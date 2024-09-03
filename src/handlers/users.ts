@@ -7,7 +7,7 @@ import { connection } from '../config/database';
 
 export const searchUser = async(userEmail: String, userPwd: String) => {
     const postdb = await connection.connect();
-  	const search_User_SQL = "select * from user where email = $1 and password = $2";
+  	const search_User_SQL = "select * from public.\"user\" where email = $1 and password = $2";
     const params = [userEmail, userPwd];
     try {        
         return new Promise((resolve, rejects)=>{
