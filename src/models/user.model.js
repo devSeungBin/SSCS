@@ -30,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         created_at: {
             type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
+            defaultValue: DataTypes.NOW(),
         },
     }, {
+        timestamps: false,
         sequelize,
         modelName: 'sscs_users',
     });

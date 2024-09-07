@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "titile": "API 문서",
-    "description": "API 문서 자동화 테스트",
+    "titile": "Plans Wizard's API docs",
+    "description": "API 명세서",
     "version": "1.0.0",
     "title": "REST API"
   },
@@ -25,6 +25,112 @@
     }
   },
   "paths": {
+    "/auth/join": {
+      "post": {
+        "tags": [
+          "authRouter"
+        ],
+        "summary": "회원가입 라우터",
+        "description": "사용자가 회원가입할 때 사용하는 라우터",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "회원가입할 유저 정보",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "user_name"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "user_email"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "user_password"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "정상적으로 db에 새로운 유저가 추가됨"
+          },
+          "400": {
+            "description": "잘못된 요청 양식"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "authRouter"
+        ],
+        "summary": "로그인 라우터",
+        "description": "사용자가 로그인할 때 사용하는 라우터",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "로그인할 유저 정보",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "user_email"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "user_password"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적으로 로그인됨"
+          },
+          "400": {
+            "description": "잘못된 요청 양식"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "authRouter"
+        ],
+        "summary": "로그아웃 라우터",
+        "description": "사용자가 로그아웃할 때 사용하는 라우터",
+        "responses": {
+          "200": {
+            "description": "정상적으로 로그아웃됨"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
     "/test": {
       "get": {
         "tags": [
@@ -33,13 +139,6 @@
         "summary": "실험용 라우터",
         "description": "여러 기능을 실험하는 테스트 라우터. 아무것도 없다.",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "User ID.",
-            "required": true,
-            "type": "integer"
-          },
           {
             "name": "body",
             "in": "body",

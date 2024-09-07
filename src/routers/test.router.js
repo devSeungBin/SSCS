@@ -6,17 +6,14 @@ const { User } = db;
 
 router.get('/', async (req, res) => {
 
+    // 더 많은 swagger-autugen 문법을 살펴보려면
+    // https://swagger-autogen.github.io/docs 를 참조
+
     /* 
     #swagger.path = '/test'
     #swagger.tags = ['testRouter']
     #swagger.summary = '실험용 라우터'
     #swagger.description = '여러 기능을 실험하는 테스트 라우터. 아무것도 없다.'
-    #swagger.parameters['id'] = {
-        in: 'path',
-        description: 'User ID.',
-        required: true,
-        type: 'integer'
-    }
 
     #swagger.parameters['body'] = {
         in: 'body',
@@ -32,7 +29,7 @@ router.get('/', async (req, res) => {
     #swagger.responses[500] = { description: '서버 내부 오류' }
     */
 
-    res.send('ok')
+    res.send('OK')
 });
 
 module.exports = router;
