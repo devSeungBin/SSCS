@@ -1,10 +1,11 @@
-import swaggerAutogen from "swagger-autogen";
-import path from "path";
+const swaggerAutogen = require("swagger-autogen");
+const path = require("path");
 
+// API 문서 자동화
 const doc = {
     info: {
-        titile: 'API 문서',
-        description: 'API 문서 자동화 테스트',
+        titile: 'Plans Wizard\'s API docs',
+        description: 'API 명세서',
     },
     servers: [
         {
@@ -23,6 +24,6 @@ const doc = {
 }
 
 const outputFile = path.join(__dirname, '../swagger.json');
-const endpointFiles = [path.join(__dirname, '../routers/*.ts')];
+const endpointFiles = [path.join(__dirname, '../routers/*.js')];
 
 swaggerAutogen(outputFile, endpointFiles, doc);

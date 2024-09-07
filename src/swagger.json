@@ -25,57 +25,36 @@
     }
   },
   "paths": {
-    "/": {
+    "/test": {
       "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/{id}": {
-      "get": {
-        "description": "",
+        "tags": [
+          "testRouter"
+        ],
+        "summary": "실험용 라우터",
+        "description": "여러 기능을 실험하는 테스트 라우터. 아무것도 없다.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "User ID.",
             "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/users/test": {
-      "post": {
-        "description": "",
-        "parameters": [
+            "type": "integer"
+          },
           {
             "name": "body",
             "in": "body",
+            "description": "User data.",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "user_email": {
-                  "example": "any"
+                "username": {
+                  "type": "string",
+                  "example": "user"
                 },
-                "user_pwd": {
-                  "example": "any"
+                "password": {
+                  "type": "string",
+                  "example": "1234"
                 }
               }
             }
@@ -83,13 +62,13 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "요청 성공 응답"
           },
-          "400": {
-            "description": "Bad Request"
+          "201": {
+            "description": "요청 성공 응답, 자원 생성 됨"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "서버 내부 오류"
           }
         }
       }
