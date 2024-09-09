@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const db = require('../models/index.db');
-const { User } = db;
+const { Users } = db;
 
 const keys = require('../config/keys.config');
 
@@ -18,11 +18,11 @@ module.exports = () => {
             async (accessToken, refreshToken, profile, done) => {
                 profile = profile._json;
                 try {
-                    const user = await User.findOne({ where: { email: profile.email } });
+                    const user = await Users.findOne({ where: { email: profile.email } });
                     if (user) {
                         done(null, user);
                     } else {
-                        const newUser = await User.create({
+                        const newUser = await Users.create({
                             name: profile.name,
                             email: profile.email,
                             image: profile.picture,

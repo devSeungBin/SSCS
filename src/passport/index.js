@@ -3,7 +3,7 @@ const local = require('./localStrategy');
 const google = require('./googleStrategy');
 
 const db = require('../models/index.db');
-const { User } = db;
+const { Users } = db;
 
 module.exports = () => {
     passport.serializeUser((user, done) => {
@@ -11,8 +11,8 @@ module.exports = () => {
         done(null, user.id);
     });
 
-    passport.deserializeUser((id, done) => {
-        User.findOne({ where: { id: id } })
+    passport.deserializeUser( async (id, done) => {
+        await Users.findOne({ where: { id: id } })
             .then((user) => {
                 //user = user.dataValues;
                 done(null, user);

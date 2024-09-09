@@ -1,57 +1,53 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Users extends Model { 
+    class Preferences extends Model { 
         static associate(models) {
-            models.Users.belongsTo(models.Preferences, {
+            models.Preferences.belongsTo(models.Users, {
                 foreignKey: "user_id",
-                sourceKey: "id",
+                targetKey: "id",
             });
         }
     };
 
-    Users.init({
+    Preferences.init({
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        name: {
-            type: DataTypes.STRING(100),
+        user_id: {
+            field: "UserId",
+            type: DataTypes.INTEGER,
+        },
+        day_preference: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false,
+            defaultValue: [3, 3, 3, 3, 3, 3, 3],
         },
-        email: {
-            type: DataTypes.STRING(100),
+        time_preference: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false,
-            unique: true,
-        },
-        password: {
-            type: DataTypes.STRING(100),
-        },
-        image: {
-            type: DataTypes.STRING,
-        },
-        provider: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
+            defaultValue: [3, 3],
         },
     }, {
         sequelize,
         timestamps: true,
         paranoid: false,
         // underscored: false,
-        modelName: 'Users',
-        tableName: "sscs_users",
+        modelName: 'Preferences',
+        tableName: "sscs_users_preferences",
         // charset: "utf8",
         // collate: "utf8_general_ci",
     });
 
-    return Users;
+    return Preferences;
 };
+
 
 // const Sequelize = require('sequelize');
 
-// module.exports = class Users extends Sequelize.Model { 
+// module.exports = class Preferences extends Sequelize.Model { 
 //     static init(sequelize) {
 //         return super.init({
 //             id: {
@@ -59,41 +55,32 @@ module.exports = (sequelize, DataTypes) => {
 //                 autoIncrement: true,
 //                 primaryKey: true,
 //             },
-//             name: {
-//                 type: Sequelize.STRING(100),
+//             day_preference: {
+//                 type: Sequelize.ARRAY(Sequelize.STRING),
 //                 allowNull: false,
+//                 defaultValue: [3, 3, 3, 3, 3, 3, 3],
 //             },
-//             email: {
-//                 type: Sequelize.STRING(100),
+//             time_preference: {
+//                 type: Sequelize.ARRAY(Sequelize.STRING),
 //                 allowNull: false,
-//                 unique: true,
-//             },
-//             password: {
-//                 type: Sequelize.STRING(100),
-//             },
-//             image: {
-//                 type: Sequelize.STRING,
-//             },
-//             provider: {
-//                 type: Sequelize.STRING(100),
-//                 allowNull: false,
+//                 defaultValue: [3, 3],
 //             },
 //         }, {
 //             sequelize,
 //             timestamps: true,
 //             paranoid: true,
 //             underscored: false,
-//             modelName: 'Users',
-//             tableName: "sscs_users",
+//             modelName: 'Preferences',
+//             tableName: "sscs_users_preferences",
 //             charset: "utf8",
 //             collate: "utf8_general_ci",
 //         });
 //     }
 
 //     static associate(models) {
-//         models.Users.hasMany(models.Preferences, {
+//         models.Preferences.belongsTo(models.Users, {
 //             foreignKey: "user_id",
-//             sourceKey: "id",
+//             targetKey: "id",
 //         });
 //     }
 // };

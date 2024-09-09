@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../models/index.db');
-const { User } = db;
+const { Users, Preferences } = db;
 
 router.get('/session', async (req, res) => {
 
@@ -22,7 +22,7 @@ router.get('/session', async (req, res) => {
         msg: "세션 확인 메세지",
         info: {
             session: req.session,
-            user: req.user, 
+            user: req.user,
         },
     });
 });

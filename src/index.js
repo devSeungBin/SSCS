@@ -55,9 +55,11 @@ app.use(cors(corsOption));
 // 라우터 세부설정
 const testRouter = require('./routers/test.router');
 const authRouter = require('./routers/auth.router');
+const preferenceRouter = require('./routers/preference.router');
 
 app.use('/test', testRouter);
 app.use('/auth', authRouter);
+app.use('/preference', preferenceRouter);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 

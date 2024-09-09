@@ -1,9 +1,9 @@
 const db = require('../models/index.db');
-const { User } = db;
+const { Users, Preferences } = db;
 
 exports.searchUser = async (email, provider) => {
     try {
-        const user = await User.findOne({ where: { email: email, provider: provider }, raw: true });
+        const user = await Users.findOne({ where: { email: email, provider: provider }, raw: true });
         if(!user) {
             return {
                 statusCode: 400,    // 사용자가 db에 없음
@@ -30,13 +30,17 @@ exports.createUser = async (user) => {
     }
 
     try {
-        if (await User.findOne({ where: { email: user.email } })) {
+        if (await Users.findOne({ where: { email: user.email } })) {
             return {
                 statusCode: 500,    // 이미 사용자가 db에 있음
             };
         }
         
-        await User.create(user);
+        await Users.create(user)
+            .then(async(user) => {
+                await Preferences.create({UserId: user.id});
+            });
+
         return {
             statusCode: 201,    // db에 사용자 추가
             info: user,

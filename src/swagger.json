@@ -162,6 +162,70 @@
         }
       }
     },
+    "/preference": {
+      "get": {
+        "tags": [
+          "preferenceRouter"
+        ],
+        "summary": "선호도 조회 API",
+        "description": "사용자가 자신의 선호도를 조회할 때 사용하는 엔드포인트",
+        "responses": {
+          "200": {
+            "description": "정상적으로 선호도 조회됨"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "preferenceRouter"
+        ],
+        "summary": "선호도 수정 API",
+        "description": "사용자가 자신의 선호도를 수정할 때 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "수정할 선호도 정보",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "day_preference": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                },
+                "time_preference": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "정상적으로 선호도 수정됨"
+          },
+          "400": {
+            "description": "잘못된 요청 양식"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
     "/test/session": {
       "get": {
         "tags": [

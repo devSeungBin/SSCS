@@ -2,7 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const db = require('../models/index.db');
-const { User } = db;
+const { Users } = db;
 
 module.exports = () => {
     passport.use(
@@ -13,7 +13,7 @@ module.exports = () => {
         },
         async (email, password, done) => {
             try {
-                const user = await User.findOne({ where: { email: email, provider: 'local' } });
+                const user = await Users.findOne({ where: { email: email, provider: 'local' } });
                 if (user) {
                     if (password === user.password) {
                         done(null, user);
