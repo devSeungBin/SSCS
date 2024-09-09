@@ -1,5 +1,6 @@
 const passport = require('passport');
 const local = require('./localStrategy');
+const google = require('./googleStrategy');
 
 const db = require('../models/index.db');
 const { User } = db;
@@ -22,4 +23,5 @@ module.exports = () => {
     });
 
     local();
+    google();
 };

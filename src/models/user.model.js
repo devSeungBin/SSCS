@@ -41,9 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     (async () => { 
         try {
             await sequelize.sync();
-            console.log("[DB] User 테이블이 생성되었습니다.");
+            console.log("[DB] User 테이블이 연결되었습니다.");
         } catch(error) {
-            console.log(`[DB] User 테이블 생성에 실패했습니다: ${error}`);
+            console.log(`[DB] User 테이블 생성 또는 연결에 실패했습니다: ${error}`);
         }
     })();
 

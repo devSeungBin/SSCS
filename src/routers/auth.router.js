@@ -12,8 +12,8 @@ router.post('/join', isNotLoggedIn, async (req, res, next) => {
     /* 
     #swagger.path = '/auth/join'
     #swagger.tags = ['authRouter']
-    #swagger.summary = '회원가입 라우터'
-    #swagger.description = '사용자가 회원가입할 때 사용하는 라우터'
+    #swagger.summary = '로컬 회원가입 API'
+    #swagger.description = '사용자가 로컬 회원가입할 때 사용하는 엔드포인트'
     #swagger.parameters['body'] = {
         in: 'body',
         description: '회원가입할 유저 정보',
@@ -24,7 +24,7 @@ router.post('/join', isNotLoggedIn, async (req, res, next) => {
             password: "user_password"
         }
     }
-    #swagger.responses[201] = { description: '정상적으로 db에 새로운 유저가 추가됨' }
+    #swagger.responses[201] = { description: '정상적으로 회원가입 처리됨' }
     #swagger.responses[400] = { description: '잘못된 요청 양식' }
     #swagger.responses[500] = { description: '서버 내부 오류' }
     */
@@ -68,8 +68,8 @@ router.post('/join', isNotLoggedIn, async (req, res, next) => {
     /* 
     #swagger.path = '/auth/login'
     #swagger.tags = ['authRouter']
-    #swagger.summary = '로그인 라우터'
-    #swagger.description = '사용자가 로그인할 때 사용하는 라우터'
+    #swagger.summary = '로컬 로그인 API'
+    #swagger.description = '사용자가 로컬 로그인할 때 사용하는 엔드포인트'
     #swagger.parameters['body'] = {
         in: 'body',
         description: '로그인할 유저 정보',
@@ -79,7 +79,7 @@ router.post('/join', isNotLoggedIn, async (req, res, next) => {
             password: "user_password",
         }
     }
-    #swagger.responses[200] = { description: '정상적으로 로그인됨' }
+    #swagger.responses[200] = { description: '정상적으로 로그인 처리됨' }
     #swagger.responses[400] = { description: '잘못된 요청 양식' }
     #swagger.responses[500] = { description: '서버 내부 오류' }
     */
@@ -123,10 +123,10 @@ router.get('/logout', isLoggedIn, (req, res, next) => {
     /* 
     #swagger.path = '/auth/logout'
     #swagger.tags = ['authRouter']
-    #swagger.summary = '로그아웃 라우터'
-    #swagger.description = '사용자가 로그아웃할 때 사용하는 라우터'
+    #swagger.summary = '로그아웃 API'
+    #swagger.description = '사용자가 로그아웃할 때 사용하는 엔드포인트'
 
-    #swagger.responses[200] = { description: '정상적으로 로그아웃됨' }
+    #swagger.responses[200] = { description: '정상적으로 로그인 처리됨' }
     */
 
     req.logout((err) => {
@@ -143,6 +143,40 @@ router.get('/logout', isLoggedIn, (req, res, next) => {
         }
     });
 });
+
+router.get('/google', isNotLoggedIn, (req, res, next) => {
+
+    /* 
+    #swagger.path = '/auth/google'
+    #swagger.tags = ['authRouter']
+    #swagger.summary = '구글 로그인 API'
+    #swagger.description = '사용자가 구글 로그인할 때 사용하는 엔드포인트'
+
+    #swagger.responses[200] = { description: '정상적으로 로그인 처리됨' }
+    */
+
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
+router.get('/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+
+        /* 
+        #swagger.path = '/auth/google/callback'
+        #swagger.tags = ['authRouter']
+        #swagger.summary = '구글 로그인 리다이렉트 API'
+        #swagger.description = '클라이언트가 구글 인증 서버에서 인증 코드를 받기 위한 엔드포인트, 클라이언트로부터 요청이 다이렉트로 들어오지 않는 주소'
+
+        #swagger.responses[200] = { description: '정상적으로 로그아웃됨' }
+        */
+
+        return res.status(200).json({
+            msg: "로그인 성공",
+            info: req.session,
+        });
+    },
+);
+
 
 
 module.exports = router;
