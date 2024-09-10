@@ -16,19 +16,32 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        user_id: {
-            field: "UserId",
-            type: DataTypes.INTEGER,
-        },
+        // user_id: {
+        //     field: "UserId",
+        //     type: DataTypes.INTEGER,
+        // },
         day_preference: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
+            // type: DataTypes.ARRAY(DataTypes.STRING),
+            type: DataTypes.JSONB,
             allowNull: false,
-            defaultValue: [3, 3, 3, 3, 3, 3, 3],
+            defaultValue: {
+                Mon: 3,
+                Tue: 3,
+                Wed: 3,
+                Thu: 3,
+                Fri: 3,
+                Sat: 3,
+                Sun: 3,
+            },
         },
         time_preference: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
+            // type: DataTypes.ARRAY(DataTypes.STRING),
+            type: DataTypes.JSONB,
             allowNull: false,
-            defaultValue: [3, 3],
+            defaultValue: {
+                am: 3,
+                pm: 3,
+            },
         },
     }, {
         sequelize,

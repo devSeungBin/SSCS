@@ -22,35 +22,55 @@ exports.searchPreference = async (id) => {
     }
 }
 
+exports.checkPreference = (day_preference, time_preference) => {
+    try {
+        if (typeof day_preference !== 'object' || day_preference === null ||
+            typeof time_preference !== 'object' || time_preference === null) {
+            return false;        // 요청 데이터 형식 오류
+        }
+
+        const day_requiredKeys = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const time_requiredKeys = ['am', 'pm'];
+        for (const key of day_requiredKeys) {
+            if (!day_preference.hasOwnProperty(key)) {
+                return false;        // 요청 데이터 형식 오류
+            }
+        }
+        for (const key of time_requiredKeys) {
+            if (!time_preference.hasOwnProperty(key)) {
+                return false;        // 요청 데이터 형식 오류
+            }
+        }
+
+        for (const key in day_preference) {
+            const value = day_preference[key];
+            if (typeof value !== 'number' || value % 1 !== 0 || value < 1 || value > 5) {
+                return false;        // 요청 데이터 형식 오류
+            }
+        }
+        for (const key in time_preference) {
+            const value = time_preference[key];
+            if (typeof value !== 'number' || value % 1 !== 0 || value < 1 || value > 5) {
+                return false;        // 요청 데이터 형식 오류
+            }
+        }
+
+        return true;
+
+    } catch (err) {
+        return false;        // 서버 내부 오류
+    }
+}
+
 exports.updatePreference = async (user, day_preference, time_preference) => {
     try {
-        const preference = await Preferences.findOne({ where: { UserId: user.id }, raw: true });
+        const preference = await Preferences.findOne({ where: { UserId: user.id } });
+        if (!preference) {
+            return {
+                statusCode: 500,    // 사용자가 db에 없음
+            };
+        }
         
-        if(!preference) {
-            return {
-                statusCode: 400,    // 선호도가 db에 없음
-            };
-        }
-
-        if((day_preference.length() != 7) || (time_preference.length() != 2)) {
-            return {
-                statusCode: 400,    // 선호도 양식이 잘못됐음
-            };
-        }
-
-        if(day_preference.some((e) => { !(e.isInteger()) || (e < 1) || (e > 5) }) ||
-           time_preference.some((e) => { !(e.isInteger()) || (e < 1) || (e > 5) })) {
-            return {
-                statusCode: 400,    // 선호도 양식이 잘못됐음
-            };
-        }
-
-        if(preference.day_preference === day_preference && preference.time_preference === time_preference) {
-            return {
-                statusCode: 400,    // 변경하려는 선호도가 없음
-            };
-        }
-
         await preference.update({ day_preference: day_preference, time_preference: time_preference });
         await preference.save();
 

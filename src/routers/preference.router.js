@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { isLoggedIn, isNotLoggedIn } = require('../middlewares/auth.middleware');
-const { searchPreference, updatePreference } = require('../handlers/preference.handle');
+const { searchPreference, updatePreference, checkPreference } = require('../handlers/preference.handle');
 
 const router = express.Router();
 
@@ -46,8 +46,19 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         description: '수정할 선호도 정보',
         required: true,
         schema: {
-            day_preference: [],
-            time_preference: [],
+            day_preference: {
+                Mon: 3,
+                Tue: 3,
+                Wed: 3,
+                Thu: 3,
+                Fri: 3,
+                Sat: 3,
+                Sun: 3,
+            },
+            time_preference: {
+                am: 3,
+                pm: 3,
+            },
         }
     }
     #swagger.responses[201] = { description: '정상적으로 선호도 수정됨' }
@@ -56,8 +67,15 @@ router.get('/', isLoggedIn, async (req, res, next) => {
     */
 
     const { day_preference, time_preference } = req.body;
+    const user = req.user.dataValues;
 
-    const result = updatePreference(req.user, day_preference, time_preference);
+    if(!checkPreference(day_preference, time_preference)) {
+        return res.status(400).json({
+            msg: "선호도 수정 실패",
+        });
+    }
+
+    const result = await updatePreference(user, day_preference, time_preference);
 
     if(result.statusCode === 201) {
 
@@ -71,7 +89,6 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             msg: "선호도 수정 실패",
         });
     }
-
  });
 
 

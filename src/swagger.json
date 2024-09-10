@@ -197,14 +197,50 @@
               "type": "object",
               "properties": {
                 "day_preference": {
-                  "type": "array",
-                  "example": [],
-                  "items": {}
+                  "type": "object",
+                  "properties": {
+                    "Mon": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Tue": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Wed": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Thu": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Fri": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Sat": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "Sun": {
+                      "type": "number",
+                      "example": 3
+                    }
+                  }
                 },
                 "time_preference": {
-                  "type": "array",
-                  "example": [],
-                  "items": {}
+                  "type": "object",
+                  "properties": {
+                    "am": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "pm": {
+                      "type": "number",
+                      "example": 3
+                    }
+                  }
                 }
               }
             }

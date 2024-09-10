@@ -32,7 +32,7 @@ exports.createUser = async (user) => {
     try {
         if (await Users.findOne({ where: { email: user.email } })) {
             return {
-                statusCode: 500,    // 이미 사용자가 db에 있음
+                statusCode: 400,    // 이미 사용자가 db에 있음
             };
         }
         
@@ -47,7 +47,6 @@ exports.createUser = async (user) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,    // db 내부 오류
         };
