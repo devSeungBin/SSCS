@@ -75,7 +75,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         });
     }
 
-    const result = await updatePreference(user, day_preference, time_preference);
+    const result = await updatePreference(user.id, day_preference, time_preference);
 
     if(result.statusCode === 201) {
 

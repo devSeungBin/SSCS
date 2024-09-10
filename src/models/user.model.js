@@ -3,7 +3,17 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Users extends Model { 
         static associate(models) {
-            models.Users.belongsTo(models.Preferences, {
+            models.Users.hasOne(models.Preferences, {
+                foreignKey: "user_id",
+                sourceKey: "id",
+            });
+
+            models.Users.hasMany(models.Groups, {
+                foreignKey: "creator",
+                sourceKey: "id",
+            });
+
+            models.Users.hasMany(models.GroupUsers, {
                 foreignKey: "user_id",
                 sourceKey: "id",
             });
@@ -29,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100),
         },
         image: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
         },
         provider: {
             type: DataTypes.STRING(100),
@@ -39,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         timestamps: true,
         paranoid: false,
-        // underscored: false,
+        underscored: true,
         modelName: 'Users',
         tableName: "sscs_users",
         // charset: "utf8",

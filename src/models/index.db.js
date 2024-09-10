@@ -19,20 +19,41 @@ const sequelize = new Sequelize(keys.DB_NAME, keys.DB_USER, keys.DB_PASSWORD, {
 
 const Users = require("./user.model")(sequelize, Sequelize.DataTypes);
 const Preferences = require("./preference.model")(sequelize, Sequelize.DataTypes);
+const Groups = require("./group.model")(sequelize, Sequelize.DataTypes);
+const GroupUsers = require("./group.user.model")(sequelize, Sequelize.DataTypes);
 
 
 const db = {};
 db.sequelize = sequelize;
 db.Users = Users;
 db.Preferences = Preferences;
+db.Groups = Groups;
+db.GroupUsers = GroupUsers;
 
-db.Users.hasMany(db.Preferences);
-db.Preferences.belongsTo(db.Users);
+// db.Users.hasOne(db.Preferences);
+// db.Users.hasMany(db.Groups);
+// db.Users.hasMany(db.GroupUsers);
+
+// db.Groups.belongsTo(db.Users);
+// db.Groups.hasMany(db.GroupUsers);
+
+// db.GroupUsers.belongsTo(db.Users);
+// db.GroupUsers.belongsTo(db.Groups);
+
+// db.Preferences.belongsTo(db.Users);
 
 
-Users.sync({ force: false })    // force: true => 기존 테이블을 삭제하고 새로 생성
+const test = true;
+
+Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하고 새로 생성
     .then(() => {
-        Preferences.sync({ force: false });
+        Preferences.sync({ force: test });
+    })
+    .then(() => {
+        Groups.sync({ force: test });
+    })
+    .then(() => {
+        GroupUsers.sync({ force: test });
     })
     .then(() => {
         console.log('[Server] 모든 테이블이 생성되었습니다.');

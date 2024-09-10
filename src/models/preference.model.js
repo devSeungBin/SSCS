@@ -1,4 +1,4 @@
-const { Model } = require('sequelize');
+const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Preferences extends Model { 
@@ -16,10 +16,14 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        // user_id: {
-        //     field: "UserId",
-        //     type: DataTypes.INTEGER,
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "sscs_users",
+                key: "id",
+                // deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE,
+            },
+        },
         day_preference: {
             // type: DataTypes.ARRAY(DataTypes.STRING),
             type: DataTypes.JSONB,
@@ -47,9 +51,9 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         timestamps: true,
         paranoid: false,
-        // underscored: false,
+        underscored: true,
         modelName: 'Preferences',
-        tableName: "sscs_users_preferences",
+        tableName: "sscs_preferences",
         // charset: "utf8",
         // collate: "utf8_general_ci",
     });

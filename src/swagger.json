@@ -162,6 +162,100 @@
         }
       }
     },
+    "/group/create": {
+      "post": {
+        "tags": [
+          "groupRouter"
+        ],
+        "summary": "그룹 생성 API",
+        "description": "사용자가 그룹을 생성할 때 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "생성할 그룹 정보",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "group_name"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "정상적으로 그룹이 생성됨"
+          },
+          "400": {
+            "description": "잘못된 요청 양식"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
+    "/group/:id/profile": {
+      "get": {
+        "tags": [
+          "groupRouter"
+        ],
+        "summary": "그룹 정보 조회 API",
+        "description": "그룹의 정보를 조회할 때 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적으로 그룹 정보가 조회됨"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
+    "/group/:id/users": {
+      "get": {
+        "tags": [
+          "groupRouter"
+        ],
+        "summary": "그룹 참여자 정보 조회 API",
+        "description": "그룹 참여자 정보를 조회할 때 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적으로 그룹 참여자 정보가 조회됨"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "서버 내부 오류"
+          }
+        }
+      }
+    },
     "/preference": {
       "get": {
         "tags": [

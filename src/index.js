@@ -56,10 +56,12 @@ app.use(cors(corsOption));
 const testRouter = require('./routers/test.router');
 const authRouter = require('./routers/auth.router');
 const preferenceRouter = require('./routers/preference.router');
+const groupRouter = require('./routers/group.router');
 
 app.use('/test', testRouter);
 app.use('/auth', authRouter);
 app.use('/preference', preferenceRouter);
+app.use('/group', groupRouter);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 

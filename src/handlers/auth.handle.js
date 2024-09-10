@@ -36,14 +36,12 @@ exports.createUser = async (user) => {
             };
         }
         
-        await Users.create(user)
-            .then(async(user) => {
-                await Preferences.create({UserId: user.id});
-            });
+        const newUser = await Users.create(user);
+        await Preferences.create({ user_id: newUser.id });
 
         return {
             statusCode: 201,    // db에 사용자 추가
-            info: user,
+            info: newUser,
         };
 
     } catch (err) {

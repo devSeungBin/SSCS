@@ -1,9 +1,9 @@
 const db = require('../models/index.db');
 const { Users, Preferences } = db;
 
-exports.searchPreference = async (id) => {
+exports.searchPreference = async (user_id) => {
     try {
-        const preference = await Preferences.findOne({ where: { UserId: id }, raw: true });
+        const preference = await Preferences.findOne({ where: { user_id: user_id }, raw: true });
         if(!preference) {
             return {
                 statusCode: 400,    // 선호도가 db에 없음
@@ -62,9 +62,9 @@ exports.checkPreference = (day_preference, time_preference) => {
     }
 }
 
-exports.updatePreference = async (user, day_preference, time_preference) => {
+exports.updatePreference = async (user_id, day_preference, time_preference) => {
     try {
-        const preference = await Preferences.findOne({ where: { UserId: user.id } });
+        const preference = await Preferences.findOne({ where: { user_id: user_id } });
         if (!preference) {
             return {
                 statusCode: 500,    // 사용자가 db에 없음
