@@ -45,18 +45,26 @@ db.GroupUsers = GroupUsers;
 
 const test = true;
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하고 새로 생성
     .then(() => {
-        Preferences.sync({ force: test });
+        delay(0).then(() => {
+            Preferences.sync({ force: test });
+        });
     })
     .then(() => {
-        Groups.sync({ force: test });
+        delay(0).then(() => {
+            Groups.sync({ force: test });
+        });
     })
     .then(() => {
-        GroupUsers.sync({ force: test });
-    })
-    .then(() => {
-        console.log('[Server] 모든 테이블이 생성되었습니다.');
+        delay(3000).then(() => {
+            GroupUsers.sync({ force: test });
+            console.log('[Server] 모든 테이블이 생성되었습니다.');
+        });
     })
     .catch(err => {
         console.error('[Server] 테이블 생성 중 오류 발생:', err);

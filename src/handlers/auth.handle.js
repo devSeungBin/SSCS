@@ -3,7 +3,7 @@ const { Users, Preferences } = db;
 
 exports.searchUser = async (email, provider) => {
     try {
-        const user = await Users.findOne({ where: { email: email, provider: provider }, raw: true });
+        const user = await Users.findOne({ where: { email: email, provider: provider }, raw: true });  // promise 반환값을 json으로 보고 싶으면 raw: true
         if(!user) {
             return {
                 statusCode: 400,    // 사용자가 db에 없음

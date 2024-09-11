@@ -34,6 +34,9 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 1,
         },
         invitation_code: {
+            type: DataTypes.STRING(20),
+        },
+        salt: {
             type: DataTypes.STRING(255),
         },
         creator: {

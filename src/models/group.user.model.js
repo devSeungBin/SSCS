@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         group_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            // allowNull: false,
             references: {
                 model: "sscs_groups",
                 key: "id",

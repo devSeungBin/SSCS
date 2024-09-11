@@ -64,7 +64,7 @@ exports.checkPreference = (day_preference, time_preference) => {
 
 exports.updatePreference = async (user_id, day_preference, time_preference) => {
     try {
-        const preference = await Preferences.findOne({ where: { user_id: user_id } });
+        const preference = await Preferences.findOne({ where: { user_id: user_id }, raw: false });
         if (!preference) {
             return {
                 statusCode: 500,    // 사용자가 db에 없음
