@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const db = require('../models/index.db');
-const { Users } = db;
+const { Users, Preferences } = db;
 
 const keys = require('../config/keys.config');
 
@@ -28,6 +28,9 @@ module.exports = () => {
                             image: profile.picture,
                             provider: 'google',
                         });
+
+                        await Preferences.create({ user_id: newUser.id });
+
                         done(null, newUser); 
                     }
                 } catch (err) {

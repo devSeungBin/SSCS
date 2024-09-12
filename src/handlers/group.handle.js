@@ -79,7 +79,7 @@ exports.createInvitationCode = async (group) => {
         .then(async ([salt, invitation_code]) => {
             const reGroup = await Groups.findOne({ where: { id: group.id }, raw: false }); 
 
-            await reGroup.update({ salt: salt, invitation_code: invitation_code });
+            await reGroup.update({ invitation_code: invitation_code });
             await reGroup.save();
         })
         .catch((err) => {
