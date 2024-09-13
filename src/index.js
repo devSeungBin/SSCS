@@ -30,14 +30,15 @@ app.use(express.json());
 
 app.use(cookieParser(keys.COOKIE_SECRET));
 app.use(session({
-      resave: false,
-      saveUninitialized: false,
-      secret: keys.COOKIE_SECRET,
-      cookie: {
-         httpOnly: true,
-         secure: false,
-      },
-   }),
+    resave: false,
+    saveUninitialized: false,
+    secret: keys.COOKIE_SECRET,
+    cookie: {
+        httpOnly: true,
+        secure: false,
+        // maxAge: 1000 * 60 * 60,
+    },
+}),
 );
 
 app.use(passport.initialize());
