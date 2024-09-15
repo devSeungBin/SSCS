@@ -1,12 +1,12 @@
 # 벡엔드 목표 리스트 
 
 **0. 기초 서버 구성**  
-- Javascript + Express 기반 서버 구축
-- 임시 API 구현 및 테스트
-- API 문서 자동화 구현 및 테스트
-- PostgreSQL 기반 DB 구축
-    - 필요한 DB 스키마 설계
-    - 서버와 DB 연동
+- Javascript + Express 기반 서버 구축 (완료)
+- 임시 API 구현 및 테스트 (완료)
+- API 문서 자동화 구현 및 테스트 (완료)
+- PostgreSQL 기반 DB 구축 (완료)
+    - 필요한 DB 스키마 설계 (완료)
+    - 서버와 DB 연동 (완료)
 
 이후는 목표 동작 시나리오대로 기능을 구현
 
@@ -24,14 +24,17 @@
 ```
 > 필요한 API - 기능
 
-> GET /users - 사용자 정보 조회
-> POST /users - 로컬 회원가입
+> GET /users - 사용자 정보 조회 (완료)
+> POST /users - 로컬 회원가입 (완료)
 > PATCH /users - 사용자 정보 수정
 > DELETE /users - 사용자 탈퇴
 
-> GET /users/login - 구글 로그인 (GET /users/login/callback - 리다이렉트)
-> POST /users/login - 로컬 로그인
+> GET /users/login - 구글 로그인 (GET /users/login/callback - 리다이렉트) (완료)
+> POST /users/login - 로컬 로그인 (완료)
 
+> GET /users/logout - 사용자 로그아웃
+
+> GET /users/preference - 사용자 선호도 정보 조회
 > POST /users/preference - 사용자 선호도 정보 생성
 
 > GET /users/plans - 사용자 개인 약속 조회
@@ -114,6 +117,8 @@
 > POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출
 > PATCH /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 수정
 > DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제
+
+> GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
 ```
 
 ***
