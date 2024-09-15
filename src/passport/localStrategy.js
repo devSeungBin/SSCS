@@ -13,19 +13,19 @@ module.exports = () => {
         },
         async (email, password, done) => {
             try {
-                const user = await Users.findOne({ where: { email: email, provider: 'local' } });
+                const user = await Users.findOne({ where: { email: email } });
                 if (user) {
                     if (password === user.password) {
-                        done(null, user);
+                        done(null, user, { statusCode: 200 });
                     } else {
-                        done(null, false, { message: '아이디 또는 비밀번호가 일치하지 않음' });
+                        done(null, false, { statusCode: 400, comment: '비밀번호가 일치하지 않습니다.' });
                     }
                 } else {
-                    done(null, false, { message: '아이디 또는 비밀번호가 일치하지 않음' });
+                    done(null, false, { statusCode: 404, comment: '해당 이메일을 사용하는 사용자가 없습니다.' });
                 }
 
             } catch (err) {
-                done(err);
+                done(err, null, { statusCode: 500 });
             }
         },
         ),

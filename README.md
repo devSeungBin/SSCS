@@ -24,15 +24,16 @@
 ```
 > 필요한 API - 기능
 
-> GET /users - 사용자 정보 조회 (완료)
-> POST /users - 로컬 회원가입 (완료)
+> GET /users - 사용자 정보 조회 (완성, 응답 테스트 완료)
+> POST /users - 로컬 회원가입 (완성, 응답 테스트 완료)
 > PATCH /users - 사용자 정보 수정
 > DELETE /users - 사용자 탈퇴
 
-> GET /users/login - 구글 로그인 (GET /users/login/callback - 리다이렉트) (완료)
-> POST /users/login - 로컬 로그인 (완료)
+> GET /users/login - 구글 로그인 (완성, 응답 테스트 완료)
+> GET /users/login/callback - 리다이렉트 (완성, 응답 테스트 완료)
+> POST /users/login - 로컬 로그인 (완성, 응답 테스트 완료)
 
-> GET /users/logout - 사용자 로그아웃
+> POST /users/logout - 사용자 로그아웃 (완성, 응답 테스트 완료)
 
 > GET /users/preference - 사용자 선호도 정보 조회
 > POST /users/preference - 사용자 선호도 정보 생성

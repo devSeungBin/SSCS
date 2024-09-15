@@ -20,22 +20,23 @@ module.exports = () => {
                 try {
                     const user = await Users.findOne({ where: { email: profile.email } });
                     if (user) {
-                        done(null, user);
+                        done(null, user, { statusCode: 200 });
                     } else {
                         const newUser = await Users.create({
                             name: profile.name,
                             email: profile.email,
                             image: profile.picture,
                             provider: 'google',
+                            new: true
                         });
 
-                        await Preferences.create({ user_id: newUser.id });
+                        const newPreference = await Preferences.create({ user_id: newUser.id });
 
-                        done(null, newUser); 
-                    }
+                        done(null, newUser, { statusCode: 201, user: newUser.toJSON(), preference: newPreference.toJSON() }); 
+                    };
                 } catch (err) {
-                    done(err);
-                }
+                    done(err, null, { statusCode: 500 });
+                };
             },
         ),
     );
