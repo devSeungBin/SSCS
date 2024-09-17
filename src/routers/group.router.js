@@ -1,55 +1,120 @@
 const express = require('express');
-
-const { isLoggedIn, isNotLoggedIn } = require('../middlewares/auth.middleware');
-const { isGroupUser } = require('../middlewares/group.middleware');
-const { searchGroup, searchAllGroupUser, createGroup, createInvitationCode, joinGroup, updateGroup } = require('../handlers/group.handle');
 const { join } = require('path');
 
+const { 
+    isLoggedIn, isNotLoggedIn, 
+    isNewUser, isNotNewUser
+} = require('../middlewares/auth.middleware');
+const { 
+    isGroupUser
+} = require('../middlewares/group.middleware');
+const { 
+    searchGroup, searchAllGroupUser, createGroup, createInvitationCode, joinGroup, updateGroup
+} = require('../handlers/group.handle');
+
+const { handleError } = require('../middlewares/res.middleware');
 
 const router = express.Router();
 
-router.post('/create', isLoggedIn, async (req, res, next) => {
-
+router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/group/create'
-    #swagger.tags = ['groupRouter']
-    #swagger.summary = '그룹 생성 API'
-    #swagger.description = '사용자가 그룹을 생성할 때 사용하는 엔드포인트'
-    #swagger.parameters['body'] = {
+    #swagger.path = '/groups'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '새 그룹 생성 API (인증 불필요)'
+    #swagger.description = '사용자가 새로운 그룹 생성 시 사용하는 엔드포인트'
+    #swagger.requestBody = {
         in: 'body',
         description: '생성할 그룹 정보',
         required: true,
-        schema: {
-            name: "group_name"
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postGroupsReq" },
+            }
         }
     }
-    #swagger.responses[201] = { description: '정상적으로 그룹이 생성됨' }
-    #swagger.responses[400] = { description: '잘못된 요청 양식' }
-    #swagger.responses[500] = { description: '서버 내부 오류' }
+    #swagger.responses[201] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postGroupsRes201" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
     */
 
-    let newGroup = {
-        name: req.body.name,
-        creator: req.user.id,
-    }
+    req.result = {};
 
-    newGroup = await createGroup(newGroup);
-
-    if(newGroup.statusCode === 201) {
-        return res.status(201).json({
-            msg: "그룹 생성 성공",
-            info: newGroup.info,
-        });
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
 
     } else {
-        return res.status(newGroup.statusCode).json({
-            msg: "그룹 생성 실패",
+        let newGroup = {
+            name: req.body.name,
+            creator: req.user.id,
+        }
+    
+        await createGroup(newGroup)
+        .then((info) => {
+            if (info.statusCode !== 201) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    group: info.group,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: 500,
+                    comment: err
+                }
+            };
         });
-    }
+    };
 
- });
+    next();
+}, handleError);
  
- router.get('/profile:id', isLoggedIn, isGroupUser, async (req, res, next) => {
+router.get('/profile:id', isLoggedIn, isGroupUser, async (req, res, next) => {
 
     /* 
     #swagger.path = '/group/profile:id'

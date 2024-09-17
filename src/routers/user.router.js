@@ -1,15 +1,21 @@
 const express = require('express');
 const passport = require('passport');
 
-const { isLoggedIn, isNotLoggedIn, isNewUser } = require('../middlewares/auth.middleware');
-const { searchUser, createUser } = require('../handlers/user.handle');
+const { 
+    isLoggedIn, isNotLoggedIn, 
+    isNewUser, isNotNewUser
+} = require('../middlewares/auth.middleware');
+const { 
+    searchUser, createUser, updateUser,
+    searchPreference, createPreference, checkDay, checkTime
+} = require('../handlers/user.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
 
 
 const router = express.Router();
 
-router.get('/', isLoggedIn, isNewUser, async (req, res, next) => {
+router.get('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
     /* 
     #swagger.path = '/users'
     #swagger.tags = ['UserRouter']
@@ -106,7 +112,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
         required: true,
         content: {
             "application/json": {
-                schema: { $ref: "#/components/schemas/postUsers" },
+                schema: { $ref: "#/components/schemas/postUsersReq" },
             }
         }
     }
@@ -164,7 +170,6 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
                 req.result = {
                     statusCode: info.statusCode,
                     user: info.user,
-                    preference: info.preference
                 };
             };
         })
@@ -176,6 +181,140 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
                 }
             };
         });
+    };
+
+    next();
+}, handleError);
+
+router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/users'
+    #swagger.tags = ['UserRouter']
+    #swagger.summary = '사용자 정보 수정 API (인증 필요)'
+    #swagger.description = '사용자 프로필, 선호도 정보 수정 시 사용하는 엔드포인트'
+    #swagger.requestBody = {
+        in: 'body',
+        description: '수정할 사용자 프로필, 선호도 정보',
+        required: false,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/patchUsersReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/patchUsersRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const { name } = req.body.user;
+        const { day_preference, time_preference } = req.body.preference;
+
+        let user = {};
+        let preference = {};
+        let formError = false;
+
+        if (name) { user.name = name; };
+        if (day_preference) {
+            if (checkDay(day_preference)) {
+                preference.day_preference = day_preference;
+            } else {
+                formError = true;
+            }
+        };
+        if (time_preference) {
+            if (checkTime(time_preference)) {
+                preference.time_preference = time_preference;
+            } else {
+                formError = true;
+            }
+        };
+
+        if (!formError) {
+            await updateUser(req.user.id, user, preference)
+            .then((info) => {
+                if (info.statusCode !== 200) {
+                    console.log(info)
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    req.result = {
+                        statusCode: info.statusCode,
+                        user: info.user,
+                        preference: info.preference
+                    };
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: 500,
+                        comment: err
+                    }
+                };
+            });
+        } else {
+            req.result = {
+                error: {
+                    statusCode: 400,
+                    comment: '선호도 형식이 올바르지 않습니다.'
+                }
+            };
+        };
     };
 
     next();
@@ -279,9 +418,8 @@ router.get('/login/callback', async (req, res, next) => {
                 } else {
                     req.result = {
                         statusCode: info.statusCode,
-                        passport: req.session.passport,
                         user: info.user,
-                        preference: info.preference
+                        passport: req.session.passport,
                     };
 
                 };
@@ -308,7 +446,7 @@ router.post('/login', isNotLoggedIn, async (req, res, next) => {
         required: true,
         content: {
             "application/json": {
-                schema: { $ref: "#/components/schemas/postUsersLogin" },
+                schema: { $ref: "#/components/schemas/postUsersLoginReq" },
             }
         }
     }
@@ -484,6 +622,181 @@ router.post('/logout', isLoggedIn, (req, res, next) => {
         });
     };
 
+}, handleError);
+
+router.get('/preferences', isLoggedIn, isNotNewUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/users/preferences'
+    #swagger.tags = ['UserRouter']
+    #swagger.summary = '사용자 선호도 정보 조회 API (인증 필수)'
+    #swagger.description = '사용자의 선호도 정보를 반환하는 엔드포인트, 첫 로그인 시 선호도 설정하는데 사용된다.'
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getUsersPreferencesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchPreference(req.user.id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    preference: info.preference
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: 500,
+                    comment: err
+                }
+            };
+        });
+    
+    };
+
+    next();
+}, handleError);
+
+router.post('/preferences', isLoggedIn, isNewUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/users/preferences'
+    #swagger.tags = ['UserRouter']
+    #swagger.summary = '사용자 선호도 정보 생성 API (인증 필수)'
+    #swagger.description = '사용자의 선호도 정보를 생성하는 엔드포인트, 첫 로그인 시 선호도 설정하는데 사용된다.'
+    #swagger.requestBody = {
+        in: 'body',
+        description: '신규 사용자 선호도 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postUsersPreferenceReq" },
+            }
+        }
+    }
+    #swagger.responses[201] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postUsersPreferencesRes201" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[409] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_409" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const { day_preference, time_preference } = req.body;
+
+        if (checkDay(day_preference) && checkTime(time_preference)) {
+            await createPreference(req.user.id, day_preference, time_preference)
+            .then((info) => {
+                if (info.statusCode !== 201) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    req.result = {
+                        statusCode: info.statusCode,
+                        preference: info.preference
+                    };
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: 500,
+                        comment: err
+                    }
+                };
+            });
+        } else {
+            req.result = {
+                error: {
+                    statusCode: 400,
+                    comment: '선호도 형식이 올바르지 않습니다.'
+                }
+            };
+        };
+    };
+
+    next();
 }, handleError);
 
 

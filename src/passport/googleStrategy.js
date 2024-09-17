@@ -30,9 +30,7 @@ module.exports = () => {
                             new: true
                         });
 
-                        const newPreference = await Preferences.create({ user_id: newUser.id });
-
-                        done(null, newUser, { statusCode: 201, user: newUser.toJSON(), preference: newPreference.toJSON() }); 
+                        done(null, newUser, { statusCode: 201, user: newUser.toJSON() }); 
                     };
                 } catch (err) {
                     done(err, null, { statusCode: 500 });

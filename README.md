@@ -1,12 +1,12 @@
 # 벡엔드 목표 리스트 
 
 **0. 기초 서버 구성**  
-- Javascript + Express 기반 서버 구축 (완료)
-- 임시 API 구현 및 테스트 (완료)
-- API 문서 자동화 구현 및 테스트 (완료)
-- PostgreSQL 기반 DB 구축 (완료)
-    - 필요한 DB 스키마 설계 (완료)
-    - 서버와 DB 연동 (완료)
+- Javascript + Express 기반 서버 구축 [완료]
+- 임시 API 구현 및 테스트 [완료]
+- API 문서 자동화 구현 및 테스트 [완료]
+- PostgreSQL 기반 DB 구축 [완료]
+    - 필요한 DB 스키마 설계 [완료]
+    - 서버와 DB 연동 [완료]
 
 이후는 목표 동작 시나리오대로 기능을 구현
 
@@ -24,25 +24,25 @@
 ```
 > 필요한 API - 기능
 
-> GET /users - 사용자 정보 조회 (완성, 응답 테스트 완료)
-> POST /users - 로컬 회원가입 (완성, 응답 테스트 완료)
-> PATCH /users - 사용자 정보 수정
+> GET /users - 사용자 정보 조회 [완성, 응답 테스트 완료]
+> POST /users - 로컬 회원가입 [완성, 응답 테스트 완료]
+> PATCH /users - 사용자 정보 수정 [완성, 응답 테스트 완료]
 > DELETE /users - 사용자 탈퇴
 
-> GET /users/login - 구글 로그인 (완성, 응답 테스트 완료)
-> GET /users/login/callback - 리다이렉트 (완성, 응답 테스트 완료)
-> POST /users/login - 로컬 로그인 (완성, 응답 테스트 완료)
+> GET /users/login - 구글 로그인 [완성, 응답 테스트 완료]
+> GET /users/login/callback - 리다이렉트 [완성, 응답 테스트 완료]
+> POST /users/login - 로컬 로그인 [완성, 응답 테스트 완료]
 
-> POST /users/logout - 사용자 로그아웃 (완성, 응답 테스트 완료)
+> POST /users/logout - 사용자 로그아웃 [완성, 응답 테스트 완료]
 
-> GET /users/preference - 사용자 선호도 정보 조회
-> POST /users/preference - 사용자 선호도 정보 생성
+> GET /users/preferences - 사용자 선호도 정보 조회 [완성, 응답 테스트 완료]
+> POST /users/preferences - 사용자 선호도 정보 생성 [완성, 응답 테스트 완료]
 
 > GET /users/plans - 사용자 개인 약속 조회
 
-> POST /groups - 새 그룹 생성
+> POST /groups - 새 그룹 생성 [완성, 응답 테스트 완료]
 
-> POST /groups/{group_id}/invite - 그룹 참여자 생성
+> POST /groups/{group_id}/invite - 그룹 참여자 생성(그룹 참여) []
 ```
 
 ***
@@ -74,16 +74,16 @@
 ```
 > 필요한 API - 기능
 
-> GET /groups - 모든 그룹 정보 조회 (사용자가 참여한)
+> GET /groups - 모든 그룹 정보 조회(사용자가 참여한) [...]
 
-> GET /groups/{group_id} - 단일 그룹 정보 조회
-> PATCH /groups/{group_id} - 그룹 정보 수정
+> GET /groups/{group_id} - 단일 그룹 정보 조회 []
+> PATCH /groups/{group_id} - 그룹 정보 수정 []
 > DELETE /groups/{group_id} - 그룹 삭제
 
-> GET /groups/{group_id}/members - 그룹 참여자 정보 조회
+> GET /groups/{group_id}/members - 그룹 참여자 정보 조회 []
 > DELETE /groups/{group_id}/members - 그룹 탈퇴
 
-> GET /groups/{group_id}/invite - 그룹 참여코드 조회 (코드 재생성)
+> GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) []
 
 > GET /groups/{group_id}/plans - 그룹 약속 목록 조회
 > POST /groups/{group_id}/plans - 그룹 약속 생성
@@ -150,7 +150,6 @@ users table
 - password (VARCHAR(100))
 - image (VARCHAR(255))
 - provider (VARCHAR(100), NOT NULL)
-- is_new (BOOLEAN, NOT NULL)
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 
@@ -210,6 +209,8 @@ plans table
 submissions table
 
 - id (INTEGER, NOT NULL, PRIMARY KEY)
+- user_id (INTEGER, NOT NULL) / reference 'id' in users table
 - plan_id (INTEGER, NOT NULL) / reference 'id' in plans table
+- schedule
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)

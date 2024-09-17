@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
-const { Groups, GroupUsers } = db;
+const { Groups, Participants } = db;
 
 exports.searchGroup = async (group_id) => {
     try {
@@ -37,22 +37,24 @@ exports.searchAllGroupUser = async (group_id) => {
 exports.createGroup = async (group) => {
     if (!group.name || !group.creator) {
         return {
-            statusCode: 400,    // 잘못된 그룹 정보
+            statusCode: 400,
+            comment: '그룹 생성에 필요한 정보가 올바르지 않습니다.'
         };
     }
 
     try {        
         const newGroup = await Groups.create(group);
-        await GroupUsers.create({ user_id: group.creator, group_id: newGroup.id });
+        await Participants.create({ user_id: group.creator, group_id: newGroup.id });
 
         return {
-            statusCode: 201,    // db에 그룹 추가
-            info: newGroup,
+            statusCode: 201,
+            group: newGroup.toJSON()
         };
 
     } catch (err) {
         return {
-            statusCode: 500,    // db 내부 오류
+            statusCode: 500,
+            comment: err
         };
     }
 }

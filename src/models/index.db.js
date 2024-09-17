@@ -20,7 +20,7 @@ const sequelize = new Sequelize(keys.DB_NAME, keys.DB_USER, keys.DB_PASSWORD, {
 const Users = require("./user.model")(sequelize, Sequelize.DataTypes);
 const Preferences = require("./preference.model")(sequelize, Sequelize.DataTypes);
 const Groups = require("./group.model")(sequelize, Sequelize.DataTypes);
-const GroupUsers = require("./group.user.model")(sequelize, Sequelize.DataTypes);
+const Participants = require("./participant.model")(sequelize, Sequelize.DataTypes);
 
 
 const db = {};
@@ -28,7 +28,7 @@ db.sequelize = sequelize;
 db.Users = Users;
 db.Preferences = Preferences;
 db.Groups = Groups;
-db.GroupUsers = GroupUsers;
+db.Participants = Participants;
 
 // db.Users.hasOne(db.Preferences);
 // db.Users.hasMany(db.Groups);
@@ -62,7 +62,7 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
     })
     .then(() => {
         delay(3000).then(() => {
-            GroupUsers.sync({ force: test });
+            Participants.sync({ force: test });
             console.log('[Server] 모든 테이블이 생성되었습니다.');
         });
     })

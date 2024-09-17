@@ -1,7 +1,7 @@
 const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class GroupUsers extends Model { 
+    class Participants extends Model { 
         static associate(models) {
             models.GroupUsers.belongsTo(models.Users, {
                 foreignKey: "user_id",
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     };
 
-    GroupUsers.init({
+    Participants.init({
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -44,11 +44,11 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: true,
         paranoid: false,
         underscored: true,
-        modelName: 'GroupUsers',
-        tableName: "sscs_group_users",
+        modelName: 'Participants',
+        tableName: "sscs_participants",
         // charset: "utf8",
         // collate: "utf8_general_ci",
     });
 
-    return GroupUsers;
+    return Participants;
 };

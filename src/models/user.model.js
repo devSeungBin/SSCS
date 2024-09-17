@@ -45,10 +45,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100),
             allowNull: false,
         },
-        new: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-        },
     }, {
         sequelize,
         timestamps: true,
@@ -62,52 +58,3 @@ module.exports = (sequelize, DataTypes) => {
 
     return Users;
 };
-
-// const Sequelize = require('sequelize');
-
-// module.exports = class Users extends Sequelize.Model { 
-//     static init(sequelize) {
-//         return super.init({
-//             id: {
-//                 type: Sequelize.INTEGER,
-//                 autoIncrement: true,
-//                 primaryKey: true,
-//             },
-//             name: {
-//                 type: Sequelize.STRING(100),
-//                 allowNull: false,
-//             },
-//             email: {
-//                 type: Sequelize.STRING(100),
-//                 allowNull: false,
-//                 unique: true,
-//             },
-//             password: {
-//                 type: Sequelize.STRING(100),
-//             },
-//             image: {
-//                 type: Sequelize.STRING,
-//             },
-//             provider: {
-//                 type: Sequelize.STRING(100),
-//                 allowNull: false,
-//             },
-//         }, {
-//             sequelize,
-//             timestamps: true,
-//             paranoid: true,
-//             underscored: false,
-//             modelName: 'Users',
-//             tableName: "sscs_users",
-//             charset: "utf8",
-//             collate: "utf8_general_ci",
-//         });
-//     }
-
-//     static associate(models) {
-//         models.Users.hasMany(models.Preferences, {
-//             foreignKey: "user_id",
-//             sourceKey: "id",
-//         });
-//     }
-// };

@@ -29,14 +29,54 @@ const doc = {
     components: {
         schemas: {
             // 사설 요청
-            postUsers: {    // '회원가입 시 필요한 정보'
+            postUsersReq: {    // '회원가입 시 필요한 정보'
                 $name: '홍승빈',
                 $email: 'libeyang01@naver.com',
                 $password: '12345678',
             },
-            postUsersLogin: {   // '로그인 시 필요한 정보'
+            postUsersLoginReq: {   // '로그인 시 필요한 정보'
                 $email: 'libeyang01@naver.com',
                 $password: '12345678',
+            },
+            postUsersPreferenceReq: {   // '신규 로그인 시 필요한 선호도 정보'
+                $day_preference: {
+                    Mon: 3,
+                    Tue: 3,
+                    Wed: 3,
+                    Thu: 3,
+                    Fri: 3,
+                    Sat: 3,
+                    Sun: 3,
+                },
+                $time_preference: {
+                    morning: 3,
+                    afternoon: 3,
+                    evening: 3,
+                },
+            },
+            patchUsersReq: {   // '수정할 사용자 프로필, 선호도 정보'
+                $user: {
+                    name: '박민혁'
+                },
+                $preference: {
+                    day_preference: {
+                        Mon: 5,
+                        Tue: 5,
+                        Wed: 5,
+                        Thu: 5,
+                        Fri: 5,
+                        Sat: 5,
+                        Sun: 5,
+                    },
+                    time_preference: {
+                        morning: 1,
+                        afternoon: 1,
+                        evening: 1,
+                    },
+                }
+            },
+            postGroupsReq: {   // '생성할 그룹 정보'
+                $name: 'myGroup'
             },
             
             // 공용 응답
@@ -108,14 +148,6 @@ const doc = {
                     created_at: '사용자 가입일',
                     updated_at: '사용자 정보 수정일',
                 },
-                $preference: {
-                    id: '선호도 id',
-                    user_id: '사용자 이름',
-                    day_preference: '요일 선호도 정보',
-                    time_preference: '시간 선호도 정보',
-                    created_at: '선호도 생성일',
-                    updated_at: '선호도 정보 수정일',
-                },
             },
             getUsersLoginCallbackRes200: {  // 'GET /users/login 요청 성공'
                 $statusCode: '200',
@@ -125,9 +157,6 @@ const doc = {
             },
             getUsersLoginCallbackRes201: {  // 'GET /users/login 요청 성공'
                 $statusCode: '201',
-                $passport: {
-                    id: '사용자 id',
-                },
                 $user: {
                     id: '사용자 id',
                     name: '사용자 이름',
@@ -139,6 +168,22 @@ const doc = {
                     created_at: '사용자 가입일',
                     updated_at: '사용자 정보 수정일',
                 },
+                $passport: {
+                    id: '사용자 id',
+                },
+            },
+            postUsersLoginRes200: {     // 'POST /users/login 요청 성공'
+                $statusCode: '200',
+                $passport: {
+                    id: '사용자 id',
+                },
+            },
+            postUsersLogoutRes200: {    // 'POST /users/logout 요청 성공'
+                $statusCode: '200',
+                $message: '로그아웃에 성공했습니다.',
+            },
+            getUsersPreferencesRes200: {  // 'GET /users/preferences 요청 성공'
+                $statusCode: '200',
                 $preference: {
                     id: '선호도 id',
                     user_id: '사용자 이름',
@@ -148,15 +193,51 @@ const doc = {
                     updated_at: '선호도 정보 수정일',
                 },
             },
-            postUsersLoginRes200: {
-                $statusCode: '200',
-                $passport: {
-                    id: '사용자 id',
+            postUsersPreferencesRes201: {  // 'POST /users/preferences 요청 성공'
+                $statusCode: '201',
+                $preference: {
+                    id: '선호도 id',
+                    user_id: '사용자 이름',
+                    day_preference: '요일 선호도 정보',
+                    time_preference: '시간 선호도 정보',
+                    created_at: '선호도 생성일',
+                    updated_at: '선호도 정보 수정일',
                 },
             },
-            postUsersLogoutRes200: {    // 'POST /users/logout 요청 성공'
+            patchUsersRes200: {   // 'PATCH /users 요청 성공'
                 $statusCode: '200',
-                $message: '로그아웃에 성공했습니다.',
+                $user: {
+                    name: '박민혁'
+                },
+                $preference: {
+                    day_preference: {
+                        Mon: 5,
+                        Tue: 5,
+                        Wed: 5,
+                        Thu: 5,
+                        Fri: 5,
+                        Sat: 5,
+                        Sun: 5,
+                    },
+                    time_preference: {
+                        morning: 1,
+                        afternoon: 1,
+                        evening: 1,
+                    },
+                }
+            },
+            postGroupsRes201: {   // 'POST /groups 요청 성공'
+                $statusCode: '201',
+                $group: {
+                    id: '그룹 id',
+                    name: '그룹 이름',
+                    image: '그룹 프로필 이미지',
+                    user_count: '그룹 참여자 수',
+                    invitation_code: '그룹 초대코드',
+                    creator: '그룹 생성자',
+                    created_at: '그룹 생성일',
+                    updated_at: '그룹 정보 수정일',
+                }
             },
             
 
