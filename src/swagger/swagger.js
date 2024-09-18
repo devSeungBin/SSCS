@@ -78,6 +78,13 @@ const doc = {
             postGroupsReq: {   // '생성할 그룹 정보'
                 $name: 'myGroup'
             },
+            postGroupsMembersReq: {    // '참여할 그룹 초대코드'
+                $invitationCode: 'invitation_code'
+            },
+            patchGroupsIdReq: {     // '수정할 그룹 정보'
+                $name: 'testGroup',
+                $invitationCode: 'invitation_code'
+            },
             
             // 공용 응답
             response_303: {     // '요청을 다른 페이지로 연결'
@@ -239,6 +246,77 @@ const doc = {
                     updated_at: '그룹 정보 수정일',
                 }
             },
+            getGroupsRes200: {   // 'GET /groups 요청 성공'
+                $statusCode: '200',
+                $groups: [
+                    {
+                        id: '그룹 id',
+                        name: '그룹 이름',
+                        image: '그룹 프로필 이미지',
+                        user_count: '그룹 참여자 수',
+                        invitation_code: '그룹 초대코드',
+                        creator: '그룹 생성자',
+                        created_at: '그룹 생성일',
+                        updated_at: '그룹 정보 수정일',
+                    }
+                ]
+            },
+            getGroupsIdMembersRes200: {     // 'GET /groups/{group_id}/members 요청 성공'
+                $statusCode: '200',
+                $participants: [
+                    {
+                        id: '사용자 id',
+                        name: '사용자 이름',
+                        email: '사용자 이메일',
+                        password: '사용자 비밀번호',
+                        image: '사용자 프로필 이미지',
+                        provider: '로그인 종류',
+                        new: '신규 사용자 여부',
+                        created_at: '사용자 가입일',
+                        updated_at: '사용자 정보 수정일',
+                    }
+                ]
+            },
+            getGroupsIdInviteRes200: {      // 'GET /groups/{group_id}/invite 요청 성공'
+                $statusCode: '200',
+                $invitationCode: '초대코드'
+            },
+            postGroupsMembers201: {      // 'POST /groups/{group_id}/invite 요청 성공'
+                $statusCode: '201',
+                $participant: {
+                    id: '참여정보 id',
+                    user_id: '사용자 id',
+                    group_id: '참여한 그룹 id',
+                    created_at: '그룹 참여일',
+                    updated_at: '그룹 참여 수정일',
+                }
+            },
+            patchGroupsIdRes200: {      // 'PATCH /groups/{group_id} 요청 성공'
+                $statusCode: '200',
+                $group: {
+                    id: '그룹 id',
+                    name: '그룹 이름',
+                    image: '그룹 프로필 이미지',
+                    user_count: '그룹 참여자 수',
+                    invitation_code: '그룹 초대코드',
+                    creator: '그룹 생성자',
+                    created_at: '그룹 생성일',
+                    updated_at: '그룹 정보 수정일',
+                }
+            },
+            getGroupsIdRes200: {    // 'GET /groups/{group_id} 요청 성공'
+                $statusCode: '200',
+                $group: {
+                    id: '그룹 id',
+                    name: '그룹 이름',
+                    image: '그룹 프로필 이미지',
+                    user_count: '그룹 참여자 수',
+                    invitation_code: '그룹 초대코드',
+                    creator: '그룹 생성자',
+                    created_at: '그룹 생성일',
+                    updated_at: '그룹 정보 수정일',
+                }
+            }
             
 
         },

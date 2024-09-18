@@ -89,8 +89,8 @@ router.get('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         .catch((err) => {
             req.result = {
                 error: {
-                    statusCode: 500,
-                    comment: err
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 }
             };
         });
@@ -176,8 +176,8 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
         .catch((err) => {
             req.result = {
                 error: {
-                    statusCode: 500,
-                    comment: err
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 }
             };
         });
@@ -284,7 +284,6 @@ router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
             await updateUser(req.user.id, user, preference)
             .then((info) => {
                 if (info.statusCode !== 200) {
-                    console.log(info)
                     req.result = {
                         error: {
                             statusCode: info.statusCode,
@@ -302,8 +301,8 @@ router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
             .catch((err) => {
                 req.result = {
                     error: {
-                        statusCode: 500,
-                        comment: err
+                        statusCode: err.statusCode,
+                        comment: err.comment
                     }
                 };
             });
@@ -691,8 +690,8 @@ router.get('/preferences', isLoggedIn, isNotNewUser, async (req, res, next) => {
         .catch((err) => {
             req.result = {
                 error: {
-                    statusCode: 500,
-                    comment: err
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 }
             };
         });
@@ -781,8 +780,8 @@ router.post('/preferences', isLoggedIn, isNewUser, async (req, res, next) => {
             .catch((err) => {
                 req.result = {
                     error: {
-                        statusCode: 500,
-                        comment: err
+                        statusCode: err.statusCode,
+                        comment: err.comment
                     }
                 };
             });

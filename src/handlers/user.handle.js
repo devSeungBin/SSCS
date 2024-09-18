@@ -182,8 +182,10 @@ exports.updateUser = async (id, user, preference) => {
         };
         
         if (user) {
-            await changedUser.update({ name: user.name });
-            await changedUser.save();
+            if (user.name) {
+                await changedUser.update({ name: user.name });
+                await changedUser.save();
+            };
         };
 
         if (preference) {

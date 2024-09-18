@@ -1,5 +1,5 @@
 const db = require('../models/index.db');
-const { Users, Preferences } = db;
+const { Preferences } = db;
 
 exports.isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {

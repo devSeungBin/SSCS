@@ -41,8 +41,6 @@
 > GET /users/plans - 사용자 개인 약속 조회
 
 > POST /groups - 새 그룹 생성 [완성, 응답 테스트 완료]
-
-> POST /groups/{group_id}/invite - 그룹 참여자 생성(그룹 참여) []
 ```
 
 ***
@@ -74,16 +72,17 @@
 ```
 > 필요한 API - 기능
 
-> GET /groups - 모든 그룹 정보 조회(사용자가 참여한) [...]
+> GET /groups - 모든 그룹 정보 조회(사용자가 참여한) [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id} - 단일 그룹 정보 조회 []
-> PATCH /groups/{group_id} - 그룹 정보 수정 []
+> GET /groups/{group_id} - 단일 그룹 정보 조회 [완성, 응답 테스트 완료]
+> PATCH /groups/{group_id} - 그룹 정보 수정 [완성, 응답 테스트 완료]
 > DELETE /groups/{group_id} - 그룹 삭제
 
-> GET /groups/{group_id}/members - 그룹 참여자 정보 조회 []
+> GET /groups/{group_id}/members - 그룹 참여자 정보 조회 [완성, 응답 테스트 완료]
+> POST /groups/members - 그룹 참여자 생성(그룹 참여) [완성, 응답 테스트 완료]
 > DELETE /groups/{group_id}/members - 그룹 탈퇴
 
-> GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) []
+> GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
 > GET /groups/{group_id}/plans - 그룹 약속 목록 조회
 > POST /groups/{group_id}/plans - 그룹 약속 생성
