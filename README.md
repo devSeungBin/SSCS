@@ -38,7 +38,7 @@
 > GET /users/preferences - 사용자 선호도 정보 조회 [완성, 응답 테스트 완료]
 > POST /users/preferences - 사용자 선호도 정보 생성 [완성, 응답 테스트 완료]
 
-> GET /users/plans - 사용자 개인 약속 조회
+> GET /users/plans - 사용자 개인 약속 조회 [...]
 
 > POST /groups - 새 그룹 생성 [완성, 응답 테스트 완료]
 ```
@@ -84,10 +84,10 @@
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/plans - 그룹 약속 목록 조회
-> POST /groups/{group_id}/plans - 그룹 약속 생성
+> GET /groups/{group_id}/plans - 그룹 약속 목록 조회 [...]
+> POST /groups/{group_id}/plans - 그룹 약속 생성 [...]
 
-> PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정)
+> PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정) [...]
 > DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제
 ```
 
