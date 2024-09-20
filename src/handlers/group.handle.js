@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
 const { group } = require('console');
-const { Groups, Participants } = db;
+const { Groups, Participants, Plans } = db;
 
 exports.searchGroup = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -203,3 +203,114 @@ exports.joinGroup = async (id, invitation_code) => {
     };
 }
 
+exports.createPlan = async (plan) => {
+    if (!plan.name || !plan.submission_time_scope ||
+        !plan.minimum_user_count || !plan.progress_time || !plan.deadline) {
+        return {
+            statusCode: 400,
+            comment: '약속 생성에 필요한 정보가 올바르지 않습니다.'
+        };
+    };
+
+    try {        
+        const newPlan = await Plans.create(plan);
+
+        return {
+            statusCode: 201,
+            plan: newPlan.toJSON()
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchPlan = async (id) => {
+    try {
+        const plans = await Plans.findAll({ where: { group_id: id }, raw: true });
+        if (plans.length === 0) {
+            return {
+                statusCode: 404,
+                comment: '생성된 약속이 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                plans: plans
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.updatePlan = async (plan) => {
+    try {
+        const changedPlan = await Plans.findOne({ where: { id: plan.id }, raw: false });
+        if (!changedPlan) {
+            return {
+                statusCode: 404,
+                comment: '약속이 존재하지 않습니다.'
+            };
+
+        } else {
+            if (plan.name) {
+                await changedPlan.update({ name: plan.name });
+                await changedPlan.save();
+            };
+
+            if (plan.minimum_user_count) {
+                await changedPlan.update({ minimum_user_count: plan.minimum_user_count });
+                await changedPlan.save();
+            };
+
+            if (plan.progress_time) {
+                await changedPlan.update({ progress_time: plan.progress_time });
+                await changedPlan.save();
+            };
+
+            return {
+                statusCode: 200,
+                plan: changedPlan.toJSON()
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchPlanInfo = async (id) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: id }, raw: true });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '생성된 약속이 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                plan: plan
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}

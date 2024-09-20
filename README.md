@@ -56,16 +56,16 @@
 
 > **약속의 상태**  
 > 약속은 총 4가지 상태로 구분된다.  
-> 1. 일정 모집  
+> 1. 일정 모집 (submit)  
 > 약속이 새로 생성되었을 때, 해당 상태값을 지난다.  
 >
-> 2. 일정 계산  
+> 2. 일정 계산 (calculate)  
 > 모든 일정이 모집되거나 마감일이 지났을 때, 해당 상태값을 지닌다.
 >
-> 3. 일정 선택  
+> 3. 일정 선택 (select)  
 > 일정 후보가 모두 계산되었을 때, 해당 상태값을 지닌다.  
 > 
-> 4. 약속 확정  
+> 4. 약속 확정 (comfirm)  
 > 일정 선택이 끝났을 때, 해당 상태값을 지닌다.
 
 
@@ -84,10 +84,11 @@
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/plans - 그룹 약속 목록 조회 [...]
-> POST /groups/{group_id}/plans - 그룹 약속 생성 [...]
+> GET /groups/{group_id}/plans - 그룹 약속 목록 조회 [완성, 응답 테스트 완료]
+> POST /groups/{group_id}/plans - 그룹 약속 생성 [완성, 응답 테스트 완료]
 
-> PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정) [...]
+> GET /groups/{group_id}/plans/{plan_id} - 약속 정보 조회 [완성, 응답 테스트 완료]
+> PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정) [완성, 응답 테스트 완료]
 > DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제
 ```
 
@@ -192,14 +193,13 @@ plans table
 
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
-- start_time
-- end_time
-- submission_start_time
-- submission_end_time
-- minimum_user_count
-- progress_time
-- deadline
-- status
+- name (VARCHAR(100), NOT NULL)
+- plan_time (RANGE(TIMESTAMP))
+- submission_time_scope (RANGE(TIMESTAMP), NOT NULL)
+- minimum_user_count (INTEGER, NOT NULL)
+- progress_time (FLOAT, NOT NULL)
+- deadline (TIMASTAMP, NOT NULL)
+- status (VARCHAR(100), NOT NULL)
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 
@@ -210,6 +210,6 @@ submissions table
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - user_id (INTEGER, NOT NULL) / reference 'id' in users table
 - plan_id (INTEGER, NOT NULL) / reference 'id' in plans table
-- schedule
+- time_slot (JSONB, NOT NULL)
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)

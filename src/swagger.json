@@ -283,16 +283,6 @@
             },
             "description": "Not Found"
           },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response_409"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
           "500": {
             "content": {
               "application/json": {
@@ -550,6 +540,352 @@
               }
             },
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/groups/:group_id/plans": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "그룹 약속 목록 조회 API (인증 필요)",
+        "description": "그룹 내에서 약속 조회 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속을 조회할 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "그룹 약속 생성 API (인증 필요)",
+        "description": "그룹 내에서 약속 생성 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속을 생성할 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postGroupsIdPlansRes201"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "생성할 약속 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postGroupsIdPlansReq"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/:group_id/plans/:plan_id": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "약속 정보 조회 API (인증 필요)",
+        "description": "그룹 내에서 특정 약속 정보 조회 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "조회할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "그룹 약속 수정 API (인증 필요)",
+        "description": "그룹 내에서 약속 정보 수정 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "수정할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/patchGroupsIdPlansIdRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_409"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "수정할 약속 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchGroupsIdPlansIdReq"
+              }
+            }
           }
         }
       }
@@ -1256,6 +1592,69 @@
         "required": [
           "name",
           "invitationCode"
+        ]
+      },
+      "postGroupsIdPlansReq": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "myPlan"
+          },
+          "submission_time_scope": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "example": "2024-09-20 00:00:00+00:00"
+              },
+              "end": {
+                "type": "string",
+                "example": "2024-09-21 00:00:00+00:00"
+              }
+            }
+          },
+          "minimum_user_count": {
+            "type": "number",
+            "example": 2
+          },
+          "progress_time": {
+            "type": "number",
+            "example": 1
+          },
+          "deadline": {
+            "type": "string",
+            "example": "2024-09-20 12:00:00+00:00"
+          }
+        },
+        "required": [
+          "name",
+          "submission_time_scope",
+          "minimum_user_count",
+          "progress_time",
+          "deadline"
+        ]
+      },
+      "patchGroupsIdPlansIdReq": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "testPlan"
+          },
+          "minimum_user_count": {
+            "type": "number",
+            "example": 1
+          },
+          "progress_time": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": [
+          "name",
+          "minimum_user_count",
+          "progress_time"
         ]
       },
       "response_303": {
@@ -2130,6 +2529,257 @@
         "required": [
           "statusCode",
           "group"
+        ]
+      },
+      "postGroupsIdPlansRes201": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "201"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "submission_time_scope": {
+                "type": "string",
+                "example": "일정 제출 기간"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan"
+        ]
+      },
+      "getGroupsIdPlansRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "약속 id"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "약속 이름"
+                },
+                "group": {
+                  "type": "string",
+                  "example": "약속이 생성된 그룹 id"
+                },
+                "plan_time": {
+                  "type": "string",
+                  "example": "확정된 약속 시간"
+                },
+                "submission_time_scope": {
+                  "type": "string",
+                  "example": "일정 제출 기간"
+                },
+                "minimum_user_count": {
+                  "type": "string",
+                  "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+                },
+                "progress_time": {
+                  "type": "string",
+                  "example": "약속 진행 시간"
+                },
+                "deadline": {
+                  "type": "string",
+                  "example": "일정 제출 마감일"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "약속 진행 상태"
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "약속 생성일"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "약속 정보 수정일"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plans"
+        ]
+      },
+      "patchGroupsIdPlansIdRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plans": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "submission_time_scope": {
+                "type": "string",
+                "example": "일정 제출 기간"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plans"
+        ]
+      },
+      "getGroupsIdPlansIdRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plans": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "submission_time_scope": {
+                "type": "string",
+                "example": "일정 제출 기간"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plans"
         ]
       }
     },

@@ -21,6 +21,7 @@ const Users = require("./user.model")(sequelize, Sequelize.DataTypes);
 const Preferences = require("./preference.model")(sequelize, Sequelize.DataTypes);
 const Groups = require("./group.model")(sequelize, Sequelize.DataTypes);
 const Participants = require("./participant.model")(sequelize, Sequelize.DataTypes);
+const Plans = require("./plan.model")(sequelize, Sequelize.DataTypes);
 
 
 const db = {};
@@ -29,18 +30,7 @@ db.Users = Users;
 db.Preferences = Preferences;
 db.Groups = Groups;
 db.Participants = Participants;
-
-// db.Users.hasOne(db.Preferences);
-// db.Users.hasMany(db.Groups);
-// db.Users.hasMany(db.GroupUsers);
-
-// db.Groups.belongsTo(db.Users);
-// db.Groups.hasMany(db.GroupUsers);
-
-// db.GroupUsers.belongsTo(db.Users);
-// db.GroupUsers.belongsTo(db.Groups);
-
-// db.Preferences.belongsTo(db.Users);
+db.Plans = Plans;
 
 
 const test = true;
@@ -63,6 +53,7 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
     .then(() => {
         delay(3000).then(() => {
             Participants.sync({ force: test });
+            Plans.sync({ force: test });
             console.log('[Server] 모든 테이블이 생성되었습니다.');
         });
     })

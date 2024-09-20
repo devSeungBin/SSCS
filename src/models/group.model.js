@@ -8,7 +8,12 @@ module.exports = (sequelize, DataTypes) => {
                 targetKey: "id",
             });
 
-            models.Groups.hasMany(models.GroupUsers, {
+            models.Groups.hasMany(models.Participants, {
+                foreignKey: "group_id",
+                targetKey: "id",
+            });
+
+            models.Groups.hasMany(models.Plans, {
                 foreignKey: "group_id",
                 targetKey: "id",
             });

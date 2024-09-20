@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
                 sourceKey: "id",
             });
 
-            models.Users.hasMany(models.GroupUsers, {
+            models.Users.hasMany(models.Participants, {
                 foreignKey: "user_id",
                 sourceKey: "id",
             });

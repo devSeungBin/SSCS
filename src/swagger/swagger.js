@@ -85,6 +85,21 @@ const doc = {
                 $name: 'testGroup',
                 $invitationCode: 'invitation_code'
             },
+            postGroupsIdPlansReq: {     // '생성할 약속 정보'
+                $name: 'myPlan',
+                $submission_time_scope: {
+                    start: '2024-09-20 00:00:00+00:00',
+                    end: '2024-09-21 00:00:00+00:00',
+                },
+                $minimum_user_count: 2,
+                $progress_time: 1.0,
+                $deadline: '2024-09-20 12:00:00+00:00',
+            },
+            patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'
+                $name: 'testPlan',
+                $minimum_user_count: 1,
+                $progress_time: 2.0,
+            },
             
             // 공용 응답
             response_303: {     // '요청을 다른 페이지로 연결'
@@ -316,7 +331,73 @@ const doc = {
                     created_at: '그룹 생성일',
                     updated_at: '그룹 정보 수정일',
                 }
-            }
+            },
+            postGroupsIdPlansRes201: {      // 'POST /groups/{group_id}/plans 요청 성공'
+                $statusCode: '201',
+                $plan: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    submission_time_scope: '일정 제출 기간',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    progress_time: '약속 진행 시간',
+                    deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
+            getGroupsIdPlansRes200: {       // 'GET /groups/{group_id}/plans 요청 성공'
+                $statusCode: '200',
+                $plans: [
+                    {
+                        id: '약속 id',
+                        name: '약속 이름',
+                        group: '약속이 생성된 그룹 id',
+                        plan_time: '확정된 약속 시간',
+                        submission_time_scope: '일정 제출 기간',
+                        minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                        progress_time: '약속 진행 시간',
+                        deadline: '일정 제출 마감일',
+                        status: '약속 진행 상태',
+                        created_at: '약속 생성일',
+                        updated_at: '약속 정보 수정일',
+                    }
+                ]
+            },
+            patchGroupsIdPlansIdRes200: {       // 'PATCH /groups/{group_id}/plans/{plan_id} 요청 성공'
+                $statusCode: '200',
+                $plans: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    submission_time_scope: '일정 제출 기간',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    progress_time: '약속 진행 시간',
+                    deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
+            getGroupsIdPlansIdRes200: {       // 'GET /groups/{group_id}/plans/{plan_id} 요청 성공'
+                $statusCode: '200',
+                $plans: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    submission_time_scope: '일정 제출 기간',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    progress_time: '약속 진행 시간',
+                    deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
             
 
         },
