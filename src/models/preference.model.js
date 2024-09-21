@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         modelName: 'Preferences',
         tableName: "sscs_preferences",
-        // charset: "utf8",
+        charset: "utf8mb4",
         // collate: "utf8_general_ci",
     });
 

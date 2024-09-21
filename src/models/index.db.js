@@ -5,7 +5,13 @@ const sequelize = new Sequelize(keys.DB_NAME, keys.DB_USER, keys.DB_PASSWORD, {
     host: keys.DB_HOST,
     port: keys.DB_PORT,
     dialect: 'postgres',
-    logging: false,  
+    timezone: "Asia/Seoul",
+    dialectOptions: {
+        charset: "utf8mb4",
+        // dateStrings: true,
+        // typeCast: true,
+    },
+    logging: false,
 });
 
 (async () => {
@@ -55,6 +61,11 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
             Participants.sync({ force: test });
             Plans.sync({ force: test });
             console.log('[Server] 모든 테이블이 생성되었습니다.');
+        });
+    })
+    .then(() => {
+        delay(6000).then(() => {
+            sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
         });
     })
     .catch(err => {

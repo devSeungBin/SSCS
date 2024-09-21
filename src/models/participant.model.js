@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         modelName: 'Participants',
         tableName: "sscs_participants",
-        // charset: "utf8",
+        charset: "utf8mb4",
         // collate: "utf8_general_ci",
     });
 

@@ -195,7 +195,7 @@ plans table
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - name (VARCHAR(100), NOT NULL)
 - plan_time (RANGE(TIMESTAMP))
-- submission_time_scope (RANGE(TIMESTAMP), NOT NULL)
+- plan_time_slot (RANGE(TIMESTAMP), NOT NULL)
 - minimum_user_count (INTEGER, NOT NULL)
 - progress_time (FLOAT, NOT NULL)
 - deadline (TIMASTAMP, NOT NULL)
@@ -210,6 +210,45 @@ submissions table
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - user_id (INTEGER, NOT NULL) / reference 'id' in users table
 - plan_id (INTEGER, NOT NULL) / reference 'id' in plans table
-- time_slot (JSONB, NOT NULL)
+- submission_time_slot (JSONB, NOT NULL)
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
+
+
+***
+# 일정 후보 관련
+
+약속 생성 시, 약속을 정할 날짜인 `date_list`랑 시간 범위인 `time_scope`를 아래와 같은 형식으로 보냄
+```
+date_list = ["2023-09-01", "2023-09-03"]
+time_scope = {
+    "start": "09:00",
+    "end": "10:00"
+}
+```
+
+서버는 두 정보를 이용해서 해당 약속 시간대인 `plan_time_slot` 형태를 설정 (여기서 `available`에는 해당 시간대가 가능한 사용자들의 `user_id`가 들어갈 예정)
+```
+plan_time_slot = [
+    { "time": "2023-09-01 09:00:00", "available": [] },
+    { "time": "2023-09-01 09:30:00", "available": [] },
+    { "time": "2023-09-01 10:00:00", "available": [] },
+    { "time": "2023-09-03 09:00:00", "available": [] },
+    { "time": "2023-09-03 09:30:00", "available": [] },
+    { "time": "2023-09-03 10:00:00", "available": [] },
+]
+```
+
+그룹 참여자가 해당 약속에 자신의 일정인 `submission_time_slot` 을 다음과 같은 양식으로 제출
+```
+submission_time_slot = [
+    { "time": "2023-09-01 09:00:00", "available": true },
+    { "time": "2023-09-01 09:30:00", "available": true },
+    { "time": "2023-09-01 10:00:00", "available": false },
+    { "time": "2023-09-03 09:00:00", "available": false },
+    { "time": "2023-09-03 09:30:00", "available": true },
+    { "time": "2023-09-03 10:00:00", "available": true },
+]
+```
+
+일정이 제출되면 `plan_time_slot`과 `submission_time_slot` 두 배열에서 같은 index를 가진 요소의 `available`이 true이면 해당 index `plan_time_slot`의 `available`에 해당 `user_id`를 push

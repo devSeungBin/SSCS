@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         modelName: 'Groups',
         tableName: "sscs_groups",
-        // charset: "utf8",
+        charset: "utf8mb4",
         // collate: "utf8_general_ci",
     });
 
