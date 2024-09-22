@@ -217,7 +217,7 @@ exports.generateTimeSlots = (dateList, timeScope) => {
             const time = `${date} ${hours}:${minutesStr}:00`;
 
             planTimeSlot.push({
-                time,
+                time: time,
                 available: []
             });
         }

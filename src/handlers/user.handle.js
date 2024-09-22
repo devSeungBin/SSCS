@@ -1,5 +1,5 @@
 const db = require('../models/index.db');
-const { Users, Preferences } = db;
+const { Users, Preferences, Participants, Plans } = db;
 
 function isValidObject(obj) { return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0; }
 
@@ -212,4 +212,47 @@ exports.updateUser = async (id, user, preference) => {
             comment: err
         };
     };
+}
+
+exports.searchPlan = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const myGroup = await Participants.findAll({ where: { user_id: id }, raw: true });
+            if (myGroup.length === 0) {
+                reject({
+                    statusCode: 404,
+                    comment: '참여한 그룹이 없습니다.'
+                });
+            };
+    
+            let planList = new Array();
+            let count = 0;
+    
+            for(let group of myGroup) {
+                const plans = await Plans.findAll({ where: { group_id: group.group_id }, raw: true });
+                for (let plan of plans) {
+                    planList.push(plan);
+                };
+                ++count;
+            };
+
+            if (planList.length !== 0) {
+                resolve({
+                    statusCode: 200,
+                    plans: planList
+                });
+            } else {
+                reject({
+                    statusCode: 404,
+                    comment: '참여한 약속이 없습니다.'
+                });
+            }
+    
+        } catch (err) {
+            reject({
+                statusCode: 500,
+                comment: err
+            });
+        };
+    });
 }

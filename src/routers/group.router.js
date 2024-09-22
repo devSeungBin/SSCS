@@ -860,8 +860,6 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
     } else {
         const planTimeSlot = generateTimeSlots(req.body.date_list, req.body.time_scope);
 
-        console.log(planTimeSlot)
-
         let newPlan = {
             name: req.body.name,
             group_id: req.query.group_id,

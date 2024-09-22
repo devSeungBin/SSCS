@@ -1378,6 +1378,67 @@
           }
         }
       }
+    },
+    "/users/plans": {
+      "get": {
+        "tags": [
+          "UserRouter"
+        ],
+        "summary": "사용자 개인 약속 조회 API (인증 필수)",
+        "description": "사용자의 약속 목록을 조회하는데 사용된다.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsersPlansRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2149,6 +2210,71 @@
           "preference"
         ]
       },
+      "getUsersPlansRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "약속 id"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "약속 이름"
+                },
+                "group": {
+                  "type": "string",
+                  "example": "약속이 생성된 그룹 id"
+                },
+                "plan_time": {
+                  "type": "string",
+                  "example": "확정된 약속 시간"
+                },
+                "plan_time_slot": {
+                  "type": "string",
+                  "example": "일정 제출 양식"
+                },
+                "minimum_user_count": {
+                  "type": "string",
+                  "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+                },
+                "progress_time": {
+                  "type": "string",
+                  "example": "약속 진행 시간"
+                },
+                "deadline": {
+                  "type": "string",
+                  "example": "일정 제출 마감일"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "약속 진행 상태"
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "약속 생성일"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "약속 정보 수정일"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plans"
+        ]
+      },
       "patchUsersRes200": {
         "type": "object",
         "properties": {
@@ -2676,7 +2802,7 @@
             "type": "string",
             "example": "200"
           },
-          "plans": {
+          "plan": {
             "type": "object",
             "properties": {
               "id": {
@@ -2728,7 +2854,7 @@
         },
         "required": [
           "statusCode",
-          "plans"
+          "plan"
         ]
       },
       "getGroupsIdPlansIdRes200": {
@@ -2738,7 +2864,7 @@
             "type": "string",
             "example": "200"
           },
-          "plans": {
+          "plan": {
             "type": "object",
             "properties": {
               "id": {
@@ -2790,7 +2916,7 @@
         },
         "required": [
           "statusCode",
-          "plans"
+          "plan"
         ]
       }
     },

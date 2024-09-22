@@ -7,7 +7,8 @@ const {
 } = require('../middlewares/auth.middleware');
 const { 
     searchUser, createUser, updateUser,
-    searchPreference, createPreference, checkDay, checkTime
+    searchPreference, createPreference, checkDay, checkTime,
+    searchPlan
 } = require('../handlers/user.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -650,7 +651,6 @@ router.get('/preferences', isLoggedIn, isNotNewUser, async (req, res, next) => {
             }           
         }
     }
-    }
     #swagger.responses[500] = {
         content: {
             "application/json": {
@@ -793,6 +793,90 @@ router.post('/preferences', isLoggedIn, isNewUser, async (req, res, next) => {
                 }
             };
         };
+    };
+
+    next();
+}, handleError);
+
+router.get('/plans', isLoggedIn, isNotNewUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/users/plans'
+    #swagger.tags = ['UserRouter']
+    #swagger.summary = '사용자 개인 약속 조회 API (인증 필수)'
+    #swagger.description = '사용자의 약속 목록을 조회하는데 사용된다.'
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getUsersPlansRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchPlan(req.user.id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    plans: info.plans
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
+    
     };
 
     next();

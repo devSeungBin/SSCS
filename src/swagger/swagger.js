@@ -227,6 +227,24 @@ const doc = {
                     updated_at: '선호도 정보 수정일',
                 },
             },
+            getUsersPlansRes200: {  // 'GET /users/plans 요청 성공'
+                $statusCode: '200',
+                $plans: [
+                    {
+                        id: '약속 id',
+                        name: '약속 이름',
+                        group: '약속이 생성된 그룹 id',
+                        plan_time: '확정된 약속 시간',
+                        plan_time_slot: '일정 제출 양식',
+                        minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                        progress_time: '약속 진행 시간',
+                        deadline: '일정 제출 마감일',
+                        status: '약속 진행 상태',
+                        created_at: '약속 생성일',
+                        updated_at: '약속 정보 수정일',
+                    }
+                ]
+            },
             patchUsersRes200: {   // 'PATCH /users 요청 성공'
                 $statusCode: '200',
                 $user: {
@@ -369,7 +387,7 @@ const doc = {
             },
             patchGroupsIdPlansIdRes200: {       // 'PATCH /groups/{group_id}/plans/{plan_id} 요청 성공'
                 $statusCode: '200',
-                $plans: {
+                $plan: {
                     id: '약속 id',
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
@@ -385,7 +403,7 @@ const doc = {
             },
             getGroupsIdPlansIdRes200: {       // 'GET /groups/{group_id}/plans/{plan_id} 요청 성공'
                 $statusCode: '200',
-                $plans: {
+                $plan: {
                     id: '약속 id',
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',

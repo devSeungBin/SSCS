@@ -38,7 +38,7 @@
 > GET /users/preferences - 사용자 선호도 정보 조회 [완성, 응답 테스트 완료]
 > POST /users/preferences - 사용자 선호도 정보 생성 [완성, 응답 테스트 완료]
 
-> GET /users/plans - 사용자 개인 약속 조회 [...]
+> GET /users/plans - 사용자 개인 약속 조회 [완성, 응답 테스트 완료]
 
 > POST /groups - 새 그룹 생성 [완성, 응답 테스트 완료]
 ```
@@ -195,6 +195,7 @@ plans table
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - name (VARCHAR(100), NOT NULL)
 - plan_time (RANGE(TIMESTAMP))
+- candidate_plan_time (ARRAY(255), NOT NULL)
 - plan_time_slot (ARRAY(255), NOT NULL)
 - minimum_user_count (INTEGER, NOT NULL)
 - progress_time (FLOAT, NOT NULL)
@@ -210,7 +211,7 @@ submissions table
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - user_id (INTEGER, NOT NULL) / reference 'id' in users table
 - plan_id (INTEGER, NOT NULL) / reference 'id' in plans table
-- submission_time_slot (JSONB, NOT NULL)
+- submission_time_slot (ARRAY(255), NOT NULL)
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 
@@ -252,3 +253,123 @@ submission_time_slot = [
 ```
 
 일정이 제출되면 `plan_time_slot`과 `submission_time_slot` 두 배열에서 같은 index를 가진 요소의 `available`이 true이면 해당 index `plan_time_slot`의 `available`에 해당 `user_id`를 push
+
+***
+# 약속 상태 업데이트 (Polling)
+
+0. 클라이언트에서 setInterval로 초마다 서버에 약속 상태 업데이트를 요청
+
+1. 서버는 요청한 사용자가 참여한 그룹의 목록을 로드
+
+2. 불러온 각 그룹마다 약속 목록을 로드
+
+3. 불러온 약속마다 해당 그룹의 인원수와 해당 약속의 일정 제출 수, 현재 날짜와 약속의 마감일 비교
+
+4. 조건이 맞으면 해당 약속의 status를 calculate으로 변경
+
+
+***
+# 일정 후보 계산
+
+0. 클라이언트는 약속의 status가 calculate일 때, 서버로 일정 후보 계산을 요청
+
+1. 서버는 해당 약속의 status가 calculate인지 확인
+
+2. 제출된 일정들의 submission_time_slot을 규합한 정보를 약속의 `plan_time_slot`에 저장
+
+3. `plan_time_slot`에서 `minimum_user_count`와 `progress_time` 조건이 동시에 부합하는 시간대 검색
+
+
+### 일정 후보 계산 성공
+4. 조건이 맞는 시간대들은 `candiate_plan_time`에 저장
+```
+candiate_plan_time: [  
+    {  
+        start: DATE,  
+        end: DATE
+    },  
+    ...  
+]
+```
+5. 해당 약속의 status를 select로 변경
+
+### 일정 후보 계산 실패
+4. 그룹 생성자는 3가지 옵션(약속 조건의 재설정 / 직접 일정 선택 / 약속 취소) 중에서 하나를 선택
+  
+- 약속 조건의 재설정  
+&ensp;5. `minimum_user_count`와 `progress_time`를 재설정  
+&ensp;6. 이후 일정 후보를 다시 계산
+
+- 직접 일정 선택  
+&ensp;5. 그룹 생성자는 `plan_time_slot` 내에서 `progress_time`길이의 일정을 선택  
+&ensp;6-1. 선택된 일정이 하나일 경우, 그룹 참여자의 투표 없이 해당 일정을 `plan_tiem`에 저장  
+&ensp;6-2. 선택된 일정이 두 개 이상일 경우, 그룹 참여자의 투표를 진행하여 선택된 일정을 `plan_tiem`에 저장  
+&ensp;7. 해당 약속의 status를 comfirm으로 변경 (select를 건너뜀)
+
+- 약속 취소  
+&ensp;5. 약속과 약속에 제출된 일정, 투표 정보들을 모두 삭제
+
+
+***
+# 일정 후보 선택
+
+0. 클라이언트는 약속의 status가 select일 때, 서버로 일정 후보 선택을 요청
+
+1. 서버는 해당 약속의 status가 select인지 확인
+
+2. `candiate_plan_time`에 일정이 하나인 경우 해당 일정을 `plan_time`으로 저장하고, 해당 약속의 상태를 comfirm으로 변경
+
+3. `candiate_plan_time`에 일정이 두 개 이상인 경우, 그룹 참가자들의 요일 선호도와 시간 선호도의 평균과 가중치를 계산
+```
+avg_day_preference: {
+    Mon: mon_average,
+    Tue: tue_average,
+    Wed: wed_average,
+    Thu: thu_average,
+    Fri: fri_average,
+    Sat: sat_verage,
+    Sun: sun_average,
+},
+day_preference_weight: dw,
+
+avg_time_preference: {
+    morning: m_average,
+    afternoon: a_average,
+    evening: e_average,
+},
+time_preference_weight: tw,
+```
+
+4. 평균과 가중치 값으로 그룹 요일 선호도, 그룹 시간 선호도를 계산
+```
+group_day_preference: {
+    Mon: mon_average * dw,
+    Tue: tue_average * dw,
+    Wed: wed_average * dw,
+    Thu: thu_average * dw,
+    Fri: fri_average * dw,
+    Sat: sat_verage * dw,
+    Sun: sun_average * dw,
+},
+
+group_time_preference: {
+    morning: m_average * tw,
+    afternoon: a_average * tw,
+    evening: e_average * tw,
+},
+```
+
+5. 각 그룹 선호도 중에서 최댓값을 최종 그룹 선호도로 선택
+```
+final_group_day_preference: {
+    maximum of group_day_preference,
+    ...(최댓값이 같은 경우 추가됨)
+},
+
+final_group_time_preference: {
+    maximum of group_time_preference,
+    ...(최댓값이 같은 경우 추가됨)
+},
+```
+
+6. `candiate_plan_time` 중에서 최종 그룹 선호도 조건에 가장 많이 부합하는 일정을 `plan_time`으로 저장하고, 해당 약속의 상태를 comfirm으로 변경
