@@ -215,11 +215,11 @@ submissions table
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 
-
 ***
-# 일정 후보 관련
 
-약속 생성 시, 약속을 정할 날짜인 `date_list`랑 시간 범위인 `time_scope`를 아래와 같은 형식으로 보냄
+# 약속 생성
+
+0. 약속 생성 시, 클라이언트는 약속을 정할 날짜인 `date_list`랑 시간 범위인 `time_scope`를 아래와 같은 형식으로 보냄
 ```
 date_list = ["2023-09-01", "2023-09-03"]
 time_scope = {
@@ -228,7 +228,7 @@ time_scope = {
 }
 ```
 
-서버는 두 정보를 이용해서 해당 약속 시간대인 `plan_time_slot` 형태를 설정 (여기서 `available`에는 해당 시간대가 가능한 사용자들의 `user_id`가 들어갈 예정)
+1. 서버는 두 정보를 이용해서 해당 약속 시간대인 `plan_time_slot` 형태를 설정 (여기서 `available`에는 해당 시간대가 가능한 사용자들의 `user_id`가 들어갈 예정)
 ```
 plan_time_slot = [
     { "time": "2023-09-01 09:00:00", "available": [] },
@@ -240,7 +240,11 @@ plan_time_slot = [
 ]
 ```
 
-그룹 참여자가 해당 약속에 자신의 일정인 `submission_time_slot` 을 다음과 같은 양식으로 제출
+***
+
+# 일정 제출
+
+0. 그룹 참여자가 해당 약속에 자신의 일정인 `submission_time_slot` 을 다음과 같은 양식으로 제출
 ```
 submission_time_slot = [
     { "time": "2023-09-01 09:00:00", "available": true },
@@ -252,9 +256,12 @@ submission_time_slot = [
 ]
 ```
 
-일정이 제출되면 `plan_time_slot`과 `submission_time_slot` 두 배열에서 같은 index를 가진 요소의 `available`이 true이면 해당 index `plan_time_slot`의 `available`에 해당 `user_id`를 push
+1. 서버는 약속의 status가 sumbit인지 확인
+
+2. 제출된 일정의 `submission_time_slot`에서 available이 true인 요소들의 index를 저장하고, 약속의 `plan_time_slot`에서 해당 index에 속하는 요소의 `available`에 해당 `user_id`를 push
 
 ***
+
 # 약속 상태 업데이트 (Polling)
 
 0. 클라이언트에서 setInterval로 초마다 서버에 약속 상태 업데이트를 요청
@@ -267,8 +274,8 @@ submission_time_slot = [
 
 4. 조건이 맞으면 해당 약속의 status를 calculate으로 변경
 
-
 ***
+
 # 일정 후보 계산
 
 0. 클라이언트는 약속의 status가 calculate일 때, 서버로 일정 후보 계산을 요청
@@ -309,8 +316,8 @@ candiate_plan_time: [
 - 약속 취소  
 &ensp;5. 약속과 약속에 제출된 일정, 투표 정보들을 모두 삭제
 
-
 ***
+
 # 일정 후보 선택
 
 0. 클라이언트는 약속의 status가 select일 때, 서버로 일정 후보 선택을 요청
