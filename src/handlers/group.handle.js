@@ -203,9 +203,31 @@ exports.joinGroup = async (id, invitation_code) => {
     };
 }
 
+exports.generateTimeSlots = (dateList, timeScope) => {
+    const planTimeSlot = [];
+
+    // 시간 범위를 분 단위로 변환
+    const startTimeInMinutes = parseInt(timeScope.start.replace(':', ''), 10) / 100 * 60;
+    const endTimeInMinutes = parseInt(timeScope.end.replace(':', ''), 10) / 100 * 60;
+
+    dateList.forEach((date) => {
+        for (let minutes = startTimeInMinutes; minutes <= endTimeInMinutes; minutes += 30) {
+            const hours = Math.floor(minutes / 60);
+            const minutesStr = (minutes % 60).toString().padStart(2, '0');
+            const time = `${date} ${hours}:${minutesStr}:00`;
+
+            planTimeSlot.push({
+                time,
+                available: []
+            });
+        }
+    });
+
+    return planTimeSlot;
+}
+
 exports.createPlan = async (plan) => {
-    if (!plan.name || !plan.submission_time_scope ||
-        !plan.minimum_user_count || !plan.progress_time || !plan.deadline) {
+    if (!plan.name || !plan.plan_time_slot || !plan.minimum_user_count || !plan.progress_time || !plan.deadline) {
         return {
             statusCode: 400,
             comment: '약속 생성에 필요한 정보가 올바르지 않습니다.'

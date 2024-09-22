@@ -14,7 +14,8 @@ const {
     createInvitationCode, joinGroup,
     searchParticipant,
     createPlan, searchPlan, updatePlan,
-    searchPlanInfo
+    searchPlanInfo,
+    generateTimeSlots
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -857,15 +858,14 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
         };
 
     } else {
-        const range = [
-            { value: req.body.submission_time_scope.start, inclusive: true },
-            { value: req.body.submission_time_scope.end, inclusive: true },
-        ];
+        const planTimeSlot = generateTimeSlots(req.body.date_list, req.body.time_scope);
+
+        console.log(planTimeSlot)
 
         let newPlan = {
             name: req.body.name,
             group_id: req.query.group_id,
-            submission_time_scope: range,
+            plan_time_slot: planTimeSlot,
             minimum_user_count: req.body.minimum_user_count,
             progress_time: req.body.progress_time,
             deadline: req.body.deadline,

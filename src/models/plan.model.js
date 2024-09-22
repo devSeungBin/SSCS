@@ -34,8 +34,8 @@ module.exports = (sequelize, DataTypes) => {
         plan_time: {
             type: DataTypes.RANGE(DataTypes.DATE),
         },
-        submission_time_scope: {
-            type: DataTypes.RANGE(DataTypes.DATE),
+        plan_time_slot: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false,
         },
         minimum_user_count: {

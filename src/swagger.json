@@ -1601,16 +1601,26 @@
             "type": "string",
             "example": "myPlan"
           },
-          "submission_time_scope": {
+          "date_list": {
+            "type": "array",
+            "example": [
+              "2023-09-01",
+              "2023-09-03"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "time_scope": {
             "type": "object",
             "properties": {
               "start": {
                 "type": "string",
-                "example": "2024-09-20 00:00:00+00:00"
+                "example": "09:00"
               },
               "end": {
                 "type": "string",
-                "example": "2024-09-21 00:00:00+00:00"
+                "example": "10:00"
               }
             }
           },
@@ -1624,12 +1634,13 @@
           },
           "deadline": {
             "type": "string",
-            "example": "2024-09-20 12:00:00+00:00"
+            "example": "2024-08-31 12:00:00"
           }
         },
         "required": [
           "name",
-          "submission_time_scope",
+          "date_list",
+          "time_scope",
           "minimum_user_count",
           "progress_time",
           "deadline"
@@ -2557,9 +2568,9 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
-              "submission_time_scope": {
+              "plan_time_slot": {
                 "type": "string",
-                "example": "일정 제출 기간"
+                "example": "일정 제출 양식"
               },
               "minimum_user_count": {
                 "type": "string",
@@ -2621,9 +2632,9 @@
                   "type": "string",
                   "example": "확정된 약속 시간"
                 },
-                "submission_time_scope": {
+                "plan_time_slot": {
                   "type": "string",
-                  "example": "일정 제출 기간"
+                  "example": "일정 제출 양식"
                 },
                 "minimum_user_count": {
                   "type": "string",
@@ -2684,9 +2695,9 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
-              "submission_time_scope": {
+              "plan_time_slot": {
                 "type": "string",
-                "example": "일정 제출 기간"
+                "example": "일정 제출 양식"
               },
               "minimum_user_count": {
                 "type": "string",
@@ -2746,9 +2757,9 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
-              "submission_time_scope": {
+              "plan_time_slot": {
                 "type": "string",
-                "example": "일정 제출 기간"
+                "example": "일정 제출 양식"
               },
               "minimum_user_count": {
                 "type": "string",

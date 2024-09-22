@@ -195,7 +195,7 @@ plans table
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - name (VARCHAR(100), NOT NULL)
 - plan_time (RANGE(TIMESTAMP))
-- plan_time_slot (RANGE(TIMESTAMP), NOT NULL)
+- plan_time_slot (ARRAY(255), NOT NULL)
 - minimum_user_count (INTEGER, NOT NULL)
 - progress_time (FLOAT, NOT NULL)
 - deadline (TIMASTAMP, NOT NULL)
