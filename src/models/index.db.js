@@ -28,6 +28,7 @@ const Preferences = require("./preference.model")(sequelize, Sequelize.DataTypes
 const Groups = require("./group.model")(sequelize, Sequelize.DataTypes);
 const Participants = require("./participant.model")(sequelize, Sequelize.DataTypes);
 const Plans = require("./plan.model")(sequelize, Sequelize.DataTypes);
+const Submissions = require("./submission.model")(sequelize, Sequelize.DataTypes);
 
 
 const db = {};
@@ -37,6 +38,7 @@ db.Preferences = Preferences;
 db.Groups = Groups;
 db.Participants = Participants;
 db.Plans = Plans;
+db.Submissions = Submissions;
 
 
 const test = true;
@@ -66,6 +68,8 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
     .then(() => {
         delay(6000).then(() => {
             sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
+
+            Submissions.sync({ force: test });
         });
     })
     .catch(err => {

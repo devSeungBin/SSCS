@@ -890,6 +890,390 @@
         }
       }
     },
+    "/groups/:group_id/plans/:plan_id/schedules": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "제출된 모든 일정 확인 API (인증 필요)",
+        "description": "약속에 제출된 모든 일정을 확인하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "제출된 모든 일정을 확인할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdSchedulesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 제출 API (인증 필요)",
+        "description": "사용자의 일정을 제출하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "일정을 제출할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postGroupsIdPlansIdSchedulesRes201"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_409"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "제출할 일정 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postGroupsIdPlansIdSchedulesReq"
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "개별 일정 수정 API (인증 필요)",
+        "description": "사용자의 일정을 수정하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "일정을 수정할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/patchGroupsIdPlansIdSchedulesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_409"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "수정할 일정 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchGroupsIdPlansIdSchedulesReq"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/:group_id/plans/:plan_id/schedule": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "개별 일정 확인 API (인증 필요)",
+        "description": "자신이 제출한 일정을 확인하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "제출된 일정을 확인할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdScheduleRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -1727,6 +2111,54 @@
           "name",
           "minimum_user_count",
           "progress_time"
+        ]
+      },
+      "postGroupsIdPlansIdSchedulesReq": {
+        "type": "object",
+        "properties": {
+          "submission_time_slot": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string",
+                  "example": "2023-09-03 10:00:00"
+                },
+                "available": {
+                  "type": "boolean",
+                  "example": false
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "submission_time_slot"
+        ]
+      },
+      "patchGroupsIdPlansIdSchedulesReq": {
+        "type": "object",
+        "properties": {
+          "submission_time_slot": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string",
+                  "example": "2023-09-03 10:00:00"
+                },
+                "available": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "submission_time_slot"
         ]
       },
       "response_303": {
@@ -2917,6 +3349,194 @@
         "required": [
           "statusCode",
           "plan"
+        ]
+      },
+      "postGroupsIdPlansIdSchedulesRes201": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "201"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "plan_time_slot": {
+                "type": "string",
+                "example": "일정 제출 양식"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan"
+        ]
+      },
+      "getGroupsIdPlansIdSchedulesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "submissions": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "제출한 일정 id"
+              },
+              "user_id": {
+                "type": "string",
+                "example": "일정을 제출한 사용자 id"
+              },
+              "plan_id": {
+                "type": "string",
+                "example": "일정이 제출된 약속 id"
+              },
+              "submission_time_slot": {
+                "type": "string",
+                "example": "제출한 일정 정보"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "일정 제출일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "일정 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "submissions"
+        ]
+      },
+      "getGroupsIdPlansIdScheduleRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "submission": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "제출한 일정 id"
+              },
+              "user_id": {
+                "type": "string",
+                "example": "일정을 제출한 사용자 id"
+              },
+              "plan_id": {
+                "type": "string",
+                "example": "일정이 제출된 약속 id"
+              },
+              "submission_time_slot": {
+                "type": "string",
+                "example": "제출한 일정 정보"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "일정 제출일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "일정 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "submission"
+        ]
+      },
+      "patchGroupsIdPlansIdSchedulesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "submission": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "제출한 일정 id"
+              },
+              "user_id": {
+                "type": "string",
+                "example": "일정을 제출한 사용자 id"
+              },
+              "plan_id": {
+                "type": "string",
+                "example": "일정이 제출된 약속 id"
+              },
+              "submission_time_slot": {
+                "type": "string",
+                "example": "제출한 일정 정보"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "일정 제출일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "일정 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "submission"
         ]
       }
     },

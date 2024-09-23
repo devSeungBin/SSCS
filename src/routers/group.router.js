@@ -13,12 +13,14 @@ const {
     searchGroupInfo,
     createInvitationCode, joinGroup,
     searchParticipant,
-    createPlan, searchPlan, updatePlan,
+    createPlan, searchPlan, updatePlan, updatePlanSchedule, deletePlanSchedule,
     searchPlanInfo,
-    generateTimeSlots
+    generateTimeSlots,
+    checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
+const submissionModel = require('../models/submission.model');
 
 
 const router = express.Router();
@@ -194,8 +196,8 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         .catch((err) => {
             req.result = {
                 error: {
-                    statusCode: 500,
-                    comment: err
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 }
             };
         });
@@ -399,8 +401,8 @@ router.patch('/:group_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, re
             .catch((err) => {
                 req.result = {
                     error: {
-                        statusCode: 500,
-                        comment: err
+                        statusCode: err.statusCode,
+                        comment: err.comment
                     }
                 };
             });
@@ -889,8 +891,8 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
         .catch((err) => {
             req.result = {
                 error: {
-                    statusCode: 500,
-                    comment: err
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 }
             };
         });
@@ -1114,8 +1116,8 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             .catch((err) => {
                 req.result = {
                     error: {
-                        statusCode: 500,
-                        comment: err
+                        statusCode: err.statusCode,
+                        comment: err.comment
                     }
                 };
             });
@@ -1127,6 +1129,523 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
                 }
             };
         };
+    };
+
+    next();
+}, handleError);
+
+router.get('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/schedules'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '제출된 모든 일정 확인 API (인증 필요)'
+    #swagger.description = '약속에 제출된 모든 일정을 확인하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '제출된 모든 일정을 확인할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdSchedulesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchSchedules(req.query.plan_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    submissions: info.submissions,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
+router.post('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/schedules'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 제출 API (인증 필요)'
+    #swagger.description = '사용자의 일정을 제출하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '일정을 제출할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '제출할 일정 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postGroupsIdPlansIdSchedulesReq" },
+            }
+        }
+    }
+    #swagger.responses[201] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postGroupsIdPlansIdSchedulesRes201" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[409] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_409" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const check = await checkSchedule(req.query.plan_id, req.body.submission_time_slot);
+
+        if (!check.result) {
+            req.result = {
+                error: {
+                    statusCode: check.statusCode,
+                    comment: check.comment
+                }
+            };
+        } else {
+            const submission = {
+                user_id: req.user.id,
+                plan_id: req.query.plan_id,
+                submission_time_slot: req.body.submission_time_slot
+            };
+
+            await createSchedule(submission)
+            .then(async (info) => {
+                if (info.statusCode !== 201) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    await updatePlanSchedule(req.user.id, req.query.plan_id, req.body.submission_time_slot)
+                    .then((info) => {
+                        if (info.statusCode !== 200) {
+                            req.result = {
+                                error: {
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
+                                }
+                            };
+                        } else {
+                            req.result = {
+                                statusCode: info.statusCode,
+                                plan: info.plan,
+                            };
+                        }
+                    })
+                    .catch((err) => {
+                        req.result = {
+                            error: {
+                                statusCode: err.statusCode,
+                                comment: err.comment
+                            }
+                        };
+                    });
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: err.statusCode,
+                        comment: err.comment
+                    }
+                };
+            });
+        };
+    };
+
+    next();
+}, handleError);
+
+router.patch('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/schedules'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '개별 일정 수정 API (인증 필요)'
+    #swagger.description = '사용자의 일정을 수정하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '일정을 수정할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '수정할 일정 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/patchGroupsIdPlansIdSchedulesReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/patchGroupsIdPlansIdSchedulesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[409] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_409" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const check = await checkSchedule(req.query.plan_id, req.body.submission_time_slot);
+
+        if (!check.result) {
+            req.result = {
+                error: {
+                    statusCode: check.statusCode,
+                    comment: check.comment
+                }
+            };
+        } else {
+            await updateSchedule(req.user.id, req.query.plan_id, req.body.submission_time_slot)
+            .then(async (info) => {
+                if (info.statusCode !== 200) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    await deletePlanSchedule(req.user.id, req.query.plan_id)
+                    .then(async (info) => {
+                        if (info.statusCode !== 200) {
+                            req.result = {
+                                error: {
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
+                                }
+                            };
+                        } else {
+                            await updatePlanSchedule(req.user.id, req.query.plan_id, req.body.submission_time_slot)
+                            .then(async (info) => {
+                                if (info.statusCode !== 200) {
+                                    req.result = {
+                                        error: {
+                                            statusCode: info.statusCode,
+                                            comment: info.comment
+                                        }
+                                    };
+                                } else {
+                                    req.result = {
+                                        statusCode: info.statusCode,
+                                        plan: info.plan,
+                                    };
+                                };
+                            })
+                            .catch((err) => {
+                                req.result = {
+                                    error: {
+                                        statusCode: err.statusCode,
+                                        comment: err.comment
+                                    }
+                                };
+                            });
+                        };
+                    })
+                    .catch((err) => {
+                        req.result = {
+                            error: {
+                                statusCode: err.statusCode,
+                                comment: err.comment
+                            }
+                        };
+                    });
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: err.statusCode,
+                        comment: err.comment
+                    }
+                };
+            });
+        };
+    };
+
+    next();
+}, handleError);
+
+
+router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/schedule'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '개별 일정 확인 API (인증 필요)'
+    #swagger.description = '자신이 제출한 일정을 확인하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '제출된 일정을 확인할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdScheduleRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchSchedule(req.user.id, req.query.plan_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    submission: info.submission,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
     };
 
     next();

@@ -1,11 +1,15 @@
 const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    
     class Plans extends Model { 
         static associate(models) {
-            models.Groups.belongsTo(models.Groups, {
+            models.Plans.belongsTo(models.Groups, {
                 foreignKey: "group_id",
+                targetKey: "id",
+            });
+
+            models.Plans.hasMany(models.Submissions, {
+                foreignKey: "plan_id",
                 targetKey: "id",
             });
 

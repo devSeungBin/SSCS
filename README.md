@@ -114,10 +114,12 @@
 ```
 > 필요한 API - 기능
 
-> GET /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 확인
-> POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출
-> PATCH /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 수정
+> GET /groups/{group_id}/plans/{plan_id}/schedules - 제출된 모든 일정 확인 [완성, 응답 테스트 완료]
+> POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출 [완성, 응답 테스트 완료]
+> PATCH /groups/{group_id}/plans/{plan_id}/schedules - 개별 일정 수정 [완성, 응답 테스트 완료]
 > DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제
+
+> GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
 > GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
 ```
@@ -256,9 +258,31 @@ submission_time_slot = [
 ]
 ```
 
-1. 서버는 약속의 status가 sumbit인지 확인
+1. 서버는 약속의 status가 sumbit인지, 일정을 이미 제출했는지 확인
 
 2. 제출된 일정의 `submission_time_slot`에서 available이 true인 요소들의 index를 저장하고, 약속의 `plan_time_slot`에서 해당 index에 속하는 요소의 `available`에 해당 `user_id`를 push
+
+***
+
+# 일정 수정
+
+0. 그룹 참여자가 해당 약속에 자신의 일정인 `submission_time_slot` 을 다음과 같은 양식으로 제출
+```
+submission_time_slot = [
+    { "time": "2023-09-01 09:00:00", "available": true },
+    { "time": "2023-09-01 09:30:00", "available": true },
+    { "time": "2023-09-01 10:00:00", "available": false },
+    { "time": "2023-09-03 09:00:00", "available": false },
+    { "time": "2023-09-03 09:30:00", "available": true },
+    { "time": "2023-09-03 10:00:00", "available": true },
+]
+```
+
+1. 서버는 약속의 status가 sumbit인지, 일정을 이미 제출했는지 확인
+
+2. 약속의 `plan_time_slot`의 available에 해당 `user_id`를 모두 제거
+
+3. 제출된 일정의 `submission_time_slot`에서 available이 true인 요소들의 index를 저장하고, 약속의 `plan_time_slot`에서 해당 index에 속하는 요소의 `available`에 해당 `user_id`를 push
 
 ***
 

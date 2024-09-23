@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
-const { group } = require('console');
-const { Groups, Participants, Plans } = db;
+const { Groups, Participants, Plans, Submissions } = db;
 
 exports.searchGroup = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -203,6 +202,8 @@ exports.joinGroup = async (id, invitation_code) => {
     };
 }
 
+
+
 exports.generateTimeSlots = (dateList, timeScope) => {
     const planTimeSlot = [];
 
@@ -313,6 +314,89 @@ exports.updatePlan = async (plan) => {
     };
 }
 
+exports.updatePlanSchedule = async (user_id, plan_id, submission_time_slot) => {
+    try {
+        const changedPlan = await Plans.findOne({ where: { id: plan_id }, raw: false });
+        if (!changedPlan) {
+            return {
+                statusCode: 404,
+                comment: '일정을 제출할 약속이 없습니다.',
+            };
+
+        };
+    
+        let availableIndex = [];
+        let index = 0;
+        for (let slot of submission_time_slot) {
+            if (slot.available) {
+                availableIndex.push(index);
+            };
+
+            index++;
+        };
+        
+        const plan = await Plans.findOne({ where: { id: plan_id }, raw: true });
+        let newSchedule = plan.plan_time_slot;
+
+        for (let index of availableIndex) {
+            newSchedule[index].available.push(user_id);
+            index++;
+        };
+
+        await changedPlan.update({ plan_time_slot: newSchedule });
+        await changedPlan.save();
+
+        return {
+            statusCode: 200,
+            plan: changedPlan.toJSON()
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err,
+        };
+    };
+}
+
+exports.deletePlanSchedule = async (user_id, plan_id) => {
+    try {
+        const changedPlan = await Plans.findOne({ where: { id: plan_id }, raw: false });
+        if (!changedPlan) {
+            return {
+                statusCode: 404,
+                comment: '일정을 제출할 약속이 없습니다.',
+            };
+
+        };
+    
+        let newSchedule = [];
+        const plan = await Plans.findOne({ where: { id: plan_id }, raw: true });
+        
+        for (let slot of plan.plan_time_slot) {
+            const newSlot = {
+                time: slot.time,
+                available: slot.available.filter((id) => id !== user_id)
+            };
+            newSchedule.push(newSlot);
+        };
+
+        await changedPlan.update({ plan_time_slot: newSchedule });
+        await changedPlan.save();
+
+        return {
+            statusCode: 200,
+            plan: changedPlan.toJSON()
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err,
+        };
+    };
+}
+
 exports.searchPlanInfo = async (id) => {
     try {
         const plan = await Plans.findOne({ where: { id: id }, raw: true });
@@ -326,6 +410,141 @@ exports.searchPlanInfo = async (id) => {
             return {
                 statusCode: 200,
                 plan: plan
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+
+
+exports.checkSchedule = async (plan_id, submission_time_slot) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id, status: 'submit' }, raw: true });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '일정을 제출할 약속이 없습니다.',
+                result: false
+            };
+        };
+
+        if(submission_time_slot.length !== plan.plan_time_slot.length) {
+            return {
+                statusCode: 400,
+                comment: '제출된 일정 형식이 올바르지 않습니다.',
+                result: false
+            };
+        };
+
+        return {
+            result: true
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err,
+            result: false
+        };
+    };
+}
+
+exports.createSchedule = async (submission) => {
+    try {        
+        const isSubmit = await Submissions.findOne({ where: { user_id: submission.user_id }, raw: false });
+        if (isSubmit) {
+            return {
+                statusCode: 409,
+                comment: '이미 제출된 일정이 있습니다.',
+            };
+
+        };
+
+        const newSchedule = await Submissions.create(submission);
+
+        return {
+            statusCode: 201,
+            schedule: newSchedule.toJSON()
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchSchedules = async (plan_id) => {
+    try {
+        const submissions = await Submissions.findAll({ where: { plan_id: plan_id }, raw: true });
+        if (submissions.length === 0) {
+            return {
+                statusCode: 404,
+                comment: '제출된 일정이 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                submissions: submissions
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchSchedule = async (user_id, plan_id) => {
+    try {
+        const submission = await Submissions.findOne({ where: { user_id: user_id, plan_id: plan_id }, raw: false });
+        if (!submission) {
+            return {
+                statusCode: 404,
+                comment: '제출된 일정이 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                submission: submission.toJSON()
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.updateSchedule = async (user_id, plan_id, submission_time_slot) => {
+    try {
+        const changedSubmission = await Submissions.findOne({ where: { user_id: user_id, plan_id: plan_id }, raw: false });
+        if (!changedSubmission) {
+            return {
+                statusCode: 404,
+                comment: '제출된 일정이 없습니다.'
+            };
+
+        } else {
+            await changedSubmission.update({ submission_time_slot: submission_time_slot });
+            await changedSubmission.save();
+
+            return {
+                statusCode: 200,
+                submission: changedSubmission.toJSON()
             };
         };
 

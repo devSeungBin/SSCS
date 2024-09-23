@@ -1,21 +1,21 @@
 const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Participants extends Model { 
+    class Submissions extends Model { 
         static associate(models) {
-            models.Participants.belongsTo(models.Users, {
+            models.Submissions.belongsTo(models.Users, {
                 foreignKey: "user_id",
                 sourceKey: "id",
             });
 
-            models.Participants.belongsTo(models.Groups, {
-                foreignKey: "group_id",
+            models.Submissions.belongsTo(models.Plans, {
+                foreignKey: "plan_id",
                 targetKey: "id",
             });
         }
     };
 
-    Participants.init({
+    Submissions.init({
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -30,25 +30,29 @@ module.exports = (sequelize, DataTypes) => {
                 // deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE,
             },
         },
-        group_id: {
+        plan_id: {
             type: DataTypes.INTEGER,
-            // allowNull: false,
+            allowNull: false,
             references: {
-                model: "sscs_groups",
+                model: "sscs_plans",
                 key: "id",
                 // deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE,
             },
-        }
+        },
+        submission_time_slot: {
+            type: DataTypes.ARRAY(DataTypes.JSON),
+            allowNull: false,
+        },
     }, {
         sequelize,
         timestamps: true,
         paranoid: false,
         underscored: true,
-        modelName: 'Participants',
-        tableName: "sscs_participants",
+        modelName: 'Submissions',
+        tableName: "sscs_submissions",
         charset: "utf8mb4",
         // collate: "utf8_general_ci",
     });
 
-    return Participants;
+    return Submissions;
 };

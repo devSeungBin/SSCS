@@ -101,6 +101,62 @@ const doc = {
                 $minimum_user_count: 1,
                 $progress_time: 2.0,
             },
+            postGroupsIdPlansIdSchedulesReq: {      // '제출할 일정 정보'
+                $submission_time_slot: [
+                    {
+                      "time": "2023-09-01 9:00:00",
+                      "available": true
+                    },
+                    {
+                      "time": "2023-09-01 9:30:00",
+                      "available": true
+                    },
+                    {
+                      "time": "2023-09-01 10:00:00",
+                      "available": false
+                    },
+                    {
+                      "time": "2023-09-03 9:00:00",
+                      "available": false
+                    },
+                    {
+                      "time": "2023-09-03 9:30:00",
+                      "available": true
+                    },
+                    {
+                      "time": "2023-09-03 10:00:00",
+                      "available": false
+                    }
+                ]
+            },
+            patchGroupsIdPlansIdSchedulesReq: {      // '수정할 일정 정보'
+                $submission_time_slot: [
+                    {
+                      "time": "2023-09-01 9:00:00",
+                      "available": false
+                    },
+                    {
+                      "time": "2023-09-01 9:30:00",
+                      "available": false
+                    },
+                    {
+                      "time": "2023-09-01 10:00:00",
+                      "available": true
+                    },
+                    {
+                      "time": "2023-09-03 9:00:00",
+                      "available": false
+                    },
+                    {
+                      "time": "2023-09-03 9:30:00",
+                      "available": true
+                    },
+                    {
+                      "time": "2023-09-03 10:00:00",
+                      "available": true
+                    }
+                ]
+            },
             
             // 공용 응답
             response_303: {     // '요청을 다른 페이지로 연결'
@@ -415,6 +471,55 @@ const doc = {
                     status: '약속 진행 상태',
                     created_at: '약속 생성일',
                     updated_at: '약속 정보 수정일',
+                }
+            },
+            postGroupsIdPlansIdSchedulesRes201: {       // 'POST /groups/{group_id}/plans/{plan_id}/schedules 요청 성공'
+                $statusCode: '201',
+                $plan: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    plan_time_slot: '일정 제출 양식',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    progress_time: '약속 진행 시간',
+                    deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
+            getGroupsIdPlansIdSchedulesRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/schedules 요청 성공'
+                $statusCode: '200',
+                $submissions: {
+                    id: '제출한 일정 id',
+                    user_id: '일정을 제출한 사용자 id',
+                    plan_id: '일정이 제출된 약속 id',
+                    submission_time_slot: '제출한 일정 정보',
+                    created_at: '일정 제출일',
+                    updated_at: '일정 수정일',
+                }
+            },
+            getGroupsIdPlansIdScheduleRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/schedule 요청 성공'
+                $statusCode: '200',
+                $submission: {
+                    id: '제출한 일정 id',
+                    user_id: '일정을 제출한 사용자 id',
+                    plan_id: '일정이 제출된 약속 id',
+                    submission_time_slot: '제출한 일정 정보',
+                    created_at: '일정 제출일',
+                    updated_at: '일정 수정일',
+                }
+            },
+            patchGroupsIdPlansIdSchedulesRes200: {       // 'PATCH /groups/{group_id}/plans/{plan_id}/schedule 요청 성공'
+                $statusCode: '200',
+                $submission: {
+                    id: '제출한 일정 id',
+                    user_id: '일정을 제출한 사용자 id',
+                    plan_id: '일정이 제출된 약속 id',
+                    submission_time_slot: '제출한 일정 정보',
+                    created_at: '일정 제출일',
+                    updated_at: '일정 수정일',
                 }
             },
             
