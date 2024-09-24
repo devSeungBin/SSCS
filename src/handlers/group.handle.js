@@ -184,8 +184,16 @@ exports.joinGroup = async (id, invitation_code) => {
                 comment: '초대코드에 해당하는 그룹이 존재하지 않습니다.'
             };
         };
-        
-        const participant = await Participants.create({ user_id: id, group_id: group.id });
+
+        const isParticipant = await Participants.findOne({ where: { user_id: id, group_id: group.dataValues.id }, raw: false });
+        if(isParticipant) {
+            return {
+                statusCode: 409,
+                comment: '이미 해당 그룹에 참여자입니다.'
+            };
+        };
+
+        const participant = await Participants.create({ user_id: id, group_id: group.dataValues.id });
         await group.update({ user_count: ++group.user_count });
         await group.save();
         
@@ -455,9 +463,9 @@ exports.checkSchedule = async (plan_id, submission_time_slot) => {
     };
 }
 
-exports.createSchedule = async (submission) => {
+exports.createSchedule = async (plan_id, submission) => {
     try {        
-        const isSubmit = await Submissions.findOne({ where: { user_id: submission.user_id }, raw: false });
+        const isSubmit = await Submissions.findOne({ where: { user_id: submission.user_id, plan_id: plan_id }, raw: false });
         if (isSubmit) {
             return {
                 statusCode: 409,

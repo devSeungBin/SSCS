@@ -508,7 +508,7 @@ router.get('/:group_id/members', isLoggedIn, isNotNewUser, isGroupUser, async (r
     next();
 }, handleError);
 
-router.post('/members', isLoggedIn, isNotNewUser, isNotGroupUser, async (req, res, next) => {
+router.post('/members', isLoggedIn, isNotNewUser, async (req, res, next) => {
     /* 
     #swagger.path = '/groups/members'
     #swagger.tags = ['GroupRouter']
@@ -1335,7 +1335,7 @@ router.post('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isG
                 submission_time_slot: req.body.submission_time_slot
             };
 
-            await createSchedule(submission)
+            await createSchedule(req.query.plan_id, submission)
             .then(async (info) => {
                 if (info.statusCode !== 201) {
                     req.result = {

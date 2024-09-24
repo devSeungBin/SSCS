@@ -114,6 +114,8 @@
 ```
 > 필요한 API - 기능
 
+> GET /plans - 약속 상태 업데이트 [완성, 응답 테스트 완료]
+
 > GET /groups/{group_id}/plans/{plan_id}/schedules - 제출된 모든 일정 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id}/schedules - 개별 일정 수정 [완성, 응답 테스트 완료]
@@ -122,6 +124,10 @@
 > GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
 > GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
+
+> GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [...]
+
+
 ```
 
 ***
@@ -290,9 +296,9 @@ submission_time_slot = [
 
 0. 클라이언트에서 setInterval로 초마다 서버에 약속 상태 업데이트를 요청
 
-1. 서버는 요청한 사용자가 참여한 그룹의 목록을 로드
+1. 서버는 모든 그룹의 목록을 로드 (또는 서버는 요청한 사용자가 참여한 그룹의 목록을 로드)
 
-2. 불러온 각 그룹마다 약속 목록을 로드
+2. 불러온 각 그룹마다 약속 목록 중 상태가 submit인 약속을 로드
 
 3. 불러온 약속마다 해당 그룹의 인원수와 해당 약속의 일정 제출 수, 현재 날짜와 약속의 마감일 비교
 

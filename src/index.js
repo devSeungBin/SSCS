@@ -56,9 +56,11 @@ app.use(cors(corsOption));
 // 라우터 세부설정
 const userRouter = require('./routers/user.router');
 const groupRouter = require('./routers/group.router');
+const planRouter = require('./routers/plan.router');
 
 app.use('/users', userRouter);
 app.use('/groups', groupRouter);
+app.use('/plans', planRouter);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 

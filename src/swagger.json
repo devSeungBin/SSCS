@@ -19,6 +19,10 @@
     {
       "name": "GroupRouter",
       "description": "그룹과 관련된 기능을 처리하는 라우터"
+    },
+    {
+      "name": "PlanRouter",
+      "description": "약속 상태를 업데이트하는 라우터"
     }
   ],
   "paths": {
@@ -1250,6 +1254,47 @@
               }
             },
             "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/plans": {
+      "get": {
+        "tags": [
+          "PlanRouter"
+        ],
+        "summary": "약속 상태 업데이트 API (인증 필요)",
+        "description": "서버가 약속의 상태를 업데이트하기 위한 엔드포인트",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getPlansRes200"
+                }
+              }
+            },
+            "description": "OK"
           },
           "404": {
             "content": {
@@ -3537,6 +3582,18 @@
         "required": [
           "statusCode",
           "submission"
+        ]
+      },
+      "getPlansRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          }
+        },
+        "required": [
+          "statusCode"
         ]
       }
     },

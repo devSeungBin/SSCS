@@ -25,6 +25,10 @@ const doc = {
             name: 'GroupRouter',
             description: '그룹과 관련된 기능을 처리하는 라우터'
         },
+        {
+            name: 'PlanRouter',
+            description: '약속 상태를 업데이트하는 라우터'
+        },
     ],
     components: {
         schemas: {
@@ -521,6 +525,9 @@ const doc = {
                     created_at: '일정 제출일',
                     updated_at: '일정 수정일',
                 }
+            },
+            getPlansRes200: {       // 'GET /plans 요청 성공'
+                $statusCode: '200',
             },
             
 
