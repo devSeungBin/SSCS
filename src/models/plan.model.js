@@ -38,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         plan_time: {
             type: DataTypes.RANGE(DataTypes.DATE),
         },
+        candidate_plan_time: {
+            type: DataTypes.RANGE(DataTypes.DATE),
+        },
+        vote_plan_time: {
+            type: DataTypes.RANGE(DataTypes.DATE),
+        },
         plan_time_slot: {
             type: DataTypes.ARRAY(DataTypes.JSON),
             allowNull: false,
@@ -50,9 +56,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: false,
         },
-        deadline: {
+        schedule_deadline: {
             type: DataTypes.DATE,
             allowNull: false,
+        },
+        vote_deadline: {
+            type: DataTypes.DATE,
         },
         status: {
             type: DataTypes.STRING(100),

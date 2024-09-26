@@ -20,7 +20,6 @@ const {
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
-const submissionModel = require('../models/submission.model');
 
 
 const router = express.Router();
@@ -868,7 +867,7 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
             plan_time_slot: planTimeSlot,
             minimum_user_count: req.body.minimum_user_count,
             progress_time: req.body.progress_time,
-            deadline: req.body.deadline,
+            schedule_deadline: req.body.schedule_deadline,
             status: 'submit'
         }
     

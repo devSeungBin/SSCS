@@ -67,7 +67,8 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
     })
     .then(() => {
         delay(6000).then(() => {
-            sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
+            sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN schedule_deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
+            sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN vote_deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
 
             Submissions.sync({ force: test });
         });

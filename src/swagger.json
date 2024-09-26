@@ -391,15 +391,6 @@
         ],
         "summary": "그룹 참여자 생성(그룹 참여) API (인증 필요)",
         "description": "초대코드로 그룹에 참여할 때 사용하는 엔드포인트",
-        "parameters": [
-          {
-            "name": "group_id",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "201": {
             "content": {
@@ -2122,7 +2113,7 @@
             "type": "number",
             "example": 1
           },
-          "deadline": {
+          "schedule_deadline": {
             "type": "string",
             "example": "2024-08-31 12:00:00"
           }
@@ -2133,7 +2124,7 @@
           "time_scope",
           "minimum_user_count",
           "progress_time",
-          "deadline"
+          "schedule_deadline"
         ]
       },
       "patchGroupsIdPlansIdReq": {
@@ -2727,7 +2718,7 @@
                   "type": "string",
                   "example": "약속 진행 시간"
                 },
-                "deadline": {
+                "schedule_deadline": {
                   "type": "string",
                   "example": "일정 제출 마감일"
                 },
@@ -3183,7 +3174,7 @@
                 "type": "string",
                 "example": "약속 진행 시간"
               },
-              "deadline": {
+              "schedule_deadline": {
                 "type": "string",
                 "example": "일정 제출 마감일"
               },
@@ -3247,7 +3238,7 @@
                   "type": "string",
                   "example": "약속 진행 시간"
                 },
-                "deadline": {
+                "schedule_deadline": {
                   "type": "string",
                   "example": "일정 제출 마감일"
                 },
@@ -3310,7 +3301,7 @@
                 "type": "string",
                 "example": "약속 진행 시간"
               },
-              "deadline": {
+              "schedule_deadline": {
                 "type": "string",
                 "example": "일정 제출 마감일"
               },
@@ -3372,7 +3363,7 @@
                 "type": "string",
                 "example": "약속 진행 시간"
               },
-              "deadline": {
+              "schedule_deadline": {
                 "type": "string",
                 "example": "일정 제출 마감일"
               },
@@ -3434,7 +3425,7 @@
                 "type": "string",
                 "example": "약속 진행 시간"
               },
-              "deadline": {
+              "schedule_deadline": {
                 "type": "string",
                 "example": "일정 제출 마감일"
               },

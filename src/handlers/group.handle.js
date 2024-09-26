@@ -236,7 +236,7 @@ exports.generateTimeSlots = (dateList, timeScope) => {
 }
 
 exports.createPlan = async (plan) => {
-    if (!plan.name || !plan.plan_time_slot || !plan.minimum_user_count || !plan.progress_time || !plan.deadline) {
+    if (!plan.name || !plan.plan_time_slot || !plan.minimum_user_count || !plan.progress_time || !plan.schedule_deadline) {
         return {
             statusCode: 400,
             comment: '약속 생성에 필요한 정보가 올바르지 않습니다.'
