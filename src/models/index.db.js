@@ -29,6 +29,7 @@ const Groups = require("./group.model")(sequelize, Sequelize.DataTypes);
 const Participants = require("./participant.model")(sequelize, Sequelize.DataTypes);
 const Plans = require("./plan.model")(sequelize, Sequelize.DataTypes);
 const Submissions = require("./submission.model")(sequelize, Sequelize.DataTypes);
+const Votes = require("./vote.model")(sequelize, Sequelize.DataTypes);
 
 
 const db = {};
@@ -39,6 +40,7 @@ db.Groups = Groups;
 db.Participants = Participants;
 db.Plans = Plans;
 db.Submissions = Submissions;
+db.Votes = Votes;
 
 
 const test = true;
@@ -51,10 +53,6 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
     .then(() => {
         delay(0).then(() => {
             Preferences.sync({ force: test });
-        });
-    })
-    .then(() => {
-        delay(0).then(() => {
             Groups.sync({ force: test });
         });
     })
@@ -62,7 +60,6 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
         delay(3000).then(() => {
             Participants.sync({ force: test });
             Plans.sync({ force: test });
-            console.log('[Server] 모든 테이블이 생성되었습니다.');
         });
     })
     .then(() => {
@@ -71,6 +68,8 @@ Users.sync({ force: test })    // force: true => 기존 테이블을 삭제하�
             sequelize.query('ALTER TABLE sscs_plans ALTER COLUMN vote_deadline TYPE TIMESTAMP WITHOUT TIME ZONE');
 
             Submissions.sync({ force: test });
+            Votes.sync({ force: test });
+            console.log('[Server] 모든 테이블이 생성되었습니다.');
         });
     })
     .catch(err => {

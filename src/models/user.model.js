@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "user_id",
                 sourceKey: "id",
             });
+
+            models.Users.hasMany(models.Votes, {
+                foreignKey: "user_id",
+                sourceKey: "id",
+            });
         }
     };
 

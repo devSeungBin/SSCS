@@ -96,7 +96,7 @@ const doc = {
                     "end": "10:00"
                 },
                 $minimum_user_count: 2,
-                $progress_time: 1.0,
+                $progress_time: 30,
                 $schedule_deadline: '2024-08-31 12:00:00',
             },
             patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'
@@ -107,56 +107,108 @@ const doc = {
             postGroupsIdPlansIdSchedulesReq: {      // '제출할 일정 정보'
                 $submission_time_slot: [
                     {
-                      "time": "2023-09-01 9:00:00",
-                      "available": true
+                        "date": "2023-09-01",
+                        "time_scope": [
+                            {
+                                "start": "9:00:00",
+                                "end": "9:15:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:15:00",
+                                "end": "9:30:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:30:00",
+                                "end": "9:45:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:45:00",
+                                "end": "10:00:00",
+                                "available": false
+                            }
+                        ]
                     },
                     {
-                      "time": "2023-09-01 9:30:00",
-                      "available": true
-                    },
-                    {
-                      "time": "2023-09-01 10:00:00",
-                      "available": false
-                    },
-                    {
-                      "time": "2023-09-03 9:00:00",
-                      "available": false
-                    },
-                    {
-                      "time": "2023-09-03 9:30:00",
-                      "available": true
-                    },
-                    {
-                      "time": "2023-09-03 10:00:00",
-                      "available": false
+                        "date": "2023-09-03",
+                        "time_scope": [
+                            {
+                                "start": "9:00:00",
+                                "end": "9:15:00",
+                                "available": false
+                            },
+                            {
+                                "start": "9:15:00",
+                                "end": "9:30:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:30:00",
+                                "end": "9:45:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:45:00",
+                                "end": "10:00:00",
+                                "available": true
+                            }
+                        ]
                     }
                 ]
             },
             patchGroupsIdPlansIdSchedulesReq: {      // '수정할 일정 정보'
                 $submission_time_slot: [
                     {
-                      "time": "2023-09-01 9:00:00",
-                      "available": false
+                        "date": "2023-09-01",
+                        "time_scope": [
+                            {
+                                "start": "9:00:00",
+                                "end": "9:15:00",
+                                "available": false
+                            },
+                            {
+                                "start": "9:15:00",
+                                "end": "9:30:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:30:00",
+                                "end": "9:45:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:45:00",
+                                "end": "10:00:00",
+                                "available": true
+                            }
+                        ]
                     },
                     {
-                      "time": "2023-09-01 9:30:00",
-                      "available": false
-                    },
-                    {
-                      "time": "2023-09-01 10:00:00",
-                      "available": true
-                    },
-                    {
-                      "time": "2023-09-03 9:00:00",
-                      "available": false
-                    },
-                    {
-                      "time": "2023-09-03 9:30:00",
-                      "available": true
-                    },
-                    {
-                      "time": "2023-09-03 10:00:00",
-                      "available": true
+                        "date": "2023-09-03",
+                        "time_scope": [
+                            {
+                                "start": "9:00:00",
+                                "end": "9:15:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:15:00",
+                                "end": "9:30:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:30:00",
+                                "end": "9:45:00",
+                                "available": true
+                            },
+                            {
+                                "start": "9:45:00",
+                                "end": "10:00:00",
+                                "available": false
+                            }
+                        ]
                     }
                 ]
             },

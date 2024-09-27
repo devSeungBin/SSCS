@@ -219,17 +219,32 @@ exports.generateTimeSlots = (dateList, timeScope) => {
     const startTimeInMinutes = parseInt(timeScope.start.replace(':', ''), 10) / 100 * 60;
     const endTimeInMinutes = parseInt(timeScope.end.replace(':', ''), 10) / 100 * 60;
 
+    let index = 0;
     dateList.forEach((date) => {
-        for (let minutes = startTimeInMinutes; minutes <= endTimeInMinutes; minutes += 30) {
-            const hours = Math.floor(minutes / 60);
-            const minutesStr = (minutes % 60).toString().padStart(2, '0');
-            const time = `${date} ${hours}:${minutesStr}:00`;
+        planTimeSlot.push({
+            date: date,
+            time_scope: []
+        });
 
-            planTimeSlot.push({
-                time: time,
+        for (let minutes = startTimeInMinutes; minutes < endTimeInMinutes; minutes += 15) {
+            const hours = Math.floor(minutes / 60);
+            const startMinute = (minutes % 60).toString().padStart(2, '0');
+            const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
+
+            const start = `${hours}:${startMinute}:00`;
+            let end = `${hours}:${endMinute}:00`;
+            if (endMinute == 60) {
+                end = `${hours + 1}:00:00`;
+            };
+
+            planTimeSlot[index].time_scope.push({
+                start: start,
+                end: end,
                 available: []
             });
-        }
+        };
+
+        index++;
     });
 
     return planTimeSlot;
@@ -333,22 +348,21 @@ exports.updatePlanSchedule = async (user_id, plan_id, submission_time_slot) => {
 
         };
     
-        let availableIndex = [];
-        let index = 0;
-        for (let slot of submission_time_slot) {
-            if (slot.available) {
-                availableIndex.push(index);
-            };
-
-            index++;
-        };
-        
         const plan = await Plans.findOne({ where: { id: plan_id }, raw: true });
         let newSchedule = plan.plan_time_slot;
+        let date_index = 0;
+        for (let slot of submission_time_slot) {
+            let time_index = 0;
 
-        for (let index of availableIndex) {
-            newSchedule[index].available.push(user_id);
-            index++;
+            for (let time of slot.time_scope) {
+                if (time.available) {
+                    newSchedule[date_index].time_scope[time_index].available.push(user_id);
+                };
+    
+                time_index++;
+            };
+
+            date_index++;
         };
 
         await changedPlan.update({ plan_time_slot: newSchedule });
@@ -378,15 +392,18 @@ exports.deletePlanSchedule = async (user_id, plan_id) => {
 
         };
     
-        let newSchedule = [];
         const plan = await Plans.findOne({ where: { id: plan_id }, raw: true });
-        
+        let newSchedule = plan.plan_time_slot;
+        let date_index = 0;
         for (let slot of plan.plan_time_slot) {
-            const newSlot = {
-                time: slot.time,
-                available: slot.available.filter((id) => id !== user_id)
+            let time_index = 0;
+
+            for (let time of slot.time_scope) {
+                newSchedule[date_index].time_scope[time_index].available = time.available.filter((id) => id !== user_id);
+                time_index++;
             };
-            newSchedule.push(newSlot);
+
+            date_index++;
         };
 
         await changedPlan.update({ plan_time_slot: newSchedule });
@@ -442,11 +459,13 @@ exports.checkSchedule = async (plan_id, submission_time_slot) => {
             };
         };
 
-        if(submission_time_slot.length !== plan.plan_time_slot.length) {
-            return {
-                statusCode: 400,
-                comment: '제출된 일정 형식이 올바르지 않습니다.',
-                result: false
+        for (let slot of submission_time_slot) {
+            if(slot.time_scope.length !== plan.plan_time_slot[0].time_scope.length) {
+                return {
+                    statusCode: 400,
+                    comment: '제출된 일정 형식이 올바르지 않습니다.',
+                    result: false
+                };
             };
         };
 
@@ -471,7 +490,6 @@ exports.createSchedule = async (plan_id, submission) => {
                 statusCode: 409,
                 comment: '이미 제출된 일정이 있습니다.',
             };
-
         };
 
         const newSchedule = await Submissions.create(submission);

@@ -2111,7 +2111,7 @@
           },
           "progress_time": {
             "type": "number",
-            "example": 1
+            "example": 30
           },
           "schedule_deadline": {
             "type": "string",
@@ -2157,13 +2157,29 @@
             "items": {
               "type": "object",
               "properties": {
-                "time": {
+                "date": {
                   "type": "string",
-                  "example": "2023-09-03 10:00:00"
+                  "example": "2023-09-03"
                 },
-                "available": {
-                  "type": "boolean",
-                  "example": false
+                "time_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "example": "9:45:00"
+                      },
+                      "end": {
+                        "type": "string",
+                        "example": "10:00:00"
+                      },
+                      "available": {
+                        "type": "boolean",
+                        "example": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2181,13 +2197,29 @@
             "items": {
               "type": "object",
               "properties": {
-                "time": {
+                "date": {
                   "type": "string",
-                  "example": "2023-09-03 10:00:00"
+                  "example": "2023-09-03"
                 },
-                "available": {
-                  "type": "boolean",
-                  "example": true
+                "time_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "example": "9:45:00"
+                      },
+                      "end": {
+                        "type": "string",
+                        "example": "10:00:00"
+                      },
+                      "available": {
+                        "type": "boolean",
+                        "example": false
+                      }
+                    }
+                  }
                 }
               }
             }

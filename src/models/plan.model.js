@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "plan_id",
                 targetKey: "id",
             });
+            
+            models.Plans.hasMany(models.Votes, {
+                foreignKey: "plan_id",
+                targetKey: "id",
+            });
 
         }
     };
@@ -53,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         progress_time: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         schedule_deadline: {
