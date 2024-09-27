@@ -1,6 +1,5 @@
 const swaggerAutogen = require("swagger-autogen")({openapi: '3.0.0'});
 const path = require("path");
-const { response } = require("express");
 
 // API 문서 자동화
 
