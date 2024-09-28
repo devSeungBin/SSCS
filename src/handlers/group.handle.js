@@ -231,10 +231,10 @@ exports.generateTimeSlots = (dateList, timeScope) => {
             const startMinute = (minutes % 60).toString().padStart(2, '0');
             const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
 
-            const start = `${hours}:${startMinute}:00`;
-            let end = `${hours}:${endMinute}:00`;
+            const start = `${hours}:${startMinute}`;
+            let end = `${hours}:${endMinute}`;
             if (endMinute == 60) {
-                end = `${hours + 1}:00:00`;
+                end = `${hours + 1}:00`;
             };
 
             planTimeSlot[index].time_scope.push({
@@ -578,6 +578,89 @@ exports.updateSchedule = async (user_id, plan_id, submission_time_slot) => {
         return {
             statusCode: 500,
             comment: err
+        };
+    };
+}
+
+
+
+exports.calculateCandidates = async (plan_id) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id, status: 'calculate' }, raw: false });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '일정 후보를 계산할 약속이 없습니다.',
+            };
+        };
+
+        let candidate_plan_time = [];
+        const inspectionSize = plan.dataValues.progress_time / 15;
+        // 같은 사용자가 연속으로 존재해야할 경우
+        for (let slot of plan.dataValues.plan_time_slot) {
+            for (let inspectionStart of slot.time_scope) {
+                if (slot.time_scope.indexOf(inspectionStart) > (slot.time_scope.length - inspectionSize)) break;
+                
+                const inspectionTimeArr = slot.time_scope.slice(slot.time_scope.indexOf(inspectionStart), slot.time_scope.indexOf(inspectionStart) + inspectionSize);
+                let isContinuousUser = true;
+                let isMoreUsersThanMinimum = true;
+                if (inspectionSize === 1) {
+                    if (inspectionTimeArr[0].available.length < plan.dataValues.minimum_user_count) {
+                        isMoreUsersThanMinimum = false;
+                    };
+
+                } else {
+                    let continuousUserList = [];
+                    for (let index = 0; index < inspectionSize; index++) {
+                        if (index == 0) {
+                            continuousUserList = [...inspectionTimeArr[index].available];
+                        } else {
+                            const prevUserList = new Set(continuousUserList);
+                            const nextUserList = new Set(inspectionTimeArr[index].available);
+                            const intersection = new Set([...prevUserList].filter(user => nextUserList.has(user)));
+
+                            continuousUserList = [...intersection];
+                        };
+
+                        if (continuousUserList.length < plan.dataValues.minimum_user_count) {
+                            isMoreUsersThanMinimum = false;
+                        };
+
+                        if (!(isMoreUsersThanMinimum && isContinuousUser)) {
+                            break;
+                        };
+                    };
+
+                };
+
+                if (isMoreUsersThanMinimum && isContinuousUser) {
+                    candidate_plan_time.push({
+                        start: `${slot.date} ${inspectionTimeArr[0].start}`,
+                        end: `${slot.date} ${inspectionTimeArr[inspectionTimeArr.length - 1].end}`,
+                    });
+                };
+                
+            };
+        };
+
+        if (candidate_plan_time.length === 0) {
+            await plan.update({ status: 'fail' });
+            await plan.save();
+        } else {
+            await plan.update({ candidate_plan_time: candidate_plan_time, status: 'select' });
+            await plan.save();
+        }
+
+        return {
+            statusCode: 200,
+            candidate_plan_time: candidate_plan_time,
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err,
         };
     };
 }

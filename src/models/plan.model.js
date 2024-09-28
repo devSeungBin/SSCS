@@ -44,10 +44,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.RANGE(DataTypes.DATE),
         },
         candidate_plan_time: {
-            type: DataTypes.RANGE(DataTypes.DATE),
+            type: DataTypes.ARRAY(DataTypes.JSON),
         },
         vote_plan_time: {
-            type: DataTypes.RANGE(DataTypes.DATE),
+            type: DataTypes.ARRAY(DataTypes.JSON),
         },
         plan_time_slot: {
             type: DataTypes.ARRAY(DataTypes.JSON),

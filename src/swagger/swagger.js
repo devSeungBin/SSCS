@@ -96,8 +96,8 @@ const doc = {
                     "end": "10:00"
                 },
                 $minimum_user_count: 2,
-                $progress_time: 30,
-                $schedule_deadline: '2024-08-31 12:00:00',
+                $progress_time: 60,
+                $schedule_deadline: '2024-10-01 00:00',
             },
             patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'
                 $name: 'testPlan',
@@ -110,23 +110,23 @@ const doc = {
                         "date": "2023-09-01",
                         "time_scope": [
                             {
-                                "start": "9:00:00",
-                                "end": "9:15:00",
+                                "start": "9:00",
+                                "end": "9:15",
                                 "available": true
                             },
                             {
-                                "start": "9:15:00",
-                                "end": "9:30:00",
+                                "start": "9:15",
+                                "end": "9:30",
                                 "available": true
                             },
                             {
-                                "start": "9:30:00",
-                                "end": "9:45:00",
+                                "start": "9:30",
+                                "end": "9:45",
                                 "available": true
                             },
                             {
-                                "start": "9:45:00",
-                                "end": "10:00:00",
+                                "start": "9:45",
+                                "end": "10:00",
                                 "available": false
                             }
                         ]
@@ -135,23 +135,23 @@ const doc = {
                         "date": "2023-09-03",
                         "time_scope": [
                             {
-                                "start": "9:00:00",
-                                "end": "9:15:00",
+                                "start": "9:00",
+                                "end": "9:15",
                                 "available": false
                             },
                             {
-                                "start": "9:15:00",
-                                "end": "9:30:00",
+                                "start": "9:15",
+                                "end": "9:30",
                                 "available": true
                             },
                             {
-                                "start": "9:30:00",
-                                "end": "9:45:00",
+                                "start": "9:30",
+                                "end": "9:45",
                                 "available": true
                             },
                             {
-                                "start": "9:45:00",
-                                "end": "10:00:00",
+                                "start": "9:45",
+                                "end": "10:00",
                                 "available": true
                             }
                         ]
@@ -164,23 +164,23 @@ const doc = {
                         "date": "2023-09-01",
                         "time_scope": [
                             {
-                                "start": "9:00:00",
-                                "end": "9:15:00",
+                                "start": "9:00",
+                                "end": "9:15",
                                 "available": false
                             },
                             {
-                                "start": "9:15:00",
-                                "end": "9:30:00",
+                                "start": "9:15",
+                                "end": "9:30",
                                 "available": true
                             },
                             {
-                                "start": "9:30:00",
-                                "end": "9:45:00",
+                                "start": "9:30",
+                                "end": "9:45",
                                 "available": true
                             },
                             {
-                                "start": "9:45:00",
-                                "end": "10:00:00",
+                                "start": "9:45",
+                                "end": "10:00",
                                 "available": true
                             }
                         ]
@@ -189,23 +189,23 @@ const doc = {
                         "date": "2023-09-03",
                         "time_scope": [
                             {
-                                "start": "9:00:00",
-                                "end": "9:15:00",
+                                "start": "9:00",
+                                "end": "9:15",
                                 "available": true
                             },
                             {
-                                "start": "9:15:00",
-                                "end": "9:30:00",
+                                "start": "9:15",
+                                "end": "9:30",
                                 "available": true
                             },
                             {
-                                "start": "9:30:00",
-                                "end": "9:45:00",
+                                "start": "9:30",
+                                "end": "9:45",
                                 "available": true
                             },
                             {
-                                "start": "9:45:00",
-                                "end": "10:00:00",
+                                "start": "9:45",
+                                "end": "10:00",
                                 "available": false
                             }
                         ]
@@ -579,6 +579,15 @@ const doc = {
             },
             getPlansRes200: {       // 'GET /plans 요청 성공'
                 $statusCode: '200',
+            },
+            getGroupsIdPlansIdCandidatesRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/candidates 요청 성공'
+                $statusCode: '200',
+                $candidate_plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일'
+                    }
+                ]
             },
             
 

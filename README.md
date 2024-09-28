@@ -131,7 +131,7 @@
 
 > GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
 
-> GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [...]
+> GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
 
 ```

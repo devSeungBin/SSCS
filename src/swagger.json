@@ -1269,6 +1269,87 @@
         }
       }
     },
+    "/groups/:group_id/plans/:plan_id/candidates": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 후보 계산 API (인증 필요)",
+        "description": "일정 후보를 게산하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "일정 후보를 계산할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdCandidatesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/plans": {
       "get": {
         "tags": [
@@ -2111,11 +2192,11 @@
           },
           "progress_time": {
             "type": "number",
-            "example": 30
+            "example": 60
           },
           "schedule_deadline": {
             "type": "string",
-            "example": "2024-08-31 12:00:00"
+            "example": "2024-10-01 00:00"
           }
         },
         "required": [
@@ -2168,11 +2249,11 @@
                     "properties": {
                       "start": {
                         "type": "string",
-                        "example": "9:45:00"
+                        "example": "9:45"
                       },
                       "end": {
                         "type": "string",
-                        "example": "10:00:00"
+                        "example": "10:00"
                       },
                       "available": {
                         "type": "boolean",
@@ -2208,11 +2289,11 @@
                     "properties": {
                       "start": {
                         "type": "string",
-                        "example": "9:45:00"
+                        "example": "9:45"
                       },
                       "end": {
                         "type": "string",
-                        "example": "10:00:00"
+                        "example": "10:00"
                       },
                       "available": {
                         "type": "boolean",
@@ -3617,6 +3698,35 @@
         },
         "required": [
           "statusCode"
+        ]
+      },
+      "getGroupsIdPlansIdCandidatesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "candidate_plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "candidate_plan_time"
         ]
       }
     },

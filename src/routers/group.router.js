@@ -15,7 +15,8 @@ const {
     createPlan, searchPlan, updatePlan, updatePlanSchedule, deletePlanSchedule,
     searchPlanInfo,
     generateTimeSlots,
-    checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule
+    checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
+    calculateCandidates
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -1648,6 +1649,103 @@ router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGro
 
     next();
 }, handleError);
+
+
+router.get('/:group_id/plans/:plan_id/candidates', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/candidates'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 후보 계산 API (인증 필요)'
+    #swagger.description = '일정 후보를 게산하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '일정 후보를 계산할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdCandidatesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await calculateCandidates(req.query.plan_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    candidate_plan_time: info.candidate_plan_time,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
 
 
 module.exports = router;
