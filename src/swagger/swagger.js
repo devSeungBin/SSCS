@@ -102,7 +102,7 @@ const doc = {
             patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'
                 $name: 'testPlan',
                 $minimum_user_count: 1,
-                $progress_time: 2.0,
+                $progress_time: 90,
             },
             postGroupsIdPlansIdSchedulesReq: {      // '제출할 일정 정보'
                 $submission_time_slot: [
