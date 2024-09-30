@@ -11,6 +11,7 @@ const {
     searchGroup, createGroup, updateGroup, 
     searchGroupInfo,
     createInvitationCode, joinGroup,
+    calculatePreferences,
     searchParticipant,
     createPlan, searchPlan, updatePlan, updatePlanSchedule, deletePlanSchedule,
     searchPlanInfo,
@@ -174,6 +175,7 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         let newGroup = {
             name: req.body.name,
             creator: req.user.id,
+            preference_setting: 'auto'
         }
     
         await createGroup(newGroup)
@@ -691,6 +693,94 @@ router.get('/:group_id/invite', isLoggedIn, isNotNewUser, isGroupUser, async (re
 
     next();
 }, handleError);
+
+router.get('/:group_id/preferences', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/preferences'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '그룹 선호도 계산 API (인증 필요)'
+    #swagger.description = '그룹 선호도를 계산할 때 사용하는 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '그룹 선호도를 게산할 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPreferencesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await calculatePreferences(req.query.group_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    auto_group_preference: info.auto_group_preference,
+                };
+            };
+        })
+        .catch((err) => {
+            return {
+                statusCode: err.statusCode,
+                comment: err.comment
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
 
 router.get('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 

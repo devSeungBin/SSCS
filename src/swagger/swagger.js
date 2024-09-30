@@ -86,7 +86,12 @@ const doc = {
             },
             patchGroupsIdReq: {     // '수정할 그룹 정보'
                 $name: 'testGroup',
-                $invitationCode: 'invitation_code'
+                $invitationCode: 'invitation_code',
+                $preference_setting: 'manual',
+                $manual_group_preference: {
+                    day_preference: ["Mon", "Tue"],
+                    time_preference: ["afternoon", "evening"],
+                }
             },
             postGroupsIdPlansReq: {     // '생성할 약속 정보'
                 $name: 'myPlan',
@@ -386,6 +391,9 @@ const doc = {
                     image: '그룹 프로필 이미지',
                     user_count: '그룹 참여자 수',
                     invitation_code: '그룹 초대코드',
+                    preference_setting: '일정 후보 자동 선택 시 사용할 선호도 방식',
+                    auto_group_preferenece: '그룹 선호도 정보(자동)',
+                    manual_group_preferenece: '그룹 선호도 정보(수동)',
                     creator: '그룹 생성자',
                     created_at: '그룹 생성일',
                     updated_at: '그룹 정보 수정일',
@@ -400,6 +408,9 @@ const doc = {
                         image: '그룹 프로필 이미지',
                         user_count: '그룹 참여자 수',
                         invitation_code: '그룹 초대코드',
+                        preference_setting: '일정 후보 자동 선택 시 사용할 선호도 방식',
+                        auto_group_preferenece: '그룹 선호도 정보(자동)',
+                        manual_group_preferenece: '그룹 선호도 정보(수동)',
                         creator: '그룹 생성자',
                         created_at: '그룹 생성일',
                         updated_at: '그룹 정보 수정일',
@@ -436,6 +447,13 @@ const doc = {
                     updated_at: '그룹 참여 수정일',
                 }
             },
+            getGroupsIdPreferencesRes200: {      // 'GET /groups/{group_id}/preferences 요청 성공'
+                $statusCode: '200',
+                $auto_group_preference: {
+                    day: '그룹 요일 선호도 중 최댓값을 가지는 선호도들',
+                    time: '그룹 시간 선호도 중 최댓값을 가지는 선호도들'
+                }
+            },
             patchGroupsIdRes200: {      // 'PATCH /groups/{group_id} 요청 성공'
                 $statusCode: '200',
                 $group: {
@@ -444,6 +462,9 @@ const doc = {
                     image: '그룹 프로필 이미지',
                     user_count: '그룹 참여자 수',
                     invitation_code: '그룹 초대코드',
+                    preference_setting: '일정 후보 자동 선택 시 사용할 선호도 방식',
+                    auto_group_preferenece: '그룹 선호도 정보(자동)',
+                    manual_group_preferenece: '그룹 선호도 정보(수동)',
                     creator: '그룹 생성자',
                     created_at: '그룹 생성일',
                     updated_at: '그룹 정보 수정일',
@@ -457,6 +478,9 @@ const doc = {
                     image: '그룹 프로필 이미지',
                     user_count: '그룹 참여자 수',
                     invitation_code: '그룹 초대코드',
+                    preference_setting: '일정 후보 자동 선택 시 사용할 선호도 방식',
+                    auto_group_preferenece: '그룹 선호도 정보(자동)',
+                    manual_group_preferenece: '그룹 선호도 정보(수동)',
                     creator: '그룹 생성자',
                     created_at: '그룹 생성일',
                     updated_at: '그룹 정보 수정일',

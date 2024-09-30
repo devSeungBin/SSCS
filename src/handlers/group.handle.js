@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
-const { Groups, Participants, Plans, Submissions } = db;
+const { Groups, Participants, Plans, Submissions, Preferences } = db;
 
 exports.searchGroup = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -200,6 +200,165 @@ exports.joinGroup = async (id, invitation_code) => {
         return {
             statusCode: 201,
             participant: participant.toJSON(),
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.createPreferences = async (user_id) => {
+    try {
+        const preference = await Preferences.findOne({ where: { user_id: user_id }, raw: true });
+        if (!preference) {
+            return {
+                statusCode: 404,
+                comment: '신규 사용자입니다. 선호도 입력 페이지로 이동합니다.'
+            };
+
+        } else {
+            
+
+            
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.calculatePreferences = async (group_id) => {
+    try {
+        const participants = await Participants.findAll({ where: { group_id: group_id }, raw: true });
+        if (!participants) {
+            return {
+                statusCode: 404,
+                comment: '해당 그룹이 존재하지 않습니다.'
+            };
+
+        } else {
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const times = ['morning', 'afternoon', 'evening'];
+            const headcount = participants.length;
+            let users = [];
+
+            // 그룹 참가자 선호도 가져오기
+            let all_day_preference = Array.from({length: 7}, () => 0);
+            let all_time_preference = Array.from({length: 3}, () => 0);
+
+            for (let participant of participants) {
+                const preference = await Preferences.findOne({ where: { user_id: participant.user_id }, raw: true });
+                if (!preference) {
+                    return {
+                        statusCode: 404,
+                        comment: '신규 사용자가 존재합니다.'
+                    };
+                };
+
+                users.push({
+                    day_preference: preference.day_preference,
+                    time_preference: preference.time_preference
+                });
+
+                days.forEach((day, index) => {
+                    all_day_preference[index] += preference.day_preference[day];
+                });
+
+                times.forEach((time, index) => {
+                    all_time_preference[index] += preference.time_preference[time];
+                });
+            };
+
+            console.log(`all_day: ${all_day_preference}`)
+            console.log(`all_time: ${all_time_preference}`)
+
+            // 평균 선호도 구하기
+            let avg_day_preference = Array.from({length: 7}, () => 0);
+            let avg_time_preference = Array.from({length: 3}, () => 0);
+            
+            days.forEach((day, index) => {
+                avg_day_preference[index] = all_day_preference[index] / headcount;
+            });
+
+            times.forEach((time, index) => {
+                avg_time_preference[index] += all_day_preference[index] / headcount;
+            });
+
+            console.log(`avg_day: ${avg_day_preference}`)
+            console.log(`avg_time: ${avg_time_preference}`)
+
+            // 선호도 MSD 구하기
+            let day_preference_MSD = Array.from({length: 7}, () => 0);
+            let time_preference_MSD = Array.from({length: 3}, () => 0);
+
+            for(let user of users) {
+                days.forEach((day, index) => {
+                    day_preference_MSD[index] += (avg_day_preference[index] - user.day_preference[day]) ** 2;
+                });
+    
+                times.forEach((time, index) => {
+                    time_preference_MSD[index] += (avg_time_preference[index] - user.time_preference[time]) ** 2;
+                });
+            };
+
+            day_preference_MSD[index] /= headcount;
+            time_preference_MSD[index] /= headcount;
+
+            console.log(`day_MSD: ${day_preference_MSD}`)
+            console.log(`time_MSD: ${time_preference_MSD}`)
+            console.log(`day_w: ${1 - day_preference_MSD}`)
+            console.log(`time_w: ${1 - time_preference_MSD}`)
+
+            // 평균 선호도와 선호도 가중치(1-MSD)를 곱한 그룹 선호도 구하기
+            let group_day_preference = Array.from({length: 7}, () => 0);
+            let group_time_preference = Array.from({length: 3}, () => 0);
+
+            days.forEach((day, index) => {
+                group_day_preference[index] = avg_day_preference[index] * (1 - day_preference_MSD[index]);
+            });
+
+            times.forEach((time, index) => {
+                group_time_preference[index] = avg_time_preference[index] * (1 - time_preference_MSD[index]);
+            });
+
+            console.log(`group_day: ${group_day_preference}`)
+            console.log(`group_time: ${group_time_preference}`)
+
+            // 그룹 선호도 중 최댓값을 갖는 선호도를 구하기
+            const day_max = Math.max(...group_day_preference);
+            const time_max = Math.max(...group_time_preference);
+
+            const day_max_index = [];
+            const time_max_index = [];
+
+            for (let index = 0; index < days.length; index++) {
+                if (group_day_preference[index] === day_max) {
+                    day_max_index.push(index);
+                };
+            };
+
+            for (let index = 0; index < times.length; index++) {
+                if (group_time_preference[index] === time_max) {
+                    time_max_index.push(index);
+                };
+            };
+
+            console.log(`day_max_index: ${day_max_index}`)
+            console.log(`time_max_index: ${time_max_index}`)
+
+            return {
+                statusCode: 200,
+                auto_group_preference: {
+                    day: day_max_index,
+                    time: time_max_index
+                }
+            };
         };
 
     } catch (err) {

@@ -539,6 +539,78 @@
         }
       }
     },
+    "/groups/:group_id/preferences": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "그룹 선호도 계산 API (인증 필요)",
+        "description": "그룹 선호도를 계산할 때 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "그룹 선호도를 게산할 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPreferencesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/groups/:group_id/plans": {
       "get": {
         "tags": [
@@ -2149,11 +2221,42 @@
           "invitationCode": {
             "type": "string",
             "example": "invitation_code"
+          },
+          "preference_setting": {
+            "type": "string",
+            "example": "manual"
+          },
+          "manual_group_preference": {
+            "type": "object",
+            "properties": {
+              "day_preference": {
+                "type": "array",
+                "example": [
+                  "Mon",
+                  "Tue"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "time_preference": {
+                "type": "array",
+                "example": [
+                  "afternoon",
+                  "evening"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "required": [
           "name",
-          "invitationCode"
+          "invitationCode",
+          "preference_setting",
+          "manual_group_preference"
         ]
       },
       "postGroupsIdPlansReq": {
@@ -2221,7 +2324,7 @@
           },
           "progress_time": {
             "type": "number",
-            "example": 2
+            "example": 90
           }
         },
         "required": [
@@ -2964,6 +3067,18 @@
                 "type": "string",
                 "example": "그룹 초대코드"
               },
+              "preference_setting": {
+                "type": "string",
+                "example": "일정 후보 자동 선택 시 사용할 선호도 방식"
+              },
+              "auto_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(자동)"
+              },
+              "manual_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(수동)"
+              },
               "creator": {
                 "type": "string",
                 "example": "그룹 생성자"
@@ -3015,6 +3130,18 @@
                 "invitation_code": {
                   "type": "string",
                   "example": "그룹 초대코드"
+                },
+                "preference_setting": {
+                  "type": "string",
+                  "example": "일정 후보 자동 선택 시 사용할 선호도 방식"
+                },
+                "auto_group_preferenece": {
+                  "type": "string",
+                  "example": "그룹 선호도 정보(자동)"
+                },
+                "manual_group_preferenece": {
+                  "type": "string",
+                  "example": "그룹 선호도 정보(수동)"
                 },
                 "creator": {
                   "type": "string",
@@ -3149,6 +3276,32 @@
           "participant"
         ]
       },
+      "getGroupsIdPreferencesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "auto_group_preference": {
+            "type": "object",
+            "properties": {
+              "day": {
+                "type": "string",
+                "example": "그룹 요일 선호도 중 최댓값을 가지는 선호도들"
+              },
+              "time": {
+                "type": "string",
+                "example": "그룹 시간 선호도 중 최댓값을 가지는 선호도들"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "auto_group_preference"
+        ]
+      },
       "patchGroupsIdRes200": {
         "type": "object",
         "properties": {
@@ -3178,6 +3331,18 @@
               "invitation_code": {
                 "type": "string",
                 "example": "그룹 초대코드"
+              },
+              "preference_setting": {
+                "type": "string",
+                "example": "일정 후보 자동 선택 시 사용할 선호도 방식"
+              },
+              "auto_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(자동)"
+              },
+              "manual_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(수동)"
               },
               "creator": {
                 "type": "string",
@@ -3228,6 +3393,18 @@
               "invitation_code": {
                 "type": "string",
                 "example": "그룹 초대코드"
+              },
+              "preference_setting": {
+                "type": "string",
+                "example": "일정 후보 자동 선택 시 사용할 선호도 방식"
+              },
+              "auto_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(자동)"
+              },
+              "manual_group_preferenece": {
+                "type": "string",
+                "example": "그룹 선호도 정보(수동)"
               },
               "creator": {
                 "type": "string",

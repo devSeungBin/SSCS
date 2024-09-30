@@ -44,6 +44,18 @@ module.exports = (sequelize, DataTypes) => {
         // salt: {
         //     type: DataTypes.STRING(255),
         // },
+        preference_setting: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        auto_group_preference: {
+            type: DataTypes.JSON,
+            allowNull: false,
+        },
+        manual_group_preference: {
+            type: DataTypes.JSON,
+            allowNull: false,
+        },
         creator: {
             type: DataTypes.INTEGER,
             allowNull: false,

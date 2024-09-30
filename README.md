@@ -90,6 +90,8 @@
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
+> GET /groups/{group_id}/preferences - 그룹 선호도 계산 [...]
+
 > GET /groups/{group_id}/plans - 그룹 약속 목록 조회 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans - 그룹 약속 생성 [완성, 응답 테스트 완료]
 
@@ -151,6 +153,8 @@
 ```
 > 필요한 API - 기능
 
+> GET /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 선택 []
+
 > PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (서버 수정)
 ```
 &nbsp;
@@ -187,6 +191,9 @@ groups table
 - image (VARCHAR(255))
 - user_count (INTEGER, NOT NULL)
 - invitation_code (VARCHAR(20))
+- preference_setting (VARCHAR(20))
+- auto_group_preference (JSON)
+- manual_group_preference (JSON)
 - creator (INTEGER, NOT NULL) / reference 'id' in users table
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
 - updated_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
