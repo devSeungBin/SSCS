@@ -90,8 +90,6 @@
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/preferences - 그룹 선호도 계산 [...]
-
 > GET /groups/{group_id}/plans - 그룹 약속 목록 조회 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans - 그룹 약속 생성 [완성, 응답 테스트 완료]
 
@@ -134,6 +132,9 @@
 > GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
+
+
+> GET /groups/{group_id}/preferences - 그룹 선호도 계산 [임시 사용, 완성, 응답 테스트 완료]
 
 
 ```

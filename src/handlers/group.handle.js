@@ -161,6 +161,16 @@ exports.updateGroup = async (group) => {
                 await changedGroup.save();
             };
 
+            if (group.preference_setting) {
+                await changedGroup.update({ preference_setting: group.preference_setting });
+                await changedGroup.save();
+            };
+
+            if (group.manual_group_preference) {
+                await changedGroup.update({ manual_group_preference: group.manual_group_preference });
+                await changedGroup.save();
+            };
+
             return {
                 statusCode: 200,
                 group: changedGroup.toJSON()
@@ -220,12 +230,49 @@ exports.createPreferences = async (user_id) => {
             };
 
         } else {
-            
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const times = ['morning', 'afternoon', 'evening'];
 
-            
+            let day_preference = Array.from({length: 7}, () => 0);
+            let time_preference = Array.from({length: 3}, () => 0);
+
+            days.forEach((day, index) => {
+                day_preference[index] += preference.day_preference[day];
+            });
+
+            times.forEach((time, index) => {
+                time_preference[index] += preference.time_preference[time];
+            });
+
+            const day_max = Math.max(...day_preference);
+            const time_max = Math.max(...time_preference);
+
+            const day_max_index = [];
+            const time_max_index = [];
+
+            for (let index = 0; index < days.length; index++) {
+                if (day_preference[index] === day_max) {
+                    day_max_index.push(index);
+                };
+            };
+
+            for (let index = 0; index < times.length; index++) {
+                if (time_preference[index] === time_max) {
+                    time_max_index.push(index);
+                };
+            };
+
+            return {
+                statusCode: 200,
+                group_preference: {
+                    day: day_max_index,
+                    time: time_max_index
+                }
+            };
         };
 
     } catch (err) {
+        console.log(err)
         return {
             statusCode: 500,
             comment: err
@@ -235,8 +282,16 @@ exports.createPreferences = async (user_id) => {
 
 exports.calculatePreferences = async (group_id) => {
     try {
+        const group = await Groups.findOne({where: { id: group_id }, raw: false });
+        if (!group) {
+            return {
+                statusCode: 404,
+                comment: '해당 그룹이 존재하지 않습니다.'
+            };
+        };
+
         const participants = await Participants.findAll({ where: { group_id: group_id }, raw: true });
-        if (!participants) {
+        if (participants.length === 0) {
             return {
                 statusCode: 404,
                 comment: '해당 그룹이 존재하지 않습니다.'
@@ -267,11 +322,11 @@ exports.calculatePreferences = async (group_id) => {
                 });
 
                 days.forEach((day, index) => {
-                    all_day_preference[index] += preference.day_preference[day];
+                    all_day_preference[index] += (preference.day_preference[day] - 1) / 4;  // 정규화 (max 5, min 1)
                 });
 
                 times.forEach((time, index) => {
-                    all_time_preference[index] += preference.time_preference[time];
+                    all_time_preference[index] += (preference.time_preference[time] - 1) / 4;   // 정규화 (max 5, min 1)
                 });
             };
 
@@ -287,7 +342,7 @@ exports.calculatePreferences = async (group_id) => {
             });
 
             times.forEach((time, index) => {
-                avg_time_preference[index] += all_day_preference[index] / headcount;
+                avg_time_preference[index] += all_time_preference[index] / headcount;
             });
 
             console.log(`avg_day: ${avg_day_preference}`)
@@ -299,21 +354,19 @@ exports.calculatePreferences = async (group_id) => {
 
             for(let user of users) {
                 days.forEach((day, index) => {
-                    day_preference_MSD[index] += (avg_day_preference[index] - user.day_preference[day]) ** 2;
+                    day_preference_MSD[index] += (avg_day_preference[index] - ((user.day_preference[day] - 1) / 4)) ** 2;   // 정규화 (max 5, min 1)
                 });
     
                 times.forEach((time, index) => {
-                    time_preference_MSD[index] += (avg_time_preference[index] - user.time_preference[time]) ** 2;
+                    time_preference_MSD[index] += (avg_time_preference[index] - ((user.time_preference[time] - 1) / 4)) ** 2;   // 정규화 (max 5, min 1)
                 });
             };
 
-            day_preference_MSD[index] /= headcount;
-            time_preference_MSD[index] /= headcount;
+            day_preference_MSD = day_preference_MSD.map((p) => p / headcount);
+            time_preference_MSD = time_preference_MSD.map((p) => p / headcount);
 
             console.log(`day_MSD: ${day_preference_MSD}`)
             console.log(`time_MSD: ${time_preference_MSD}`)
-            console.log(`day_w: ${1 - day_preference_MSD}`)
-            console.log(`time_w: ${1 - time_preference_MSD}`)
 
             // 평균 선호도와 선호도 가중치(1-MSD)를 곱한 그룹 선호도 구하기
             let group_day_preference = Array.from({length: 7}, () => 0);
@@ -352,12 +405,14 @@ exports.calculatePreferences = async (group_id) => {
             console.log(`day_max_index: ${day_max_index}`)
             console.log(`time_max_index: ${time_max_index}`)
 
+            const auto_group_preference = {
+                day: day_max_index,
+                time: time_max_index
+            };
+
             return {
                 statusCode: 200,
-                auto_group_preference: {
-                    day: day_max_index,
-                    time: time_max_index
-                }
+                auto_group_preference: auto_group_preference
             };
         };
 
@@ -467,6 +522,17 @@ exports.updatePlan = async (plan) => {
             };
 
         } else {
+            if (plan.schedule_deadline && changedPlan.toJSON().status !== 'submit') {
+                return {
+                    statusCode: 400,
+                    comment: '이미 일정 제출이 마감된 약속입니다.'
+                };
+                
+            } else if (plan.schedule_deadline && changedPlan.toJSON().status === 'submit') {
+                await changedPlan.update({ schedule_deadline: plan.schedule_deadline });
+                await changedPlan.save();
+            };
+
             if (plan.name) {
                 await changedPlan.update({ name: plan.name });
                 await changedPlan.save();

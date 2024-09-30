@@ -32,10 +32,10 @@ exports.updatePlan = async () => {
                     };
 
                     const dateNow = new Date();
-                    const planDate = new Date(plan.deadline);
+                    const planDate = new Date(plan.schedule_deadline);
                     const planTime = planDate.getTime() + (planDate.getTimezoneOffset() * 60 * 1000);
-                    const deadLine = new Date(planTime + timeDiff);
-                    if (dateNow >= deadLine) {
+                    const schedule_deadline = new Date(planTime + timeDiff);
+                    if (dateNow >= schedule_deadline) {
                         const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
                         await newPlan.update({ status: 'calculate' });
                         await newPlan.save();

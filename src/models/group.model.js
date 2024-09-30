@@ -48,10 +48,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(20),
             allowNull: false,
         },
-        auto_group_preference: {
-            type: DataTypes.JSON,
-            allowNull: false,
-        },
         manual_group_preference: {
             type: DataTypes.JSON,
             allowNull: false,

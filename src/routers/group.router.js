@@ -11,7 +11,7 @@ const {
     searchGroup, createGroup, updateGroup, 
     searchGroupInfo,
     createInvitationCode, joinGroup,
-    calculatePreferences,
+    calculatePreferences, createPreferences,
     searchParticipant,
     createPlan, searchPlan, updatePlan, updatePlanSchedule, deletePlanSchedule,
     searchPlanInfo,
@@ -172,15 +172,9 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         };
 
     } else {
-        let newGroup = {
-            name: req.body.name,
-            creator: req.user.id,
-            preference_setting: 'auto'
-        }
-    
-        await createGroup(newGroup)
-        .then((info) => {
-            if (info.statusCode !== 201) {
+        await createPreferences(req.user.id)
+        .then(async (info) => {
+            if (info.statusCode !== 200) {
                 req.result = {
                     error: {
                         statusCode: info.statusCode,
@@ -188,10 +182,29 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                     }
                 };
             } else {
-                req.result = {
-                    statusCode: info.statusCode,
-                    group: info.group,
-                };
+                let newGroup = {
+                    name: req.body.name,
+                    creator: req.user.id,
+                    preference_setting: 'auto',
+                    manual_group_preference: info.group_preference,
+                }
+            
+                await createGroup(newGroup)
+                .then((info) => {
+                    if (info.statusCode !== 201) {
+                        req.result = {
+                            error: {
+                                statusCode: info.statusCode,
+                                comment: info.comment
+                            }
+                        };
+                    } else {
+                        req.result = {
+                            statusCode: info.statusCode,
+                            group: info.group,
+                        };
+                    };
+                });
             };
         })
         .catch((err) => {
@@ -367,7 +380,8 @@ router.patch('/:group_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, re
         };
 
     } else {
-        const { name, invitationCode } = req.body;
+        const { name, invitationCode,
+            preference_setting, manual_group_preference } = req.body;
 
         let group = {};
         let formError = false;
@@ -379,6 +393,12 @@ router.patch('/:group_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, re
 
             if (name) { group.name = name; };
             if (invitationCode) { group.invitation_code = invitationCode; };
+            if (preference_setting === 'manual') { 
+                group.preference_setting = preference_setting;
+                group.manual_group_preference = manual_group_preference;
+            } else {
+                group.preference_setting = preference_setting;
+            };
         };
         
 
@@ -698,7 +718,7 @@ router.get('/:group_id/preferences', isLoggedIn, isNotNewUser, isGroupUser, asyn
     /* 
     #swagger.path = '/groups/:group_id/preferences'
     #swagger.tags = ['GroupRouter']
-    #swagger.summary = '그룹 선호도 계산 API (인증 필요)'
+    #swagger.summary = '테스트용 그룹 선호도 계산 API (인증 필요)'
     #swagger.description = '그룹 선호도를 계산할 때 사용하는 엔드포인트'
     #swagger.parameters['group_id'] = {
         in: 'query',
@@ -1169,7 +1189,7 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
         };
 
     } else {
-        const { name, minimum_user_count, progress_time } = req.body;
+        const { name, minimum_user_count, progress_time, schedule_deadline } = req.body;
 
         let plan = {};
         let formError = false;
@@ -1182,6 +1202,7 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             if (name) { plan.name = name; };
             if (minimum_user_count) { plan.minimum_user_count = minimum_user_count; };
             if (progress_time) { plan.progress_time = progress_time; };
+            if (schedule_deadline) { plan.schedule_deadline = schedule_deadline; };
         };
         
 
