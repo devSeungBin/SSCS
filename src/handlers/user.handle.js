@@ -182,23 +182,26 @@ exports.updateUser = async (id, user, preference) => {
         };
         
         if (user) {
-            if (user.name) {
-                await changedUser.update({ name: user.name });
-                await changedUser.save();
+            if (user.name == changedUser.toJSON().name) {
+                delete user.name;
             };
         };
 
         if (preference) {
-            if (preference.day_preference) {
-                await changedPreference.update({ day_preference: preference.day_preference });
-                await changedPreference.save();
+            if (preference.day_preference == changedPreference.toJSON().day_preference) {
+                delete preference.day_preference;
             };
 
-            if (preference.time_preference) {
-                await changedPreference.update({ time_preference: preference.time_preference });
-                await changedPreference.save();
-            };  
+            if (preference.time_preference == changedPreference.toJSON().time_preference) {
+                delete preference.time_preference;
+            };
         };
+
+        await changedUser.update(user);
+        await changedUser.save();
+
+        await changedPreference.update(preference);
+        await changedPreference.save();
 
         return {
             statusCode: 200,    // 사용자 정보가 변경됨

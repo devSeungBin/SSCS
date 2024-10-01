@@ -976,6 +976,7 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
             group_id: req.query.group_id,
             plan_time_slot: planTimeSlot,
             minimum_user_count: req.body.minimum_user_count,
+            maximum_user_count: req.body.maximum_user_count,
             progress_time: req.body.progress_time,
             schedule_deadline: req.body.schedule_deadline,
             status: 'submit'
@@ -1189,7 +1190,7 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
         };
 
     } else {
-        const { name, minimum_user_count, progress_time, schedule_deadline } = req.body;
+        const { name, minimum_user_count, maximum_user_count, progress_time, schedule_deadline } = req.body;
 
         let plan = {};
         let formError = false;
@@ -1201,6 +1202,7 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
 
             if (name) { plan.name = name; };
             if (minimum_user_count) { plan.minimum_user_count = minimum_user_count; };
+            if (maximum_user_count) { plan.maximum_user_count = maximum_user_count; };
             if (progress_time) { plan.progress_time = progress_time; };
             if (schedule_deadline) { plan.schedule_deadline = schedule_deadline; };
         };

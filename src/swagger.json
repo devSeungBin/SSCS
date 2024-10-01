@@ -2232,21 +2232,21 @@
               "day_preference": {
                 "type": "array",
                 "example": [
-                  "Mon",
-                  "Tue"
+                  5,
+                  6
                 ],
                 "items": {
-                  "type": "string"
+                  "type": "number"
                 }
               },
               "time_preference": {
                 "type": "array",
                 "example": [
-                  "afternoon",
-                  "evening"
+                  1,
+                  2
                 ],
                 "items": {
-                  "type": "string"
+                  "type": "number"
                 }
               }
             }
@@ -2293,6 +2293,10 @@
             "type": "number",
             "example": 2
           },
+          "maximum_user_count": {
+            "type": "number",
+            "example": 5
+          },
           "progress_time": {
             "type": "number",
             "example": 60
@@ -2307,6 +2311,7 @@
           "date_list",
           "time_scope",
           "minimum_user_count",
+          "maximum_user_count",
           "progress_time",
           "schedule_deadline"
         ]
@@ -2322,15 +2327,25 @@
             "type": "number",
             "example": 1
           },
+          "maximum_user_count": {
+            "type": "number",
+            "example": 3
+          },
           "progress_time": {
             "type": "number",
             "example": 90
+          },
+          "schedule_deadline": {
+            "type": "string",
+            "example": "2024-10-02 00:00"
           }
         },
         "required": [
           "name",
           "minimum_user_count",
-          "progress_time"
+          "maximum_user_count",
+          "progress_time",
+          "schedule_deadline"
         ]
       },
       "postGroupsIdPlansIdSchedulesReq": {
@@ -2930,6 +2945,10 @@
                   "type": "string",
                   "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
                 },
+                "maximum_user_count": {
+                  "type": "string",
+                  "example": "일정을 제출할 최대 인원 수"
+                },
                 "progress_time": {
                   "type": "string",
                   "example": "약속 진행 시간"
@@ -3444,6 +3463,10 @@
                 "type": "string",
                 "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
               },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
               "progress_time": {
                 "type": "string",
                 "example": "약속 진행 시간"
@@ -3508,6 +3531,10 @@
                   "type": "string",
                   "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
                 },
+                "maximum_user_count": {
+                  "type": "string",
+                  "example": "일정을 제출할 최대 인원 수"
+                },
                 "progress_time": {
                   "type": "string",
                   "example": "약속 진행 시간"
@@ -3571,6 +3598,10 @@
                 "type": "string",
                 "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
               },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
               "progress_time": {
                 "type": "string",
                 "example": "약속 진행 시간"
@@ -3633,6 +3664,10 @@
                 "type": "string",
                 "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
               },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
               "progress_time": {
                 "type": "string",
                 "example": "약속 진행 시간"
@@ -3694,6 +3729,10 @@
               "minimum_user_count": {
                 "type": "string",
                 "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
               },
               "progress_time": {
                 "type": "string",

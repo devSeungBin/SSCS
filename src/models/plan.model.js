@@ -57,6 +57,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        maximum_user_count: {
+            type: DataTypes.INTEGER,
+        },
         progress_time: {
             type: DataTypes.INTEGER,
             allowNull: false,

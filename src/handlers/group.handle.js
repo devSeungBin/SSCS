@@ -151,25 +151,24 @@ exports.updateGroup = async (group) => {
             };
 
         } else {
-            if (group.name) {
-                await changedGroup.update({ name: group.name });
-                await changedGroup.save();
+            if (group.name == changedGroup.toJSON().name) {
+                delete group.name;
             };
 
-            if (group.invitation_code) {
-                await changedGroup.update({ invitation_code: group.invitation_code });
-                await changedGroup.save();
+            if (group.invitation_code == changedGroup.toJSON().invitation_code) {
+                delete group.invitation_code;
             };
 
-            if (group.preference_setting) {
-                await changedGroup.update({ preference_setting: group.preference_setting });
-                await changedGroup.save();
+            if (group.preference_setting == changedGroup.toJSON().preference_setting) {
+                delete group.preference_setting;
             };
 
-            if (group.manual_group_preference) {
-                await changedGroup.update({ manual_group_preference: group.manual_group_preference });
-                await changedGroup.save();
+            if (group.manual_group_preference == changedGroup.toJSON().manual_group_preference) {
+                delete group.manual_group_preference;
             };
+
+            await changedGroup.update(group);
+            await changedGroup.save();
 
             return {
                 statusCode: 200,
@@ -522,31 +521,49 @@ exports.updatePlan = async (plan) => {
             };
 
         } else {
-            if (plan.schedule_deadline && changedPlan.toJSON().status !== 'submit') {
+            if (plan.maximum_user_count == changedPlan.toJSON().maximum_user_count) {
+                delete plan.maximum_user_count;
+            } else {
+                if (!plan.maximum_user_count) {
+                    plan.maximum_user_count = null;
+                };
+            };
+
+            const timeDiff = 9 * 60 * 60 * 1000;
+
+            const planDate = new Date(changedPlan.toJSON().schedule_deadline);
+            const planTime = planDate.getTime();
+            const schedule_deadline = new Date(planTime + timeDiff);
+
+            const inputDate =  new Date(plan.schedule_deadline);
+            const inputPlanTime = inputDate.getTime();
+            const input_schedule_deadline = new Date(inputPlanTime + timeDiff);
+
+            if (input_schedule_deadline.getTime() == schedule_deadline.getTime()) {
+                delete plan.schedule_deadline;
+            };
+
+            if (plan.name == changedPlan.toJSON().name) {
+                delete plan.name;
+            };
+
+            if (plan.minimum_user_count == changedPlan.toJSON().minimum_user_count) {
+                delete plan.minimum_user_count;
+            };
+
+            if (plan.progress_time == changedPlan.toJSON().progress_time) {
+                delete plan.pregress_time;
+            };
+
+            if ((plan.maximum_user_count || plan.schedule_deadline) && changedPlan.toJSON().status !== 'submit') {
                 return {
                     statusCode: 400,
                     comment: '이미 일정 제출이 마감된 약속입니다.'
                 };
-                
-            } else if (plan.schedule_deadline && changedPlan.toJSON().status === 'submit') {
-                await changedPlan.update({ schedule_deadline: plan.schedule_deadline });
-                await changedPlan.save();
             };
 
-            if (plan.name) {
-                await changedPlan.update({ name: plan.name });
-                await changedPlan.save();
-            };
-
-            if (plan.minimum_user_count) {
-                await changedPlan.update({ minimum_user_count: plan.minimum_user_count });
-                await changedPlan.save();
-            };
-
-            if (plan.progress_time) {
-                await changedPlan.update({ progress_time: plan.progress_time });
-                await changedPlan.save();
-            };
+            await changedPlan.update(plan);
+            await changedPlan.save();
 
             return {
                 statusCode: 200,

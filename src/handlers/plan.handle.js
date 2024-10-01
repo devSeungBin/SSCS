@@ -20,22 +20,27 @@ exports.updatePlan = async () => {
                     continue;
                 };
 
-                const headCount = group.user_count;
                 for (let plan of planList) {
                     const submissionList = await Submissions.findAll({ where: { plan_id: plan.id } , raw: true });
 
-                    if (headCount === submissionList.length) {
-                        const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
-                        await newPlan.update({ status: 'calculate' });
-                        await newPlan.save();
-                        continue;
+                    if (plan.maximum_user_count) {
+                        if (plan.maximum_user_count === submissionList.length) {
+                            const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
+                            await newPlan.update({ status: 'calculate' });
+                            await newPlan.save();
+                            continue;
+                        };
                     };
 
-                    const dateNow = new Date();
+                    const now = new Date();
+                    const dateNow = new Date(now.getTime() + timeDiff);
+                    const dateTime = dateNow.getTime();
+
                     const planDate = new Date(plan.schedule_deadline);
-                    const planTime = planDate.getTime() + (planDate.getTimezoneOffset() * 60 * 1000);
-                    const schedule_deadline = new Date(planTime + timeDiff);
-                    if (dateNow >= schedule_deadline) {
+                    const schedule_deadline = new Date(planDate.getTime() + timeDiff);
+                    const schedule_deadline_time = schedule_deadline.getTime();
+
+                    if (dateTime >= schedule_deadline_time) {
                         const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
                         await newPlan.update({ status: 'calculate' });
                         await newPlan.save();

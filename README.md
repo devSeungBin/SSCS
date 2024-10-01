@@ -221,6 +221,7 @@ plans table
 - vote_plan_time (ARRAY(255), NOT NULL)
 - plan_time_slot (ARRAY(255), NOT NULL)
 - minimum_user_count (INTEGER, NOT NULL)
+- maximum_user_count (INTEGER, NOT NULL)
 - progress_time (FLOAT, NOT NULL)
 - schedule_deadline (TIMASTAMP, NOT NULL)
 - vote_deadline (TIMASTAMP, NOT NULL)

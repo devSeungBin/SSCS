@@ -271,14 +271,14 @@ router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                 preference.day_preference = day_preference;
             } else {
                 formError = true;
-            }
+            };
         };
         if (time_preference) {
             if (checkTime(time_preference)) {
                 preference.time_preference = time_preference;
             } else {
                 formError = true;
-            }
+            };
         };
 
         if (!formError) {
