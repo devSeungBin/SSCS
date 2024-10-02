@@ -229,7 +229,7 @@ exports.createPreferences = async (user_id) => {
             };
 
         } else {
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const times = ['morning', 'afternoon', 'evening'];
 
             let day_preference = Array.from({length: 7}, () => 0);
@@ -297,7 +297,7 @@ exports.calculatePreferences = async (group_id) => {
             };
 
         } else {
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const times = ['morning', 'afternoon', 'evening'];
             const headcount = participants.length;
             let users = [];
@@ -838,7 +838,6 @@ exports.calculateCandidates = async (plan_id) => {
 
         let candidate_plan_time = [];
         const inspectionSize = plan.dataValues.progress_time / 15;
-        // 같은 사용자가 연속으로 존재해야할 경우
         for (let slot of plan.dataValues.plan_time_slot) {
             for (let inspectionStart of slot.time_scope) {
                 if (slot.time_scope.indexOf(inspectionStart) > (slot.time_scope.length - inspectionSize)) break;
@@ -876,9 +875,51 @@ exports.calculateCandidates = async (plan_id) => {
                 };
 
                 if (isMoreUsersThanMinimum && isContinuousUser) {
+                    
+                    const [startHours, startMinutes] = inspectionTimeArr[0].start.split(':').map(Number);
+                    const [endHours, endMinutes] = inspectionTimeArr[inspectionTimeArr.length - 1].end.split(':').map(Number);
+                    const startTotalSeconds = (startHours * 60 + startMinutes) * 60;
+                    const endTotalSeconds = (endHours * 60 + endMinutes) * 60;
+                    const totalSeconds = endTotalSeconds - startTotalSeconds;
+                  
+                    // const lateAtNightStart = 0;
+                    const morningStart = (6 * 60 * 60);
+                    const afternoonStart = (12 * 60 * 60);
+                    const eveningStart = (18 * 60 * 60);
+
+                    // const lateAtNightEnd = morningStart - 1;
+                    const morningEnd = afternoonStart - 1;
+                    const afternoonEnd = eveningStart - 1;
+                    const eveningEnd = (24 * 60 * 60) - 1;
+                  
+                    let time = [];
+                    if (startTotalSeconds >= morningStart && startTotalSeconds <= morningEnd) {
+                        if (totalSeconds > (12 * 60 * 60)){
+                            time.push(0, 1, 2);
+                        } else if (totalSeconds > (6 * 60 * 60)) {
+                            time.push(0, 1);
+                        } else {
+                            time.push(0);
+                        };
+                    } else if (startTotalSeconds >= afternoonStart && startTotalSeconds <= afternoonEnd) {
+                        if (totalSeconds > (6 * 60 * 60)){
+                            time.push(1, 2);
+                        } else {
+                            time.push(1);
+                        };
+                    } else if (startTotalSeconds >= eveningStart && startTotalSeconds <= eveningEnd) {
+                        if (totalSeconds < (6 * 60 * 60)){
+                            time.push(2);
+                        };
+                    } else {
+                      time = 'lateAtNight';
+                    }
+
                     candidate_plan_time.push({
                         start: `${slot.date} ${inspectionTimeArr[0].start}`,
                         end: `${slot.date} ${inspectionTimeArr[inspectionTimeArr.length - 1].end}`,
+                        day: new Date(`${slot.date} ${inspectionTimeArr[0].start}`).getDay(),
+                        time: time
                     });
                 };
                 
@@ -903,6 +944,248 @@ exports.calculateCandidates = async (plan_id) => {
         return {
             statusCode: 500,
             comment: err,
+        };
+    };
+}
+
+exports.autoSelectCandidates = async (group_id, plan_id) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id, status: 'select' }, raw: false });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '일정을 선택할 약속이 존재하지 않습니다.'
+            };
+        };
+
+        const planJson = plan.toJSON();
+        if (planJson.candidate_plan_time.length === 1) {
+            await plan.update({ plan_time: planJson.candidate_plan_time[0] });
+            await plan.save();
+        } else {
+            const group = await Groups.findOne({where: { id: group_id }, raw: false });
+            const groupJson = group.toJSON();
+            if (!group) {
+                return {
+                    statusCode: 404,
+                    comment: '해당 그룹이 존재하지 않습니다.'
+                };
+            };
+    
+            const participants = await Participants.findAll({ where: { group_id: group_id }, raw: true });
+            if (participants.length === 0) {
+                return {
+                    statusCode: 404,
+                    comment: '해당 그룹이 존재하지 않습니다.'
+                };
+            };
+
+            let group_preference = {};
+            if (groupJson.preference_setting === 'auto') {
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const times = ['morning', 'afternoon', 'evening'];
+                let headcount;
+                if (planJson.maximum_user_count) {
+                    headcount = planJson.maximum_user_count;
+                } else {
+                    headcount = participants.length;
+                };
+
+                // 그룹 참가자 선호도 가져오기
+                let all_day_preference = Array.from({length: 7}, () => 0);
+                let all_time_preference = Array.from({length: 3}, () => 0);
+
+                let submission_user_list = [];
+                for (let participant of participants) {
+                    const submission_user = await Submissions.findOne({ where: { user_id: participant.user_id, plan_id: plan_id }, raw: true });
+                    submission_user_list.push(submission_user.user_id);
+                };
+
+                let users = [];
+                for (let submission_user_id of submission_user_list) {
+                    const preference = await Preferences.findOne({ where: { user_id: submission_user_id }, raw: true });
+                    if (!preference) {
+                        return {
+                            statusCode: 404,
+                            comment: '신규 사용자가 존재합니다.'
+                        };
+                    };
+
+                    users.push({
+                        day_preference: preference.day_preference,
+                        time_preference: preference.time_preference
+                    });
+
+                    days.forEach((day, index) => {
+                        all_day_preference[index] += (preference.day_preference[day] - 1) / 4;  // 정규화 (max 5, min 1)
+                    });
+
+                    times.forEach((time, index) => {
+                        all_time_preference[index] += (preference.time_preference[time] - 1) / 4;   // 정규화 (max 5, min 1)
+                    });
+                };
+
+                // 평균 선호도 구하기
+                let avg_day_preference = Array.from({length: 7}, () => 0);
+                let avg_time_preference = Array.from({length: 3}, () => 0);
+                
+                days.forEach((day, index) => {
+                    avg_day_preference[index] = all_day_preference[index] / headcount;
+                });
+
+                times.forEach((time, index) => {
+                    avg_time_preference[index] += all_time_preference[index] / headcount;
+                });
+
+                // 선호도 MSD 구하기
+                let day_preference_MSD = Array.from({length: 7}, () => 0);
+                let time_preference_MSD = Array.from({length: 3}, () => 0);
+
+                for(let user of users) {
+                    days.forEach((day, index) => {
+                        day_preference_MSD[index] += (avg_day_preference[index] - ((user.day_preference[day] - 1) / 4)) ** 2;   // 정규화 (max 5, min 1)
+                    });
+        
+                    times.forEach((time, index) => {
+                        time_preference_MSD[index] += (avg_time_preference[index] - ((user.time_preference[time] - 1) / 4)) ** 2;   // 정규화 (max 5, min 1)
+                    });
+                };
+
+                day_preference_MSD = day_preference_MSD.map((p) => p / headcount);
+                time_preference_MSD = time_preference_MSD.map((p) => p / headcount);
+
+                // 평균 선호도와 선호도 가중치(1-MSD)를 곱한 그룹 선호도 구하기
+                let group_day_preference = Array.from({length: 7}, () => 0);
+                let group_time_preference = Array.from({length: 3}, () => 0);
+
+                days.forEach((day, index) => {
+                    group_day_preference[index] = avg_day_preference[index] * (1 - day_preference_MSD[index]);
+                });
+
+                times.forEach((time, index) => {
+                    group_time_preference[index] = avg_time_preference[index] * (1 - time_preference_MSD[index]);
+                });
+
+                // 그룹 선호도 중 최댓값을 갖는 선호도를 구하기
+                const day_max = Math.max(...group_day_preference);
+                const time_max = Math.max(...group_time_preference);
+
+                const day_max_index = [];
+                const time_max_index = [];
+
+                for (let index = 0; index < days.length; index++) {
+                    if (group_day_preference[index] === day_max) {
+                        day_max_index.push(index);
+                    };
+                };
+
+                for (let index = 0; index < times.length; index++) {
+                    if (group_time_preference[index] === time_max) {
+                        time_max_index.push(index);
+                    };
+                };
+
+                group_preference.day = day_max_index;
+                group_preference.time = time_max_index;
+            } else {
+                group_preference.day = groupJson.manual_group_preference.day;
+                group_preference.time = groupJson.manual_group_preference.time;
+            };
+
+            let twoCondition = [];
+            let oneCondition = [];
+            const groupDayList = new Set(group_preference.day);
+            const groupTimeList = new Set(group_preference.time);
+            for (let plan_time of planJson.candidate_plan_time) {
+                const hasDay = groupDayList.has(plan_time.day);
+                let hasTime = true;
+
+                for (let time of plan_time.time) {
+                    if (!groupTimeList.has(time)) {
+                        hasTime = false;
+                        break;
+                    };
+                };
+
+                if (hasDay && hasTime) {
+                    twoCondition.push(plan_time);
+                } else if (hasDay || hasTime) {
+                    oneCondition.push(plan_time);
+                };
+            };
+            
+            if (twoCondition.length !== 0) {
+                if (twoCondition.length === 1) {
+                    await plan.update({ plan_time: twoCondition[0], status: 'comfirm' });
+                    await plan.save();
+
+                    return {
+                        statusCode: 200,
+                        plan_time: plan.toJSON().plan_time
+                    };
+                };
+
+                if (twoCondition.length >= 2) {
+                    return {
+                        statusCode: 200,
+                        plan_time: twoCondition
+                    };
+                };
+            } else if (oneCondition.length !== 0) {
+                if (oneCondition.length === 1) {
+                    await plan.update({ plan_time: oneCondition[0], status: 'comfirm' });
+                    await plan.save();
+
+                    return {
+                        statusCode: 200,
+                        plan_time: plan.toJSON().plan_time
+                    };
+                };
+
+                if (oneCondition.length >= 2) {
+                    return {
+                        statusCode: 200,
+                        plan_time: oneCondition
+                    };
+                };
+            } else {
+                return {
+                    statusCode: 200,
+                    plan_time: candidate_plan_time
+                };
+            };
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.manualSelectCandidates = async (plan_id, plan_time) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id, status: 'select' }, raw: false });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '일정을 선택할 약속이 존재하지 않습니다.'
+            };
+        };
+
+        await plan.update({ plan_time: plan_time, status: 'comfirm' });
+        await plan.save();
+
+        return {
+            statusCode: 200,
+            plan_time: plan.toJSON().plan_time
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
         };
     };
 }

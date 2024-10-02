@@ -1422,6 +1422,178 @@
         }
       }
     },
+    "/groups/:group_id/plans/:plan_id/selection": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 후보 자동 선택 API (인증 필요)",
+        "description": "일정 후보 중에서 약속 일정을 자동으로 선택하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 일정을 선택할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdSelectionRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 후보 수동 선택 API (인증 필요)",
+        "description": "일정 후보 중에서 약속 일정을 수동으로 선택하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 일정을 선택할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postGroupsIdPlansIdSelectionRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "선택할 일정 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postGroupsIdPlansIdSelectionReq"
+              }
+            }
+          }
+        }
+      }
+    },
     "/plans": {
       "get": {
         "tags": [
@@ -2229,7 +2401,7 @@
           "manual_group_preference": {
             "type": "object",
             "properties": {
-              "day_preference": {
+              "day": {
                 "type": "array",
                 "example": [
                   5,
@@ -2239,7 +2411,7 @@
                   "type": "number"
                 }
               },
-              "time_preference": {
+              "time": {
                 "type": "array",
                 "example": [
                   1,
@@ -2426,6 +2598,35 @@
         },
         "required": [
           "submission_time_slot"
+        ]
+      },
+      "postGroupsIdPlansIdSelectionReq": {
+        "type": "object",
+        "properties": {
+          "plan_time": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "example": "9:00"
+              },
+              "end": {
+                "type": "string",
+                "example": "9:30"
+              },
+              "day": {
+                "type": "number",
+                "example": 0
+              },
+              "time": {
+                "type": "number",
+                "example": 0
+              }
+            }
+          }
+        },
+        "required": [
+          "plan_time"
         ]
       },
       "response_303": {
@@ -3927,6 +4128,80 @@
         "required": [
           "statusCode",
           "candidate_plan_time"
+        ]
+      },
+      "getGroupsIdPlansIdSelectionRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                },
+                "day": {
+                  "type": "string",
+                  "example": "요일"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "아침, 낮, 저녁"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan_time"
+        ]
+      },
+      "postGroupsIdPlansIdSelectionRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                },
+                "day": {
+                  "type": "string",
+                  "example": "요일"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "아침, 낮, 저녁"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan_time"
         ]
       }
     },

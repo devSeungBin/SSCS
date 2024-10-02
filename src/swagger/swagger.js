@@ -89,8 +89,8 @@ const doc = {
                 $invitationCode: 'invitation_code',
                 $preference_setting: 'manual',
                 $manual_group_preference: {
-                    day_preference: [5, 6],
-                    time_preference: [1, 2],
+                    day: [5, 6],
+                    time: [1, 2],
                 }
             },
             postGroupsIdPlansReq: {     // '생성할 약속 정보'
@@ -219,6 +219,14 @@ const doc = {
                         ]
                     }
                 ]
+            },
+            postGroupsIdPlansIdSelectionReq: {      // '선택할 일정 정보'
+                $plan_time: {
+                    "start": "9:00",
+                    "end": "9:30",
+                    "day": 0,
+                    "time": 0
+                }
             },
             
             // 공용 응답
@@ -615,6 +623,28 @@ const doc = {
                     {
                         start: '시작일',
                         end: '종료일'
+                    }
+                ]
+            },
+            getGroupsIdPlansIdSelectionRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/selection 요청 성공'
+                $statusCode: '200',
+                $plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일',
+                        day: '요일',
+                        time: '아침, 낮, 저녁'
+                    }
+                ]
+            },
+            postGroupsIdPlansIdSelectionRes200: {       // 'POST /groups/{group_id}/plans/{plan_id}/selection 요청 성공'
+                $statusCode: '200',
+                $plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일',
+                        day: '요일',
+                        time: '아침, 낮, 저녁'
                     }
                 ]
             },

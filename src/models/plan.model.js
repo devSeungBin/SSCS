@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         plan_time: {
-            type: DataTypes.RANGE(DataTypes.DATE),
+            type: DataTypes.JSONB,
         },
         candidate_plan_time: {
             type: DataTypes.ARRAY(DataTypes.JSON),

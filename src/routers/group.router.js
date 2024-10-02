@@ -17,7 +17,8 @@ const {
     searchPlanInfo,
     generateTimeSlots,
     checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
-    calculateCandidates
+    calculateCandidates,
+    autoSelectCandidates, manualSelectCandidates
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -1860,5 +1861,200 @@ router.get('/:group_id/plans/:plan_id/candidates', isLoggedIn, isNotNewUser, isG
 }, handleError);
 
 
+router.get('/:group_id/plans/:plan_id/selection', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/selection'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 후보 자동 선택 API (인증 필요)'
+    #swagger.description = '일정 후보 중에서 약속 일정을 자동으로 선택하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 일정을 선택할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdSelectionRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await autoSelectCandidates(req.query.group_id, req.query.plan_id)
+        .then(async (info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    plan_time: info.plan_time,
+                };
+            };
+        })
+        .catch((err) => {
+            return {
+                statusCode: err.statusCode,
+                comment: err.comment
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
+router.post('/:group_id/plans/:plan_id/selection', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/selection'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 후보 수동 선택 API (인증 필요)'
+    #swagger.description = '일정 후보 중에서 약속 일정을 수동으로 선택하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 일정을 선택할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '선택할 일정 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postGroupsIdPlansIdSelectionReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postGroupsIdPlansIdSelectionRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await manualSelectCandidates(req.query.plan_id, req.body.plan_time)
+        .then(async (info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    plan_time: info.plan_time,
+                };
+            };
+        })
+        .catch((err) => {
+            return {
+                statusCode: err.statusCode,
+                comment: err.comment
+            };
+        });
+    };
+
+    next();
+}, handleError);
 
 module.exports = router;

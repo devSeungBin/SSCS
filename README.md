@@ -154,7 +154,8 @@
 ```
 > 필요한 API - 기능
 
-> GET /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 선택 []
+> GET /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 자동 선택 [...]
+> POST /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 수동 선택 [...]
 
 > PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (서버 수정)
 ```
@@ -216,7 +217,7 @@ plans table
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - name (VARCHAR(100), NOT NULL)
-- plan_time (RANGE(TIMESTAMP))
+- plan_time (ARRAY(255), NOT NULL)
 - candidate_plan_time (ARRAY(255), NOT NULL)
 - vote_plan_time (ARRAY(255), NOT NULL)
 - plan_time_slot (ARRAY(255), NOT NULL)
