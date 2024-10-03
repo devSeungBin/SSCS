@@ -228,6 +228,21 @@ const doc = {
                     "time": 0
                 }
             },
+            postGroupsIdPlansIdFailureReq: {      // '처리할 약속 정보'
+                $option: "select or cancel or reset",
+                // select
+                $vote_plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일'
+                    }
+                ],
+                $vote_deadline: "투표 날짜",
+
+                // reset
+                $minimum_user_count: 1,
+                $progress_time: 90
+            },
             
             // 공용 응답
             response_303: {     // '요청을 다른 페이지로 연결'
@@ -622,7 +637,9 @@ const doc = {
                 $candidate_plan_time: [
                     {
                         start: '시작일',
-                        end: '종료일'
+                        end: '종료일',
+                        day: '요일',
+                        time: '아침, 낮, 저녁'
                     }
                 ]
             },
@@ -647,6 +664,23 @@ const doc = {
                         time: '아침, 낮, 저녁'
                     }
                 ]
+            },
+            postGroupsIdPlansIdFailureRes200: {       // 'POST /groups/{group_id}/plans/{plan_id}/failure 요청 성공'
+                $statusCode: '200',
+                $plan: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    plan_time_slot: '일정 제출 양식',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    maximum_user_count: '일정을 제출할 최대 인원 수',
+                    progress_time: '약속 진행 시간',
+                    schedule_deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
             },
             
 

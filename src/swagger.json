@@ -1422,6 +1422,99 @@
         }
       }
     },
+    "/groups/:group_id/plans/:plan_id/failure": {
+      "post": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 후보 계산 실패 API (인증 필요)",
+        "description": "일정 후보 계산 실패 시 약속을 처리하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "약속이 속한 그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "처리할 약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postGroupsIdPlansIdFailureRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "처리할 약속 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postGroupsIdPlansIdFailureReq"
+              }
+            }
+          }
+        }
+      }
+    },
     "/groups/:group_id/plans/:plan_id/selection": {
       "get": {
         "tags": [
@@ -2627,6 +2720,50 @@
         },
         "required": [
           "plan_time"
+        ]
+      },
+      "postGroupsIdPlansIdFailureReq": {
+        "type": "object",
+        "properties": {
+          "option": {
+            "type": "string",
+            "example": "select or cancel or reset"
+          },
+          "vote_plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                }
+              }
+            }
+          },
+          "vote_deadline": {
+            "type": "string",
+            "example": "투표 날짜"
+          },
+          "minimum_user_count": {
+            "type": "number",
+            "example": 1
+          },
+          "progress_time": {
+            "type": "number",
+            "example": 90
+          }
+        },
+        "required": [
+          "option",
+          "vote_plan_time",
+          "vote_deadline",
+          "minimum_user_count",
+          "progress_time"
         ]
       },
       "response_303": {
@@ -4120,6 +4257,14 @@
                 "end": {
                   "type": "string",
                   "example": "종료일"
+                },
+                "day": {
+                  "type": "string",
+                  "example": "요일"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "아침, 낮, 저녁"
                 }
               }
             }
@@ -4202,6 +4347,72 @@
         "required": [
           "statusCode",
           "plan_time"
+        ]
+      },
+      "postGroupsIdPlansIdFailureRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "plan_time_slot": {
+                "type": "string",
+                "example": "일정 제출 양식"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "schedule_deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan"
         ]
       }
     },

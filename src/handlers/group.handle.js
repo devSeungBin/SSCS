@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
-const { Groups, Participants, Plans, Submissions, Preferences } = db;
+const { Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
 
 exports.searchGroup = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -562,6 +562,10 @@ exports.updatePlan = async (plan) => {
                 };
             };
 
+            if (changedPlan.toJSON().status === 'fail') {
+                plan.status = 'calculate';
+            };
+
             await changedPlan.update(plan);
             await changedPlan.save();
 
@@ -912,8 +916,8 @@ exports.calculateCandidates = async (plan_id) => {
                             time.push(2);
                         };
                     } else {
-                      time = 'lateAtNight';
-                    }
+                        time.push(3);
+                    };
 
                     candidate_plan_time.push({
                         start: `${slot.date} ${inspectionTimeArr[0].start}`,
@@ -1183,6 +1187,126 @@ exports.manualSelectCandidates = async (plan_id, plan_time) => {
         };
 
     } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+
+
+exports.failCalculation = async (plan_id, req) => {
+    try {
+        const changedPlan = await Plans.findOne({ where: { id: plan_id, status: 'fail' }, raw: false });
+        if (!changedPlan) {
+            return {
+                statusCode: 404,
+                comment: '일정 후보 계산에 실패한 약속을 찾을 수 없습니다.'
+            };
+
+        } else {
+            let plan = {};
+            
+            if (req.option === 'cancel') { 
+                const submissions = await Submissions.findAll({ where: { plan_id: plan_id }, raw: true });
+                if (submissions.length > 0) {
+                    for (let submission of submissions) {
+                        const user = await Submissions.findOne({ where: { id: submission.id }, raw: false });
+                        await user.destroy();
+                    };
+                };
+
+                const votes = await Votes.findAll({ where: { plan_id: plan_id }, raw: true });
+                if (votes.length > 0) {
+                    for (let vote of votes) {
+                        const user = await Votes.findOne({ where: { id: vote.id }, raw: false });
+                        await user.destroy();
+                    };
+                };
+
+                await changedPlan.destroy();
+
+                return {
+                    statusCode: 200,
+                    plan: "약속을 삭제했습니다."
+                };
+
+            } else {
+                if (req.option === 'select') {
+                    plan.vote_plan_time = [];
+                    for (let slot of req.vote_plan_time) {
+                        const [startHours, startMinutes] = slot.start.split(' ')[1].split(':').map(Number);
+                        const [endHours, endMinutes] = slot.end.split(' ')[1].split(':').map(Number);
+                        const startTotalSeconds = (startHours * 60 + startMinutes) * 60;
+                        const endTotalSeconds = (endHours * 60 + endMinutes) * 60;
+                        const totalSeconds = endTotalSeconds - startTotalSeconds;
+
+                        // const lateAtNightStart = 0;
+                        const morningStart = (6 * 60 * 60);
+                        const afternoonStart = (12 * 60 * 60);
+                        const eveningStart = (18 * 60 * 60);
+
+                        // const lateAtNightEnd = morningStart - 1;
+                        const morningEnd = afternoonStart - 1;
+                        const afternoonEnd = eveningStart - 1;
+                        const eveningEnd = (24 * 60 * 60) - 1;
+                    
+                        let time = [];
+                        if (startTotalSeconds >= morningStart && startTotalSeconds <= morningEnd) {
+                            if (totalSeconds > (12 * 60 * 60)){
+                                time.push(0, 1, 2);
+                            } else if (totalSeconds > (6 * 60 * 60)) {
+                                time.push(0, 1);
+                            } else {
+                                time.push(0);
+                            };
+                        } else if (startTotalSeconds >= afternoonStart && startTotalSeconds <= afternoonEnd) {
+                            if (totalSeconds > (6 * 60 * 60)){
+                                time.push(1, 2);
+                            } else {
+                                time.push(1);
+                            };
+                        } else if (startTotalSeconds >= eveningStart && startTotalSeconds <= eveningEnd) {
+                            if (totalSeconds < (6 * 60 * 60)){
+                                time.push(2);
+                            };
+                        } else {
+                            time.push(3);
+                        };
+
+                        plan.vote_plan_time.push({
+                            start: `${slot.start}`,
+                            end: `${slot.end}`,
+                            day: new Date(`${slot.start}`).getDay(),
+                            time: time,
+                            approval: []
+                        });
+                    };
+
+                    plan.vote_deadline = req.vote_deadline;
+                    plan.status = 'vote';
+
+                };
+                
+                // if (req.option === 'reset') {
+                //     plan.minimum_user_count = req.minimum_user_count;
+                //     plan.progress_time = req.progress_time;
+                //     plan.status = 'calculate';
+                // };
+
+                await changedPlan.update(plan);
+                await changedPlan.save();
+
+                return {
+                    statusCode: 200,
+                    plan: changedPlan.toJSON()
+                };
+            };
+        };
+
+    } catch (err) {
+        console.log(err)
         return {
             statusCode: 500,
             comment: err

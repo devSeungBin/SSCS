@@ -18,7 +18,8 @@ const {
     generateTimeSlots,
     checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
     calculateCandidates,
-    autoSelectCandidates, manualSelectCandidates
+    autoSelectCandidates, manualSelectCandidates,
+    failCalculation
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -1853,6 +1854,109 @@ router.get('/:group_id/plans/:plan_id/candidates', isLoggedIn, isNotNewUser, isG
                     statusCode: err.statusCode,
                     comment: err.comment
                 }
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
+router.post('/:group_id/plans/:plan_id/failure', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/failure'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 후보 계산 실패 API (인증 필요)'
+    #swagger.description = '일정 후보 계산 실패 시 약속을 처리하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '약속이 속한 그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '처리할 약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '처리할 약속 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postGroupsIdPlansIdFailureReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postGroupsIdPlansIdFailureRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await failCalculation(req.query.plan_id, req.body)
+        .then(async (info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    plan: info.plan,
+                };
+            };
+        })
+        .catch((err) => {
+            return {
+                statusCode: err.statusCode,
+                comment: err.comment
             };
         });
     };

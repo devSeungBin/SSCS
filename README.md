@@ -133,6 +133,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
+> GET /groups/{group_id}/plans/{plan_id}/failure - 일정 후보 계산 실패 [...]
 
 > GET /groups/{group_id}/preferences - 그룹 선호도 계산 [임시 사용, 완성, 응답 테스트 완료]
 
@@ -217,7 +218,7 @@ plans table
 - id (INTEGER, NOT NULL, PRIMARY KEY)
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - name (VARCHAR(100), NOT NULL)
-- plan_time (ARRAY(255), NOT NULL)
+- plan_time (JSONB, NOT NULL)
 - candidate_plan_time (ARRAY(255), NOT NULL)
 - vote_plan_time (ARRAY(255), NOT NULL)
 - plan_time_slot (ARRAY(255), NOT NULL)
