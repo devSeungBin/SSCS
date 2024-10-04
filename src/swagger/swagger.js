@@ -237,11 +237,33 @@ const doc = {
                         end: '종료일'
                     }
                 ],
-                $vote_deadline: "투표 날짜",
+                $vote_deadline: "투표 제출 마감일",
 
                 // reset
                 $minimum_user_count: 1,
                 $progress_time: 90
+            },
+            postGroupsIdPlansIdVotesReq: {      // '제출할 투표 정보'
+                $vote_plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일',
+                        day: '요일',
+                        time: '아침, 낮, 저녁',
+                        approval: true
+                    }
+                ]
+            },
+            patchGroupsIdPlansIdVotesReq: {      // '수정할 투표 정보'
+                $vote_plan_time: [
+                    {
+                        start: '시작일',
+                        end: '종료일',
+                        day: '요일',
+                        time: '아침, 낮, 저녁',
+                        approval: false
+                    }
+                ]
             },
             
             // 공용 응답
@@ -377,6 +399,8 @@ const doc = {
                         name: '약속 이름',
                         group: '약속이 생성된 그룹 id',
                         plan_time: '확정된 약속 시간',
+                        candidate_plan_time: '계산된 일정 후보 목록',
+                        vote_plan_time: '투표할 일정 후보 목록',
                         plan_time_slot: '일정 제출 양식',
                         minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                         maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -516,6 +540,8 @@ const doc = {
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
                     plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
                     plan_time_slot: '일정 제출 양식',
                     minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                     maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -534,6 +560,8 @@ const doc = {
                         name: '약속 이름',
                         group: '약속이 생성된 그룹 id',
                         plan_time: '확정된 약속 시간',
+                        candidate_plan_time: '계산된 일정 후보 목록',
+                        vote_plan_time: '투표할 일정 후보 목록',
                         plan_time_slot: '일정 제출 양식',
                         minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                         maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -552,6 +580,8 @@ const doc = {
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
                     plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
                     plan_time_slot: '일정 제출 양식',
                     minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                     maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -569,6 +599,8 @@ const doc = {
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
                     plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
                     plan_time_slot: '일정 제출 양식',
                     minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                     maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -586,6 +618,8 @@ const doc = {
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
                     plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
                     plan_time_slot: '일정 제출 양식',
                     minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                     maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -598,14 +632,16 @@ const doc = {
             },
             getGroupsIdPlansIdSchedulesRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/schedules 요청 성공'
                 $statusCode: '200',
-                $submissions: {
-                    id: '제출한 일정 id',
-                    user_id: '일정을 제출한 사용자 id',
-                    plan_id: '일정이 제출된 약속 id',
-                    submission_time_slot: '제출한 일정 정보',
-                    created_at: '일정 제출일',
-                    updated_at: '일정 수정일',
-                }
+                $submissions: [
+                    {
+                        id: '제출한 일정 id',
+                        user_id: '일정을 제출한 사용자 id',
+                        plan_id: '일정이 제출된 약속 id',
+                        submission_time_slot: '제출한 일정 정보',
+                        created_at: '일정 제출일',
+                        updated_at: '일정 수정일',
+                    }
+                ]
             },
             getGroupsIdPlansIdScheduleRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/schedule 요청 성공'
                 $statusCode: '200',
@@ -672,6 +708,8 @@ const doc = {
                     name: '약속 이름',
                     group: '약속이 생성된 그룹 id',
                     plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
                     plan_time_slot: '일정 제출 양식',
                     minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
                     maximum_user_count: '일정을 제출할 최대 인원 수',
@@ -680,6 +718,68 @@ const doc = {
                     status: '약속 진행 상태',
                     created_at: '약속 생성일',
                     updated_at: '약속 정보 수정일',
+                }
+            },
+            postGroupsIdPlansIdVotesRes201: {       // 'POST /groups/{group_id}/plans/{plan_id}/votes 요청 성공'
+                $statusCode: '200',
+                $plan: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
+                    plan_time_slot: '일정 제출 양식',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    maximum_user_count: '일정을 제출할 최대 인원 수',
+                    progress_time: '약속 진행 시간',
+                    schedule_deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
+            patchGroupsIdPlansIdVotesRes200: {       // 'PATCH /groups/{group_id}/plans/{plan_id}/votes 요청 성공'
+                $statusCode: '200',
+                $plan: {
+                    id: '약속 id',
+                    name: '약속 이름',
+                    group: '약속이 생성된 그룹 id',
+                    plan_time: '확정된 약속 시간',
+                    candidate_plan_time: '계산된 일정 후보 목록',
+                    vote_plan_time: '투표할 일정 후보 목록',
+                    plan_time_slot: '일정 제출 양식',
+                    minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
+                    maximum_user_count: '일정을 제출할 최대 인원 수',
+                    progress_time: '약속 진행 시간',
+                    schedule_deadline: '일정 제출 마감일',
+                    status: '약속 진행 상태',
+                    created_at: '약속 생성일',
+                    updated_at: '약속 정보 수정일',
+                }
+            },
+            getGroupsIdPlansIdVotesRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/votes 요청 성공'
+                $statusCode: '200',
+                $votes: [
+                    {
+                        id: '제출한 투표 id',
+                        user_id: '투표를 제출한 사용자 id',
+                        plan_id: '투표가 제출된 약속 id',
+                        submission_time_slot: '제출한 투표 정보',
+                        created_at: '투표 제출일',
+                        updated_at: '투표 수정일',
+                    }
+                ]
+            },
+            getGroupsIdPlansIdVoteRes200: {       // 'GET /groups/{group_id}/plans/{plan_id}/vote 요청 성공'
+                $statusCode: '200',
+                $vote: {
+                    id: '제출한 투표 id',
+                    user_id: '투표를 제출한 사용자 id',
+                    plan_id: '투표가 제출된 약속 id',
+                    submission_time_slot: '제출한 투표 정보',
+                    created_at: '투표 제출일',
+                    updated_at: '투표 수정일',
                 }
             },
             

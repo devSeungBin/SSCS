@@ -13,13 +13,14 @@ const {
     createInvitationCode, joinGroup,
     calculatePreferences, createPreferences,
     searchParticipant,
-    createPlan, searchPlan, updatePlan, updatePlanSchedule, deletePlanSchedule,
+    createPlan, searchPlan, updatePlan, updatePlanSchedule, updatePlanVote, deletePlanSchedule, deletePlanVote,
     searchPlanInfo,
     generateTimeSlots,
     checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
     calculateCandidates,
     autoSelectCandidates, manualSelectCandidates,
-    failCalculation
+    failCalculation,
+    checkVote, createVote, searchVotes, searchVote,  updateVote
 } = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
@@ -1669,7 +1670,6 @@ router.patch('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, is
     next();
 }, handleError);
 
-
 router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 
     #swagger.path = '/groups/:group_id/plans/:plan_id/schedule'
@@ -2160,5 +2160,515 @@ router.post('/:group_id/plans/:plan_id/selection', isLoggedIn, isNotNewUser, isG
 
     next();
 }, handleError);
+
+
+router.get('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/votes'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '제출된 모든 투표 확인 API (인증 필요)'
+    #swagger.description = '약속에 제출된 모든 투표를 확인하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdVotesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchVotes(req.query.plan_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    votes: info.votes,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
+router.post('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/:group_id/plans/:plan_id/votes'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 투표 제출 API (인증 필요)'
+    #swagger.description = '그룹 내에서 일정 투표 제출 시 사용하는 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '그룹 id',
+        required: true,
+        type: 'integer',
+    }
+        #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '제출할 투표 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/postGroupsIdPlansIdVotesReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/postGroupsIdPlansIdVotesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const check = await checkVote(req.query.plan_id, req.body.vote_plan_time);
+
+        if (!check.result) {
+            req.result = {
+                error: {
+                    statusCode: check.statusCode,
+                    comment: check.comment
+                }
+            };
+        } else {
+            const vote = {
+                user_id: req.user.id,
+                plan_id: req.query.plan_id,
+                vote_plan_time: req.body.vote_plan_time
+            };
+
+            await createVote(vote)
+            .then(async (info) => {
+                if (info.statusCode !== 201) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    await updatePlanVote(vote)
+                    .then((info) => {
+                        if (info.statusCode !== 200) {
+                            req.result = {
+                                error: {
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
+                                }
+                            };
+                        } else {
+                            req.result = {
+                                statusCode: info.statusCode,
+                                plan: info.plan,
+                            };
+                        }
+                    })
+                    .catch((err) => {
+                        req.result = {
+                            error: {
+                                statusCode: err.statusCode,
+                                comment: err.comment
+                            }
+                        };
+                    });
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: err.statusCode,
+                        comment: err.comment
+                    }
+                };
+            });
+        };
+    };
+
+    next();
+}, handleError);
+
+router.patch('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/:group_id/plans/:plan_id/votes'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '일정 투표 수정 API (인증 필요)'
+    #swagger.description = '그룹 내에서 일정 투표 수정 시 사용하는 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '그룹 id',
+        required: true,
+        type: 'integer',
+    }
+        #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.requestBody = {
+        in: 'body',
+        description: '수정할 투표 정보',
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: "#/components/schemas/patchGroupsIdPlansIdVotesReq" },
+            }
+        }
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/patchGroupsIdPlansIdVotesRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        const check = await checkVote(req.query.plan_id, req.body.vote_plan_time);
+
+        if (!check.result) {
+            req.result = {
+                error: {
+                    statusCode: check.statusCode,
+                    comment: check.comment
+                }
+            };
+        } else {
+            const vote = {
+                user_id: req.user.id,
+                plan_id: req.query.plan_id,
+                vote_plan_time: req.body.vote_plan_time
+            };
+
+            await updateVote(vote)
+            .then(async (info) => {
+                if (info.statusCode !== 200) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    await deletePlanVote(vote)
+                    .then(async (info) => {
+                        if (info.statusCode !== 200) {
+                            req.result = {
+                                error: {
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
+                                }
+                            };
+                        } else {
+                            await updatePlanSchedule(vote)
+                            .then(async (info) => {
+                                if (info.statusCode !== 200) {
+                                    req.result = {
+                                        error: {
+                                            statusCode: info.statusCode,
+                                            comment: info.comment
+                                        }
+                                    };
+                                } else {
+                                    req.result = {
+                                        statusCode: info.statusCode,
+                                        plan: info.plan,
+                                    };
+                                };
+                            })
+                            .catch((err) => {
+                                req.result = {
+                                    error: {
+                                        statusCode: err.statusCode,
+                                        comment: err.comment
+                                    }
+                                };
+                            });
+                        };
+                    })
+                    .catch((err) => {
+                        req.result = {
+                            error: {
+                                statusCode: err.statusCode,
+                                comment: err.comment
+                            }
+                        };
+                    });
+                };
+            })
+            .catch((err) => {
+                req.result = {
+                    error: {
+                        statusCode: err.statusCode,
+                        comment: err.comment
+                    }
+                };
+            });
+        };
+    };
+
+    next();
+}, handleError);
+
+router.get('/:group_id/plans/:plan_id/vote', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+    /* 
+    #swagger.path = '/groups/:group_id/plans/:plan_id/vote'
+    #swagger.tags = ['GroupRouter']
+    #swagger.summary = '개별 투표 확인 API (인증 필요)'
+    #swagger.description = '자신이 제출한 투표를 확인하기 위한 엔드포인트'
+    #swagger.parameters['group_id'] = {
+        in: 'query',
+        description: '그룹 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['plan_id'] = {
+        in: 'query',
+        description: '약속 id',
+        required: true,
+        type: 'integer',
+    }
+    #swagger.responses[200] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/getGroupsIdPlansIdVoteRes200" }
+            }           
+        }
+    }
+    #swagger.responses[303] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_303" }
+            }           
+        }
+    }
+    #swagger.responses[401] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[404] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_404" }
+            }           
+        }
+    }
+    #swagger.responses[500] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_500" }
+            }           
+        }
+    }
+    */
+
+    req.result = {};
+
+    if (req.auth) {
+        req.result = {
+            error: {
+                statusCode: req.auth.statusCode,
+                comment: req.auth.comment
+            }
+        };
+
+    } else {
+        await searchVote(req.user.id, req.query.plan_id)
+        .then((info) => {
+            if (info.statusCode !== 200) {
+                req.result = {
+                    error: {
+                        statusCode: info.statusCode,
+                        comment: info.comment
+                    }
+                };
+            } else {
+                req.result = {
+                    statusCode: info.statusCode,
+                    vote: info.vote,
+                };
+            };
+        })
+        .catch((err) => {
+            req.result = {
+                error: {
+                    statusCode: err.statusCode,
+                    comment: err.comment
+                }
+            };
+        });
+    };
+
+    next();
+}, handleError);
+
+
 
 module.exports = router;

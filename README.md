@@ -120,7 +120,7 @@
 ```
 > 필요한 API - 기능
 
-> GET /plans - 약속 상태 업데이트 [완성, 응답 테스트 완료]
+> GET /plans - 약속 상태 업데이트 [status: submit 완성, 응답 테스트 완료] [status: vote ...]
 
 > GET /groups/{group_id}/plans/{plan_id}/schedules - 제출된 모든 일정 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출 [완성, 응답 테스트 완료]
@@ -133,10 +133,15 @@
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/plans/{plan_id}/failure - 일정 후보 계산 실패 [...]
+> GET /groups/{group_id}/plans/{plan_id}/failure - 일정 후보 계산 실패 [완성, 응답 테스트 완료]
 
 > GET /groups/{group_id}/preferences - 그룹 선호도 계산 [임시 사용, 완성, 응답 테스트 완료]
 
+> GET /groups/{group_id}/plans/{plan_id}/votes - 제출된 모든 투표 확인 [완성]
+> POST /groups/{group_id}/plans/{plan_id}/votes - 투표 제출 [완성]
+> PATCH /groups/{group_id}/plans/{plan_id}/votes - 제출된 투표 수정 [완성]
+
+> GET /groups/{group_id}/plans/{plan_id}/vote - 개별 투표 확인 [완성]
 
 ```
 
@@ -155,10 +160,9 @@
 ```
 > 필요한 API - 기능
 
-> GET /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 자동 선택 [...]
-> POST /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 수동 선택 [...]
+> GET /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 자동 선택 [완성, 응답 테스트 완료]
+> POST /groups/{group_id}/plans/{plan_id}/selection - 일정 후보 수동 선택 [완성, 응답 테스트 완료]
 
-> PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (서버 수정)
 ```
 &nbsp;
 

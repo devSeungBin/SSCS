@@ -1687,6 +1687,372 @@
         }
       }
     },
+    "/groups/:group_id/plans/:plan_id/votes": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "제출된 모든 투표 확인 API (인증 필요)",
+        "description": "약속에 제출된 모든 투표를 확인하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdVotesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/:group_id/plans/:plan_id/votes": {
+      "post": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 투표 제출 API (인증 필요)",
+        "description": "그룹 내에서 일정 투표 제출 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postGroupsIdPlansIdVotesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "제출할 투표 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postGroupsIdPlansIdVotesReq"
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "일정 투표 수정 API (인증 필요)",
+        "description": "그룹 내에서 일정 투표 수정 시 사용하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/patchGroupsIdPlansIdVotesRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "in": "body",
+          "description": "수정할 투표 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchGroupsIdPlansIdVotesReq"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/:group_id/plans/:plan_id/vote": {
+      "get": {
+        "tags": [
+          "GroupRouter"
+        ],
+        "summary": "개별 투표 확인 API (인증 필요)",
+        "description": "자신이 제출한 투표를 확인하기 위한 엔드포인트",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "query",
+            "description": "그룹 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "description": "약속 id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getGroupsIdPlansIdVoteRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/plans": {
       "get": {
         "tags": [
@@ -2747,7 +3113,7 @@
           },
           "vote_deadline": {
             "type": "string",
-            "example": "투표 날짜"
+            "example": "투표 제출 마감일"
           },
           "minimum_user_count": {
             "type": "number",
@@ -2764,6 +3130,78 @@
           "vote_deadline",
           "minimum_user_count",
           "progress_time"
+        ]
+      },
+      "postGroupsIdPlansIdVotesReq": {
+        "type": "object",
+        "properties": {
+          "vote_plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                },
+                "day": {
+                  "type": "string",
+                  "example": "요일"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "아침, 낮, 저녁"
+                },
+                "approval": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "vote_plan_time"
+        ]
+      },
+      "patchGroupsIdPlansIdVotesReq": {
+        "type": "object",
+        "properties": {
+          "vote_plan_time": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "example": "시작일"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "종료일"
+                },
+                "day": {
+                  "type": "string",
+                  "example": "요일"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "아침, 낮, 저녁"
+                },
+                "approval": {
+                  "type": "boolean",
+                  "example": false
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "vote_plan_time"
         ]
       },
       "response_303": {
@@ -3274,6 +3712,14 @@
                 "plan_time": {
                   "type": "string",
                   "example": "확정된 약속 시간"
+                },
+                "candidate_plan_time": {
+                  "type": "string",
+                  "example": "계산된 일정 후보 목록"
+                },
+                "vote_plan_time": {
+                  "type": "string",
+                  "example": "투표할 일정 후보 목록"
                 },
                 "plan_time_slot": {
                   "type": "string",
@@ -3793,6 +4239,14 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
               "plan_time_slot": {
                 "type": "string",
                 "example": "일정 제출 양식"
@@ -3861,6 +4315,14 @@
                   "type": "string",
                   "example": "확정된 약속 시간"
                 },
+                "candidate_plan_time": {
+                  "type": "string",
+                  "example": "계산된 일정 후보 목록"
+                },
+                "vote_plan_time": {
+                  "type": "string",
+                  "example": "투표할 일정 후보 목록"
+                },
                 "plan_time_slot": {
                   "type": "string",
                   "example": "일정 제출 양식"
@@ -3928,6 +4390,14 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
               "plan_time_slot": {
                 "type": "string",
                 "example": "일정 제출 양식"
@@ -3993,6 +4463,14 @@
               "plan_time": {
                 "type": "string",
                 "example": "확정된 약속 시간"
+              },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
               },
               "plan_time_slot": {
                 "type": "string",
@@ -4060,6 +4538,14 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
               "plan_time_slot": {
                 "type": "string",
                 "example": "일정 제출 양식"
@@ -4108,31 +4594,34 @@
             "example": "200"
           },
           "submissions": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "제출한 일정 id"
-              },
-              "user_id": {
-                "type": "string",
-                "example": "일정을 제출한 사용자 id"
-              },
-              "plan_id": {
-                "type": "string",
-                "example": "일정이 제출된 약속 id"
-              },
-              "submission_time_slot": {
-                "type": "string",
-                "example": "제출한 일정 정보"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "일정 제출일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "일정 수정일"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "제출한 일정 id"
+                },
+                "user_id": {
+                  "type": "string",
+                  "example": "일정을 제출한 사용자 id"
+                },
+                "plan_id": {
+                  "type": "string",
+                  "example": "일정이 제출된 약속 id"
+                },
+                "submission_time_slot": {
+                  "type": "string",
+                  "example": "제출한 일정 정보"
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "일정 제출일"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "일정 수정일"
+                }
               }
             }
           }
@@ -4375,6 +4864,14 @@
                 "type": "string",
                 "example": "확정된 약속 시간"
               },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
               "plan_time_slot": {
                 "type": "string",
                 "example": "일정 제출 양식"
@@ -4413,6 +4910,241 @@
         "required": [
           "statusCode",
           "plan"
+        ]
+      },
+      "postGroupsIdPlansIdVotesRes201": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
+              "plan_time_slot": {
+                "type": "string",
+                "example": "일정 제출 양식"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "schedule_deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan"
+        ]
+      },
+      "patchGroupsIdPlansIdVotesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "약속 id"
+              },
+              "name": {
+                "type": "string",
+                "example": "약속 이름"
+              },
+              "group": {
+                "type": "string",
+                "example": "약속이 생성된 그룹 id"
+              },
+              "plan_time": {
+                "type": "string",
+                "example": "확정된 약속 시간"
+              },
+              "candidate_plan_time": {
+                "type": "string",
+                "example": "계산된 일정 후보 목록"
+              },
+              "vote_plan_time": {
+                "type": "string",
+                "example": "투표할 일정 후보 목록"
+              },
+              "plan_time_slot": {
+                "type": "string",
+                "example": "일정 제출 양식"
+              },
+              "minimum_user_count": {
+                "type": "string",
+                "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
+              },
+              "maximum_user_count": {
+                "type": "string",
+                "example": "일정을 제출할 최대 인원 수"
+              },
+              "progress_time": {
+                "type": "string",
+                "example": "약속 진행 시간"
+              },
+              "schedule_deadline": {
+                "type": "string",
+                "example": "일정 제출 마감일"
+              },
+              "status": {
+                "type": "string",
+                "example": "약속 진행 상태"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "약속 생성일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "약속 정보 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "plan"
+        ]
+      },
+      "getGroupsIdPlansIdVotesRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "votes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "제출한 투표 id"
+                },
+                "user_id": {
+                  "type": "string",
+                  "example": "투표를 제출한 사용자 id"
+                },
+                "plan_id": {
+                  "type": "string",
+                  "example": "투표가 제출된 약속 id"
+                },
+                "submission_time_slot": {
+                  "type": "string",
+                  "example": "제출한 투표 정보"
+                },
+                "created_at": {
+                  "type": "string",
+                  "example": "투표 제출일"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "투표 수정일"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "votes"
+        ]
+      },
+      "getGroupsIdPlansIdVoteRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "vote": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "제출한 투표 id"
+              },
+              "user_id": {
+                "type": "string",
+                "example": "투표를 제출한 사용자 id"
+              },
+              "plan_id": {
+                "type": "string",
+                "example": "투표가 제출된 약속 id"
+              },
+              "submission_time_slot": {
+                "type": "string",
+                "example": "제출한 투표 정보"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "투표 제출일"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "투표 수정일"
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "vote"
         ]
       }
     },

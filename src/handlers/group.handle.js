@@ -627,13 +627,51 @@ exports.updatePlanSchedule = async (user_id, plan_id, submission_time_slot) => {
     };
 }
 
+exports.updatePlanVote = async (vote) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id }, raw: false });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '투표를 제출할 약속이 없습니다.',
+            };
+
+        };
+    
+        let newVote = plan.toJSON().vote_plan_time;
+        let date_index = 0;
+        for (let slot of vote.vote_plan_time) {
+
+            if (slot.approval) {
+                newVote[date_index].approval.push(vote.user_id);
+            };
+
+            date_index++;
+        };
+
+        await plan.update({ vote_plan_time: newVote });
+        await plan.save();
+
+        return {
+            statusCode: 201,
+            plan: plan.toJSON()
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err,
+        };
+    };
+}
+
 exports.deletePlanSchedule = async (user_id, plan_id) => {
     try {
         const changedPlan = await Plans.findOne({ where: { id: plan_id }, raw: false });
         if (!changedPlan) {
             return {
                 statusCode: 404,
-                comment: '일정을 제출할 약속이 없습니다.',
+                comment: '일정을 수정할 약속이 없습니다.',
             };
 
         };
@@ -661,6 +699,43 @@ exports.deletePlanSchedule = async (user_id, plan_id) => {
         };
 
     } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err,
+        };
+    };
+}
+
+exports.deletePlanVote = async (vote) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: vote.plan_id }, raw: false });
+        if (!plan) {
+            return {
+                statusCode: 404,
+                comment: '투표를 수정할 약속이 없습니다.',
+            };
+
+        };
+    
+        let newVote = plan.toJSON().vote_plan_time;
+        let date_index = 0;
+        for (let slot of plan.toJSON().vote_plan_time) {
+            newVote[date_index].approval = slot.approval.filter((id) => id !== vote.user_id);
+
+            date_index++;
+        };
+
+        await plan.update({ vote_plan_time: newVote });
+        await plan.save();
+
+        return {
+            statusCode: 200,
+            plan: plan.toJSON()
+        };
+
+    } catch (err) {
+        console.log(err)
         return {
             statusCode: 500,
             comment: err,
@@ -1302,6 +1377,145 @@ exports.failCalculation = async (plan_id, req) => {
                     statusCode: 200,
                     plan: changedPlan.toJSON()
                 };
+            };
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+
+
+exports.checkVote = async (plan_id, vote_plan_time) => {
+    try {
+        const plan = await Plans.findOne({ where: { id: plan_id, status: 'vote' }, raw: true });
+        if (plan.length === 0) {
+            return {
+                statusCode: 404,
+                comment: '투표를 제출할 약속이 없습니다.',
+                result: false
+            };
+        };
+
+        if(vote_plan_time.length !== plan.vote_plan_time.length) {
+            return {
+                statusCode: 400,
+                comment: '제출된 투표 형식이 올바르지 않습니다.',
+                result: false
+            };
+        };
+
+        return {
+            result: true
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err,
+            result: false
+        };
+    };
+}
+
+exports.createVote = async (vote) => {
+    try {        
+        const isVote = await Votes.findOne({ where: { user_id: vote.user_id, plan_id: vote.plan_id }, raw: false });
+        if (isVote) {
+            return {
+                statusCode: 409,
+                comment: '이미 제출된 투표가 있습니다.',
+            };
+        };
+
+        const newVote = await Votes.create(vote);
+
+        return {
+            statusCode: 201,
+            vote_plan_time: newVote.toJSON()
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.updateVote = async (vote) => {
+    try {
+        const changedVote = await Votes.findOne({ where: { user_id: vote.user_id, plan_id: vote.plan_id }, raw: false });
+        if (!changedVote) {
+            return {
+                statusCode: 404,
+                comment: '제출된 투표가 없습니다.'
+            };
+
+        } else {
+            await changedVote.update({ vote_plan_time: vote.vote_plan_time });
+            await changedVote.save();
+
+            return {
+                statusCode: 200,
+                vote: changedVote.toJSON()
+            };
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchVotes = async (plan_id) => {
+    try {
+        const votes = await Votes.findAll({ where: { plan_id: plan_id }, raw: true });
+        if (votes.length === 0) {
+            return {
+                statusCode: 404,
+                comment: '제출된 투표가 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                votes: votes
+            };
+        };
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
+}
+
+exports.searchVote = async (user_id, plan_id) => {
+    try {
+        const vote = await Votes.findOne({ where: { user_id: user_id, plan_id: plan_id }, raw: false });
+        if (!vote) {
+            return {
+                statusCode: 404,
+                comment: '제출된 일정이 없습니다.'
+            };
+
+        } else {
+            return {
+                statusCode: 200,
+                vote: vote.toJSON()
             };
         };
 
