@@ -699,7 +699,6 @@ exports.deletePlanSchedule = async (user_id, plan_id) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err,
@@ -735,7 +734,6 @@ exports.deletePlanVote = async (vote) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err,
@@ -1415,7 +1413,6 @@ exports.checkVote = async (plan_id, vote_plan_time) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err,
@@ -1442,7 +1439,6 @@ exports.createVote = async (vote) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
@@ -1470,7 +1466,6 @@ exports.updateVote = async (vote) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
@@ -1495,7 +1490,6 @@ exports.searchVotes = async (plan_id) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
@@ -1520,7 +1514,6 @@ exports.searchVote = async (user_id, plan_id) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
