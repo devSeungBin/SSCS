@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         submission_time_slot: {
-            type: DataTypes.ARRAY(DataTypes.JSON),
+            type: DataTypes.ARRAY(DataTypes.JSONB),
             allowNull: false,
         },
     }, {

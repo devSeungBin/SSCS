@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         vote_plan_time: {
-            type: DataTypes.ARRAY(DataTypes.JSON),
+            type: DataTypes.ARRAY(DataTypes.JSONB),
             allowNull: false,
         },
     }, {

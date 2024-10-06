@@ -922,22 +922,34 @@ exports.calculateCandidates = async (plan_id) => {
                 const inspectionTimeArr = slot.time_scope.slice(slot.time_scope.indexOf(inspectionStart), slot.time_scope.indexOf(inspectionStart) + inspectionSize);
                 let isContinuousUser = true;
                 let isMoreUsersThanMinimum = true;
+                let allUserList = [];
+
                 if (inspectionSize === 1) {
                     if (inspectionTimeArr[0].available.length < plan.dataValues.minimum_user_count) {
                         isMoreUsersThanMinimum = false;
                     };
 
+                    allUserList = [...inspectionTimeArr[0].available];
+
                 } else {
                     let continuousUserList = [];
+                    
                     for (let index = 0; index < inspectionSize; index++) {
                         if (index == 0) {
                             continuousUserList = [...inspectionTimeArr[index].available];
+                            allUserList = [...inspectionTimeArr[index].available];
                         } else {
                             const prevUserList = new Set(continuousUserList);
+                            const prevAllUserList = new Set(allUserList);
                             const nextUserList = new Set(inspectionTimeArr[index].available);
+                            
+                            // const intersection = prevUserList.intersection(nextUserList);
                             const intersection = new Set([...prevUserList].filter(user => nextUserList.has(user)));
-
                             continuousUserList = [...intersection];
+
+                            // const union = prevAllUserList.union(nextUserList);
+                            const union = new Set([...prevAllUserList].filter(user => nextUserList.add(user)));
+                            allUserList = [...union];
                         };
 
                         if (continuousUserList.length < plan.dataValues.minimum_user_count) {
@@ -996,7 +1008,8 @@ exports.calculateCandidates = async (plan_id) => {
                         start: `${slot.date} ${inspectionTimeArr[0].start}`,
                         end: `${slot.date} ${inspectionTimeArr[inspectionTimeArr.length - 1].end}`,
                         day: new Date(`${slot.date} ${inspectionTimeArr[0].start}`).getDay(),
-                        time: time
+                        time: time,
+                        user: allUserList
                     });
                 };
                 
@@ -1006,14 +1019,31 @@ exports.calculateCandidates = async (plan_id) => {
         if (candidate_plan_time.length === 0) {
             await plan.update({ status: 'fail' });
             await plan.save();
-        } else {
+        } else if (candidate_plan_time.length === 1) {
             await plan.update({ candidate_plan_time: candidate_plan_time, status: 'select' });
             await plan.save();
-        }
+        } else {
+            let mostUserCount = 0;
+            for (let candidate of candidate_plan_time) {
+                if (candidate.user.length > mostUserCount) {
+                    mostUserCount = candidate.user.length;
+                };
+            };
+
+            let final_candidates = [];
+            for (let candidate of candidate_plan_time) {
+                if (candidate.user.length === mostUserCount) {
+                    final_candidates.push(candidate);
+                };
+            };
+
+            await plan.update({ candidate_plan_time: final_candidates, status: 'select' });
+            await plan.save();
+        };
 
         return {
             statusCode: 200,
-            candidate_plan_time: candidate_plan_time,
+            candidate_plan_time: plan.toJSON().candidate_plan_time,
         };
 
     } catch (err) {
@@ -1037,7 +1067,7 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
 
         const planJson = plan.toJSON();
         if (planJson.candidate_plan_time.length === 1) {
-            await plan.update({ plan_time: planJson.candidate_plan_time[0] });
+            await plan.update({ plan_time: planJson.candidate_plan_time[0], status: 'comfirm' });
             await plan.save();
 
             return {

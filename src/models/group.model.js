@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         manual_group_preference: {
-            type: DataTypes.JSON,
+            type: DataTypes.JSONB,
             allowNull: false,
         },
         creator: {

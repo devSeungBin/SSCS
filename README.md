@@ -82,11 +82,11 @@
 
 > GET /groups/{group_id} - 단일 그룹 정보 조회 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id} - 그룹 정보 수정 [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id} - 그룹 삭제
+> DELETE /groups/{group_id} - 그룹 삭제[]
 
 > GET /groups/{group_id}/members - 그룹 참여자 정보 조회 [완성, 응답 테스트 완료]
 > POST /groups/members - 그룹 참여자 생성(그룹 참여) [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/members - 그룹 탈퇴
+> DELETE /groups/{group_id}/members - 그룹 탈퇴[]
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
@@ -95,7 +95,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id} - 약속 정보 조회 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정) [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제
+> DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제[]
 ```
 
 ***
@@ -120,16 +120,16 @@
 ```
 > 필요한 API - 기능
 
-> GET /plans - 약속 상태 업데이트 [status: submit 완성, 응답 테스트 완료] [status: vote ...]
+> GET /plans - 약속 상태 업데이트 [status: submit 완성, 응답 테스트 완료] [status: vote 완성, 응답 테스트 완료]
 
 > GET /groups/{group_id}/plans/{plan_id}/schedules - 제출된 모든 일정 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id}/schedules - 개별 일정 수정 [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제
+> DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제[]
 
 > GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
-> GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)
+> GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)[]
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
@@ -137,11 +137,11 @@
 
 > GET /groups/{group_id}/preferences - 그룹 선호도 계산 [임시 사용, 완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/plans/{plan_id}/votes - 제출된 모든 투표 확인 [완성]
-> POST /groups/{group_id}/plans/{plan_id}/votes - 투표 제출 [완성]
-> PATCH /groups/{group_id}/plans/{plan_id}/votes - 제출된 투표 수정 [완성]
+> GET /groups/{group_id}/plans/{plan_id}/votes - 제출된 모든 투표 확인 [완성, 응답 테스트 완료]
+> POST /groups/{group_id}/plans/{plan_id}/votes - 투표 제출 [완성, 응답 테스트 완료]
+> PATCH /groups/{group_id}/plans/{plan_id}/votes - 제출된 투표 수정 [완성, 응답 테스트 완료]
 
-> GET /groups/{group_id}/plans/{plan_id}/vote - 개별 투표 확인 [완성]
+> GET /groups/{group_id}/plans/{plan_id}/vote - 개별 투표 확인 [완성, 응답 테스트 완료]
 
 ```
 

@@ -63,32 +63,93 @@ exports.updatePlan = async () => {
                                             start: time.start,
                                             end: time.end,
                                             day: time.dat,
-                                            time: time.time
+                                            time: time.time,
+                                            user: time.approval
                                         });
                                     };
                                 };
 
-                                await newPlan.update({ candidate_plan_time: candidate_plan_time, status: 'select' });
+                                if (candidate_plan_time.length === 0) {
+                                    if (voteList.length > 0) {
+                                        for (let vote of voteList) {
+                                            const user = await Votes.findOne({ where: { id: vote.id }, raw: false });
+                                            await user.destroy();
+                                        };
+                                    };
+
+                                    await newPlan.update({ vote_plan_time: null, vote_deadline: null, status: 'fail' });
+                                    await newPlan.save();
+                                    continue;
+                                };
+
+                                let mostUserCount = 0;
+                                for (let candidate of candidate_plan_time) {
+                                    if (candidate.user.length > mostUserCount) {
+                                        mostUserCount = candidate.user.length;
+                                    };
+                                };
+                    
+                                let final_candidates = [];
+                                for (let candidate of candidate_plan_time) {
+                                    if (candidate.user.length === mostUserCount) {
+                                        final_candidates.push(candidate);
+                                    };
+                                };
+
+                                await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
                                 await newPlan.save();
                                 continue;
                             };
                         };
     
-                        const planDate = new Date(plan.schedule_deadline);
-                        const schedule_deadline = new Date(planDate.getTime() + timeDiff);
-                        const schedule_deadline_time = schedule_deadline.getTime();
+                        const planDate = new Date(plan.vote_deadline);
+                        const vote_deadline = new Date(planDate.getTime() + timeDiff);
+                        const vote_deadline_time = vote_deadline.getTime();
     
-                        if (dateTime >= schedule_deadline_time) {
+                        if (dateTime >= vote_deadline_time) {
                             const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
                             
-                            let candidiate_plan_time = [];
+                            let candidate_plan_time = [];
                             for (let time of plan.vote_plan_time) {
                                 if (time.approval.length >= plan.minimum_user_count) {
-                                    candidiate_plan_time.push(time);
+                                    candidate_plan_time.push({
+                                        start: time.start,
+                                        end: time.end,
+                                        day: time.dat,
+                                        time: time.time,
+                                        user: time.approval
+                                    });
                                 };
                             };
 
-                            await newPlan.update({ candidiate_plan_time: candidiate_plan_time, status: 'select' });
+                            if (candidate_plan_time.length === 0) {
+                                if (voteList.length > 0) {
+                                    for (let vote of voteList) {
+                                        const user = await Votes.findOne({ where: { id: vote.id }, raw: false });
+                                        await user.destroy();
+                                    };
+                                };
+
+                                await newPlan.update({ vote_plan_time: null, vote_deadline: null, status: 'fail' });
+                                await newPlan.save();
+                                continue;
+                            };
+
+                            let mostUserCount = 0;
+                            for (let candidate of candidate_plan_time) {
+                                if (candidate.user.length > mostUserCount) {
+                                    mostUserCount = candidate.user.length;
+                                };
+                            };
+                
+                            let final_candidates = [];
+                            for (let candidate of candidate_plan_time) {
+                                if (candidate.user.length === mostUserCount) {
+                                    final_candidates.push(candidate);
+                                };
+                            };
+
+                            await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
                             await newPlan.save();
                             continue;
                         };

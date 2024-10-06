@@ -44,13 +44,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.JSONB,
         },
         candidate_plan_time: {
-            type: DataTypes.ARRAY(DataTypes.JSON),
+            type: DataTypes.ARRAY(DataTypes.JSONB),
         },
         vote_plan_time: {
-            type: DataTypes.ARRAY(DataTypes.JSON),
+            type: DataTypes.ARRAY(DataTypes.JSONB),
         },
         plan_time_slot: {
-            type: DataTypes.ARRAY(DataTypes.JSON),
+            type: DataTypes.ARRAY(DataTypes.JSONB),
             allowNull: false,
         },
         minimum_user_count: {
