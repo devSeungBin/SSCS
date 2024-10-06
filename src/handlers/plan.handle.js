@@ -1,5 +1,5 @@
 const db = require('../models/index.db');
-const { Groups, Plans, Submissions } = db;
+const { Groups, Plans, Submissions, Votes } = db;
 
 exports.updatePlan = async () => {
     return new Promise(async (resolve, reject) => {
@@ -13,40 +13,87 @@ exports.updatePlan = async () => {
             };
 
             const timeDiff = 9 * 60 * 60 * 1000;
+            const now = new Date();
+            const dateNow = new Date(now.getTime() + timeDiff);
+            const dateTime = dateNow.getTime();
+
             for (let group of groupList) {
                 // 나중에 약속 개수도 group db에 포함시키면 약속 정보를 가져오는 쿼리를 없앨 수 있음
-                const planList = await Plans.findAll({ where: { group_id: group.id, status: 'submit' } , raw: true });
-                if (planList.length === 0) {
-                    continue;
-                };
+                const submitPlanList = await Plans.findAll({ where: { group_id: group.id, status: 'submit' } , raw: true });
+                const votePlanList = await Plans.findAll({ where: { group_id: group.id, status: 'vote' } , raw: true });
 
-                for (let plan of planList) {
-                    const submissionList = await Submissions.findAll({ where: { plan_id: plan.id } , raw: true });
-
-                    if (plan.maximum_user_count) {
-                        if (plan.maximum_user_count === submissionList.length) {
+                if (submitPlanList.length !== 0) {
+                    for (let plan of submitPlanList) {
+                        const submissionList = await Submissions.findAll({ where: { plan_id: plan.id } , raw: true });
+    
+                        if (plan.maximum_user_count) {
+                            if (plan.maximum_user_count === submissionList.length) {
+                                const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
+                                await newPlan.update({ status: 'calculate' });
+                                await newPlan.save();
+                                continue;
+                            };
+                        };
+    
+                        const planDate = new Date(plan.schedule_deadline);
+                        const schedule_deadline = new Date(planDate.getTime() + timeDiff);
+                        const schedule_deadline_time = schedule_deadline.getTime();
+    
+                        if (dateTime >= schedule_deadline_time) {
                             const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
                             await newPlan.update({ status: 'calculate' });
                             await newPlan.save();
                             continue;
                         };
                     };
-
-                    const now = new Date();
-                    const dateNow = new Date(now.getTime() + timeDiff);
-                    const dateTime = dateNow.getTime();
-
-                    const planDate = new Date(plan.schedule_deadline);
-                    const schedule_deadline = new Date(planDate.getTime() + timeDiff);
-                    const schedule_deadline_time = schedule_deadline.getTime();
-
-                    if (dateTime >= schedule_deadline_time) {
-                        const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
-                        await newPlan.update({ status: 'calculate' });
-                        await newPlan.save();
-                        continue;
-                    };
                 };
+
+                if (votePlanList.length !== 0) {
+                    for (let plan of votePlanList) {
+                        const voteList = await Votes.findAll({ where: { plan_id: plan.id } , raw: true });
+    
+                        if (plan.maximum_user_count) {
+                            if (plan.maximum_user_count === voteList.length) {
+                                const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
+
+                                let candidate_plan_time = [];
+                                for (let time of plan.vote_plan_time) {
+                                    if (time.approval.length >= plan.minimum_user_count) {
+                                        candidate_plan_time.push({
+                                            start: time.start,
+                                            end: time.end,
+                                            day: time.dat,
+                                            time: time.time
+                                        });
+                                    };
+                                };
+
+                                await newPlan.update({ candidate_plan_time: candidate_plan_time, status: 'select' });
+                                await newPlan.save();
+                                continue;
+                            };
+                        };
+    
+                        const planDate = new Date(plan.schedule_deadline);
+                        const schedule_deadline = new Date(planDate.getTime() + timeDiff);
+                        const schedule_deadline_time = schedule_deadline.getTime();
+    
+                        if (dateTime >= schedule_deadline_time) {
+                            const newPlan = await Plans.findOne({ where: { id: plan.id } , raw: false });
+                            
+                            let candidiate_plan_time = [];
+                            for (let time of plan.vote_plan_time) {
+                                if (time.approval.length >= plan.minimum_user_count) {
+                                    candidiate_plan_time.push(time);
+                                };
+                            };
+
+                            await newPlan.update({ candidiate_plan_time: candidiate_plan_time, status: 'select' });
+                            await newPlan.save();
+                            continue;
+                        };
+                    };
+                };  
             };
 
             resolve({

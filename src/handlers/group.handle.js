@@ -1039,6 +1039,12 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
         if (planJson.candidate_plan_time.length === 1) {
             await plan.update({ plan_time: planJson.candidate_plan_time[0] });
             await plan.save();
+
+            return {
+                statusCode: 200,
+                plan_time: plan.plan_time
+            };
+            
         } else {
             const group = await Groups.findOne({where: { id: group_id }, raw: false });
             const groupJson = group.toJSON();
