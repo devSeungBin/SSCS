@@ -19,7 +19,7 @@ const {
     checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
     calculateCandidates,
     autoSelectCandidates, manualSelectCandidates,
-    failCalculation,
+    checkLeader, failCalculation,
     checkVote, createVote, searchVotes, searchVote,  updateVote
 } = require('../handlers/group.handle');
 
@@ -1937,28 +1937,39 @@ router.post('/:group_id/plans/:plan_id/failure', isLoggedIn, isNotNewUser, isGro
         };
 
     } else {
-        await failCalculation(req.query.plan_id, req.body)
-        .then(async (info) => {
-            if (info.statusCode !== 200) {
-                req.result = {
-                    error: {
+        const check = await checkLeader(req.user.id, req.query.group_id);
+
+        if (!check.result) {
+            req.result = {
+                error: {
+                    statusCode: check.statusCode,
+                    comment: check.comment
+                }
+            };
+        } else {
+            await failCalculation(req.query.plan_id, req.body)
+            .then(async (info) => {
+                if (info.statusCode !== 200) {
+                    req.result = {
+                        error: {
+                            statusCode: info.statusCode,
+                            comment: info.comment
+                        }
+                    };
+                } else {
+                    req.result = {
                         statusCode: info.statusCode,
-                        comment: info.comment
-                    }
+                        plan: info.plan,
+                    };
                 };
-            } else {
-                req.result = {
-                    statusCode: info.statusCode,
-                    plan: info.plan,
+            })
+            .catch((err) => {
+                return {
+                    statusCode: err.statusCode,
+                    comment: err.comment
                 };
-            };
-        })
-        .catch((err) => {
-            return {
-                statusCode: err.statusCode,
-                comment: err.comment
-            };
-        });
+            });
+        };
     };
 
     next();
@@ -2259,7 +2270,7 @@ router.get('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupU
 
 router.post('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/:group_id/plans/:plan_id/votes'
+    #swagger.path = '/groups/:group_id/plans/:plan_id/votes'
     #swagger.tags = ['GroupRouter']
     #swagger.summary = '일정 투표 제출 API (인증 필요)'
     #swagger.description = '그룹 내에서 일정 투표 제출 시 사용하는 엔드포인트'
@@ -2408,7 +2419,7 @@ router.post('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroup
 
 router.patch('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/:group_id/plans/:plan_id/votes'
+    #swagger.path = '/groups/:group_id/plans/:plan_id/votes'
     #swagger.tags = ['GroupRouter']
     #swagger.summary = '일정 투표 수정 API (인증 필요)'
     #swagger.description = '그룹 내에서 일정 투표 수정 시 사용하는 엔드포인트'
@@ -2524,7 +2535,7 @@ router.patch('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGrou
                                 }
                             };
                         } else {
-                            await updatePlanSchedule(vote)
+                            await updatePlanVote(vote)
                             .then(async (info) => {
                                 if (info.statusCode !== 200) {
                                     req.result = {

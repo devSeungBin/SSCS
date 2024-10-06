@@ -720,7 +720,7 @@ const doc = {
                     updated_at: '약속 정보 수정일',
                 }
             },
-            postGroupsIdPlansIdVotesRes201: {       // 'POST /groups/{group_id}/plans/{plan_id}/votes 요청 성공'
+            postGroupsIdPlansIdVotesRes200: {       // 'POST /groups/{group_id}/plans/{plan_id}/votes 요청 성공'
                 $statusCode: '200',
                 $plan: {
                     id: '약속 id',

@@ -629,7 +629,7 @@ exports.updatePlanSchedule = async (user_id, plan_id, submission_time_slot) => {
 
 exports.updatePlanVote = async (vote) => {
     try {
-        const plan = await Plans.findOne({ where: { id: plan_id }, raw: false });
+        const plan = await Plans.findOne({ where: { id: vote.plan_id }, raw: false });
         if (!plan) {
             return {
                 statusCode: 404,
@@ -653,7 +653,7 @@ exports.updatePlanVote = async (vote) => {
         await plan.save();
 
         return {
-            statusCode: 201,
+            statusCode: 200,
             plan: plan.toJSON()
         };
 
@@ -1269,6 +1269,30 @@ exports.manualSelectCandidates = async (plan_id, plan_time) => {
 
 
 
+exports.checkLeader = async (user_id, group_id) => {
+    try {
+        const group = await Groups.findOne({ where: { id: group_id, creator: user_id }, raw: false });
+        if (!group) {
+            return {
+                statusCode: 404,
+                comment: '그룹 리더가 아닙니다.',
+                result: false
+            };
+        };
+
+        return {
+            result: true
+        };
+
+    } catch (err) {
+        return {
+            statusCode: 500,
+            comment: err,
+            result: false
+        };
+    };
+}
+
 exports.failCalculation = async (plan_id, req) => {
     try {
         const changedPlan = await Plans.findOne({ where: { id: plan_id, status: 'fail' }, raw: false });
@@ -1379,7 +1403,6 @@ exports.failCalculation = async (plan_id, req) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
