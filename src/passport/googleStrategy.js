@@ -27,7 +27,8 @@ module.exports = () => {
                             email: profile.email,
                             image: profile.picture,
                             provider: 'google',
-                            new: true
+                            access_token: accessToken,
+                            calendar_id: profile.email,
                         });
 
                         done(null, newUser, { statusCode: 201, user: newUser.toJSON() }); 

@@ -2392,7 +2392,7 @@
         "tags": [
           "UserRouter"
         ],
-        "summary": "구글 로그인 리다이렉트 API (인증 불필요)",
+        "summary": "구글 로그인 리다이렉트 API (직접 사용 안함)",
         "description": "클라이언트가 구글 인증 서버에서 인증 코드를 받은 후 리다이렉트되는 엔드포인트, 여기서 구글 로그인 전략이 적용된다.",
         "responses": {
           "200": {
@@ -2608,6 +2608,245 @@
               }
             },
             "description": "See Other"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/calendars": {
+      "get": {
+        "tags": [
+          "UserRouter"
+        ],
+        "summary": "캘린더 리스트 조회 API (인증 필수)",
+        "description": "사용자의 캘린더 리스트를 조회하는 엔드포인트",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsersCalendarsRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/calendars/freebusy": {
+      "get": {
+        "tags": [
+          "UserRouter"
+        ],
+        "summary": "캘린더 리스트 조회 API (인증 필수)",
+        "description": "사용자의 캘린더 리스트를 조회하는 엔드포인트",
+        "parameters": [
+          {
+            "name": "timeMax",
+            "in": "query",
+            "description": "plan_time_slot의 끝 time",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeMin",
+            "in": "query",
+            "description": "plan_time_slot의 시작 time",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateList",
+            "in": "query",
+            "description": "plan_time_slot의 date 목록",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "example": [
+                "2024-11-01",
+                "2024-11-03"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsersCalendarsFreebusyRes200"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_404"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_500"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/calendars/callback": {
+      "get": {
+        "tags": [
+          "UserRouter"
+        ],
+        "summary": "캘린더 관련 리다이렉트 API (직접 사용 안함)",
+        "description": "테스트 엔드포인트",
+        "responses": {
+          "303": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_303"
+                }
+              }
+            },
+            "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
           },
           "401": {
             "content": {
@@ -2898,8 +3137,8 @@
           "date_list": {
             "type": "array",
             "example": [
-              "2023-09-01",
-              "2023-09-03"
+              "2024-11-01",
+              "2023-11-03"
             ],
             "items": {
               "type": "string"
@@ -2932,7 +3171,7 @@
           },
           "schedule_deadline": {
             "type": "string",
-            "example": "2024-10-01 00:00"
+            "example": "2024-11-05 00:00"
           }
         },
         "required": [
@@ -2954,7 +3193,7 @@
           },
           "minimum_user_count": {
             "type": "number",
-            "example": 1
+            "example": 2
           },
           "maximum_user_count": {
             "type": "number",
@@ -2962,11 +3201,11 @@
           },
           "progress_time": {
             "type": "number",
-            "example": 90
+            "example": 60
           },
           "schedule_deadline": {
             "type": "string",
-            "example": "2024-10-02 00:00"
+            "example": "2024-11-06 00:00"
           }
         },
         "required": [
@@ -2987,7 +3226,7 @@
               "properties": {
                 "date": {
                   "type": "string",
-                  "example": "2023-09-03"
+                  "example": "2024-11-01"
                 },
                 "time_scope": {
                   "type": "array",
@@ -2996,11 +3235,11 @@
                     "properties": {
                       "start": {
                         "type": "string",
-                        "example": "9:45"
+                        "example": "9:00"
                       },
                       "end": {
                         "type": "string",
-                        "example": "10:00"
+                        "example": "9:15"
                       },
                       "available": {
                         "type": "boolean",
@@ -3027,7 +3266,7 @@
               "properties": {
                 "date": {
                   "type": "string",
-                  "example": "2023-09-03"
+                  "example": "2024-11-03"
                 },
                 "time_scope": {
                   "type": "array",
@@ -3036,15 +3275,15 @@
                     "properties": {
                       "start": {
                         "type": "string",
-                        "example": "9:45"
+                        "example": "9:00"
                       },
                       "end": {
                         "type": "string",
-                        "example": "10:00"
+                        "example": "9:15"
                       },
                       "available": {
                         "type": "boolean",
-                        "example": false
+                        "example": true
                       }
                     }
                   }
@@ -3112,22 +3351,12 @@
           "vote_deadline": {
             "type": "string",
             "example": "투표 제출 마감일"
-          },
-          "minimum_user_count": {
-            "type": "number",
-            "example": 1
-          },
-          "progress_time": {
-            "type": "number",
-            "example": 90
           }
         },
         "required": [
           "option",
           "vote_plan_time",
-          "vote_deadline",
-          "minimum_user_count",
-          "progress_time"
+          "vote_deadline"
         ]
       },
       "postGroupsIdPlansIdVotesReq": {
@@ -5143,6 +5372,84 @@
         "required": [
           "statusCode",
           "vote"
+        ]
+      },
+      "getUsersCalendarsRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "calendarList": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "캘린더 id"
+                },
+                "summary": {
+                  "type": "string",
+                  "example": "캘린더 제목"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "캘린더에 대한 설명"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "calendarList"
+        ]
+      },
+      "getUsersCalendarsFreebusyRes200": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "200"
+          },
+          "submission_time_slot": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "example": "2024-11-01"
+                },
+                "time_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "example": "9:00"
+                      },
+                      "end": {
+                        "type": "string",
+                        "example": "9:15"
+                      },
+                      "available": {
+                        "type": "boolean",
+                        "example": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "submission_time_slot"
         ]
       }
     },

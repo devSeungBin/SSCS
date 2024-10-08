@@ -1,5 +1,5 @@
 const db = require('../models/index.db');
-const { Preferences } = db;
+const { Users, Preferences } = db;
 
 exports.isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -48,6 +48,40 @@ exports.isNotNewUser = async (req, res, next) => {
             next();
         };
     } else {
+        next();
+    };
+}
+
+exports.isGoogleLoggedIn = async (req, res, next) => {
+    if (req.isAuthenticated()) {
+        if (await Users.findOne({ where: { id: req.user.id, provider: 'google' }, raw: true })) {
+            next();
+        } else {
+            req.auth = {};
+            req.auth.statusCode = 400;
+            req.auth.comment = '소셜 로그인으로 인증된 계정만 사용할 수 있습니다.';
+            next();
+        };
+    } else {
+        req.auth = {};
+        req.auth.statusCode = 401;
+        next();
+    };
+}
+
+exports.isNotGoogleLoggedIn = async (req, res, next) => {
+    if (req.isAuthenticated()) {
+        if (!await Users.findOne({ where: { id: req.user.id, provider: 'google' }, raw: true })) {
+            next();
+        } else {
+            req.auth = {};
+            req.auth.statusCode = 400;
+            req.auth.comment = '로컬 로그인으로 인증된 계정만 사용할 수 있습니다.';
+            next();
+        };
+    } else {
+        req.auth = {};
+        req.auth.statusCode = 401;
         next();
     };
 }

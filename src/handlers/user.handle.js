@@ -1,7 +1,7 @@
 const db = require('../models/index.db');
 const { Users, Preferences, Participants, Plans } = db;
 
-function isValidObject(obj) { return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0; }
+function isValidObject(obj) { return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0; };
 
 exports.searchUser = async (id) => {
     try {
@@ -170,17 +170,43 @@ exports.checkTime = (time_preference) => {
 exports.updateUser = async (id, user, preference) => {
     try {
         const changedUser = await Users.findOne({ where: { id: id }, raw: false });
-        if(!user) return {
+        if(!changedUser) return {
             statusCode: 404,
             comment: '사용자 프로필을 찾을 수 없습니다.'
         };
 
         const changedPreference = await Preferences.findOne({ where: { user_id: id }, raw: false });
-        if(!preference) return {
+        if(!changedPreference) return {
             statusCode: 303,
             comment: '신규 사용자입니다. 선호도 입력 페이지로 이동합니다.'
         };
         
+        if (user.password) {
+            if (changedUser.toJSON().provider !== 'local') {
+                return {
+                    statusCode: 400,
+                    comment: '로컬 로그인으로 인증된 계정만 사용할 수 있습니다.'
+                };
+            } else {
+                if (user.password == changedUser.toJSON().password) {
+                    delete user.password;
+                };
+            };
+        };
+
+        if (user.calendar_id) {
+            if (changedUser.toJSON().provider !== 'google') {
+                return {
+                    statusCode: 400,
+                    comment: '소셜 로그인으로 인증된 계정만 사용할 수 있습니다.'
+                };
+            } else {
+                if (user.calendar_id == changedUser.toJSON().calendar_id) {
+                    delete user.calendar_id;
+                };
+            };
+        };
+
         if (user) {
             if (user.name == changedUser.toJSON().name) {
                 delete user.name;
@@ -258,4 +284,42 @@ exports.searchPlan = async (id) => {
             });
         };
     });
+}
+
+exports.generateSchedules = (dateList, timeScope) => {
+    const planTimeSlot = [];
+
+    // 시간 범위를 분 단위로 변환
+    const startTimeInMinutes = parseInt(timeScope.start.replace(':', ''), 10) / 100 * 60;
+    const endTimeInMinutes = parseInt(timeScope.end.replace(':', ''), 10) / 100 * 60;
+
+    let index = 0;
+    dateList.forEach((date) => {
+        planTimeSlot.push({
+            date: date,
+            time_scope: []
+        });
+
+        for (let minutes = startTimeInMinutes; minutes < endTimeInMinutes; minutes += 15) {
+            const hours = Math.floor(minutes / 60);
+            const startMinute = (minutes % 60).toString().padStart(2, '0');
+            const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
+
+            const start = `${hours}:${startMinute}`;
+            let end = `${hours}:${endMinute}`;
+            if (endMinute == 60) {
+                end = `${hours + 1}:00`;
+            };
+
+            planTimeSlot[index].time_scope.push({
+                start: start,
+                end: end,
+                available: []
+            });
+        };
+
+        index++;
+    });
+
+    return planTimeSlot;
 }

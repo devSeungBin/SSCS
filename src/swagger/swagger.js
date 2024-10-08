@@ -95,7 +95,7 @@ const doc = {
             },
             postGroupsIdPlansReq: {     // '생성할 약속 정보'
                 $name: 'myPlan',
-                $date_list: ["2023-09-01", "2023-09-03"],
+                $date_list: ["2024-11-01", "2023-11-03"],
                 $time_scope: {
                     "start": "09:00",
                     "end": "10:00"
@@ -103,63 +103,23 @@ const doc = {
                 $minimum_user_count: 2,
                 $maximum_user_count: 5,
                 $progress_time: 60,
-                $schedule_deadline: '2024-10-01 00:00',
+                $schedule_deadline: '2024-11-05 00:00',
             },
             patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'
                 $name: 'testPlan',
-                $minimum_user_count: 1,
+                $minimum_user_count: 2,
                 $maximum_user_count: 3,
-                $progress_time: 90,
-                $schedule_deadline: '2024-10-02 00:00',
+                $progress_time: 60,
+                $schedule_deadline: '2024-11-06 00:00',
             },
             postGroupsIdPlansIdSchedulesReq: {      // '제출할 일정 정보'
                 $submission_time_slot: [
                     {
-                        "date": "2023-09-01",
+                        "date": "2024-11-01",
                         "time_scope": [
                             {
                                 "start": "9:00",
                                 "end": "9:15",
-                                "available": true
-                            },
-                            {
-                                "start": "9:15",
-                                "end": "9:30",
-                                "available": true
-                            },
-                            {
-                                "start": "9:30",
-                                "end": "9:45",
-                                "available": true
-                            },
-                            {
-                                "start": "9:45",
-                                "end": "10:00",
-                                "available": false
-                            }
-                        ]
-                    },
-                    {
-                        "date": "2023-09-03",
-                        "time_scope": [
-                            {
-                                "start": "9:00",
-                                "end": "9:15",
-                                "available": false
-                            },
-                            {
-                                "start": "9:15",
-                                "end": "9:30",
-                                "available": true
-                            },
-                            {
-                                "start": "9:30",
-                                "end": "9:45",
-                                "available": true
-                            },
-                            {
-                                "start": "9:45",
-                                "end": "10:00",
                                 "available": true
                             }
                         ]
@@ -169,52 +129,12 @@ const doc = {
             patchGroupsIdPlansIdSchedulesReq: {      // '수정할 일정 정보'
                 $submission_time_slot: [
                     {
-                        "date": "2023-09-01",
-                        "time_scope": [
-                            {
-                                "start": "9:00",
-                                "end": "9:15",
-                                "available": false
-                            },
-                            {
-                                "start": "9:15",
-                                "end": "9:30",
-                                "available": true
-                            },
-                            {
-                                "start": "9:30",
-                                "end": "9:45",
-                                "available": true
-                            },
-                            {
-                                "start": "9:45",
-                                "end": "10:00",
-                                "available": true
-                            }
-                        ]
-                    },
-                    {
-                        "date": "2023-09-03",
+                        "date": "2024-11-03",
                         "time_scope": [
                             {
                                 "start": "9:00",
                                 "end": "9:15",
                                 "available": true
-                            },
-                            {
-                                "start": "9:15",
-                                "end": "9:30",
-                                "available": true
-                            },
-                            {
-                                "start": "9:30",
-                                "end": "9:45",
-                                "available": true
-                            },
-                            {
-                                "start": "9:45",
-                                "end": "10:00",
-                                "available": false
                             }
                         ]
                     }
@@ -237,11 +157,7 @@ const doc = {
                         end: '종료일'
                     }
                 ],
-                $vote_deadline: "투표 제출 마감일",
-
-                // reset
-                $minimum_user_count: 1,
-                $progress_time: 90
+                $vote_deadline: "투표 제출 마감일"
             },
             postGroupsIdPlansIdVotesReq: {      // '제출할 투표 정보'
                 $vote_plan_time: [
@@ -781,6 +697,31 @@ const doc = {
                     created_at: '투표 제출일',
                     updated_at: '투표 수정일',
                 }
+            },
+            getUsersCalendarsRes200: {       // 'GET /users/calendars 요청 성공'
+                $statusCode: '200',
+                $calendarList: [
+                    {   
+                        id: '캘린더 id',
+                        summary: '캘린더 제목',
+                        description: '캘린더에 대한 설명'
+                    }
+                ]
+            },
+            getUsersCalendarsFreebusyRes200: {       // 'GET /users/calendars/freebusy 요청 성공'
+                $statusCode: '200',
+                $submission_time_slot: [
+                    {
+                        "date": "2024-11-01",
+                        "time_scope": [
+                            {
+                                "start": "9:00",
+                                "end": "9:15",
+                                "available": true
+                            }
+                        ]
+                    }
+                ]
             },
             
 

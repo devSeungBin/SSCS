@@ -55,6 +55,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100),
             allowNull: false,
         },
+        access_token: {
+            type: DataTypes.STRING(300),
+        },
+        calendar_id: {
+            type: DataTypes.STRING(100),
+        },
     }, {
         sequelize,
         timestamps: true,

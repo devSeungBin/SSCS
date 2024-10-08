@@ -26,8 +26,8 @@
 
 > GET /users - 사용자 정보 조회 [완성, 응답 테스트 완료]
 > POST /users - 로컬 회원가입 [완성, 응답 테스트 완료]
-> PATCH /users - 사용자 정보 수정 [완성, 응답 테스트 완료]
-> DELETE /users - 사용자 탈퇴
+> PATCH /users - 사용자 정보 수정 [완성, ...]
+> DELETE /users - 사용자 탈퇴 []
 
 > GET /users/login - 구글 로그인 [완성, 응답 테스트 완료]
 > GET /users/login/callback - 리다이렉트 [완성, 응답 테스트 완료]
@@ -37,6 +37,9 @@
 
 > GET /users/preferences - 사용자 선호도 정보 조회 [완성, 응답 테스트 완료]
 > POST /users/preferences - 사용자 선호도 정보 생성 [완성, 응답 테스트 완료]
+
+> GET /users/calendars - 사용자 캘린더 리스트 조회 [완성, 응답 테스트 완료]
+> GET /users/calendars/callback - 리다이렉트 [딱히 하는거 없음..?]
 
 > GET /users/plans - 사용자 개인 약속 조회 [완성, 응답 테스트 완료]
 
@@ -129,7 +132,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
-> GET ?? - 구글 캘린더 일정 가져오기 (구글 연동 필요)[]
+> GET /users/calendars/{timeParams} - 구글 캘린더 일정 가져오기 (구글 연동 필요)[...]
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
