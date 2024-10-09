@@ -95,14 +95,14 @@ const doc = {
             },
             postGroupsIdPlansReq: {     // '생성할 약속 정보'
                 $name: 'myPlan',
-                $date_list: ["2024-11-01", "2023-11-03"],
+                $date_list: ["2024-11-01", "2024-11-03"],
                 $time_scope: {
                     "start": "09:00",
                     "end": "10:00"
                 },
                 $minimum_user_count: 2,
-                $maximum_user_count: 5,
-                $progress_time: 60,
+                $maximum_user_count: 2,
+                $progress_time: 30,
                 $schedule_deadline: '2024-11-05 00:00',
             },
             patchGroupsIdPlansIdReq: {     // '수정할 약속 정보'

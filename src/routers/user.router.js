@@ -14,6 +14,9 @@ const {
     searchPlan,
     generateSchedules
 } = require('../handlers/user.handle');
+const {
+    searchPlanInfo
+} = require('../handlers/group.handle');
 
 const { handleError } = require('../middlewares/res.middleware');
 
@@ -1012,30 +1015,17 @@ router.get('/calendars', isGoogleLoggedIn, isNotNewUser, async (req, res, next) 
     next();
 }, handleError);
 
-router.get('/calendars/freebusy', isGoogleLoggedIn, isNotNewUser, async (req, res, next) => {
+router.get('/calendars/freebusy/:plan_id', isGoogleLoggedIn, isNotNewUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/users/calendars/freebusy'
+    #swagger.path = '/users/calendars/freebusy/:plan_id'
     #swagger.tags = ['UserRouter']
-    #swagger.summary = '캘린더 리스트 조회 API (인증 필수)'
-    #swagger.description = '사용자의 캘린더 리스트를 조회하는 엔드포인트'
-    #swagger.parameters['timeMax'] = {
+    #swagger.summary = '한가한 일정 가져오기 API (인증 필수)'
+    #swagger.description = '사용자의 구글 캘린더에서 한가한 일정을 가져오는 엔드포인트'
+    #swagger.parameters['plan_id'] = {
         in: 'query',
-        description: 'plan_time_slot의 끝 time',
+        description: '약속 id',
         required: true,
-        type: 'string',
-    }
-    #swagger.parameters['timeMin'] = {
-        in: 'query',
-        description: 'plan_time_slot의 시작 time',
-        required: true,
-        type: 'string',
-    }
-    #swagger.parameters['dateList'] = {
-        in: 'query',
-        description: 'plan_time_slot의 date 목록',
-        required: true,
-        type: 'array',
-        schema: ["2024-11-01", "2024-11-03"]
+        type: 'integer',
     }
     #swagger.responses[200] = {
         content: {
@@ -1092,89 +1082,100 @@ router.get('/calendars/freebusy', isGoogleLoggedIn, isNotNewUser, async (req, re
         };
 
     } else {
-        await searchUser(req.user.id)
-        .then(async (info) => {
-            if (info.statusCode !== 200) {
-                req.result = {
-                    error: {
-                        statusCode: info.statusCode,
-                        comment: info.comment
-                    }
-                };
-            } else {
-                if (!req.query.timeMax || !req.query.timeMin || !req.query.dateList) {
+        new Promise(async (resovle, reject) => {
+            await searchUser(req.user.id)
+            .then(async (info) => {
+                if (info.statusCode !== 200) {
                     req.result = {
                         error: {
-                            statusCode: 400,
-                            comment: '잘못된 요청입니다.'
+                            statusCode: info.statusCode,
+                            comment: info.comment
                         }
                     };
+                    reject();
                 } else {
-                    const oauth2Client = new google.auth.OAuth2(
-                        keys.GOOGLE_CLIENT_ID,
-                        keys.GOOGLE_CLIENT_SECRET,
-                        keys.GOOGLE_CALENDARS_CALLBACK_URL
-                    );
-    
-                    oauth2Client.setCredentials({
-                        access_token: info.user.access_token,
-                    });
-    
-                    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    
-                    let busyDateInfo = [];
-                    let index = 0;
-                    for (let date of req.query.dateList) {
-                        if (index < 0) break;
+                    const calendarId = info.user.calendar_id;
+                    const accessToken = info.user.access_token;
 
-                        busyDateInfo.push({
-                            date: date,
-                            busy_time_scope: null
-                        });
-
-                        const calendarId = info.user.calendar_id;
-                        const timeMax = `${dateList[index]} ${req.query.timeMax}`;
-                        const timeMin = `${dateList[index]} ${req.query.timeMin}`;
-
-                        await calendar.freebusy.query({
-                            resource: {
-                                timeMax: timeMax,
-                                timeMin: timeMin,
-                                timeZone: 'Asia/Seoul',
-                                items: [{ id: calendarId }]
-                            }
-                        })
-                        .then((res) => {
-                            busyDateInfo[index].busy_time_scope.push(res.data.calendars.calendarId.busy);
-                        })
-                        .catch((err) => {
+                    await searchPlanInfo(req.query.plan_id)
+                    .then(async (info) => {
+                        if (info.statusCode !== 200) {
                             req.result = {
                                 error: {
-                                    statusCode: 500,
-                                    comment: err
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
                                 }
                             };
-                            
-                            index = -2;
-                        });
+                            reject();
+                        } else {
+                            const oauth2Client = new google.auth.OAuth2(
+                                keys.GOOGLE_CLIENT_ID,
+                                keys.GOOGLE_CLIENT_SECRET,
+                                keys.GOOGLE_CALENDARS_CALLBACK_URL
+                            );
+            
+                            oauth2Client.setCredentials({
+                                access_token: accessToken,
+                            });
+            
+                            const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-                        index++;
-                    };
-                };
-            };
-        })
-        .catch((err) => {
-            req.result = {
-                error: {
-                    statusCode: err.statusCode,
-                    comment: err.comment
-                }
-            };
-        });
+                            const timeSlot = info.plan.plan_time_slot;
+                            const dateLength = timeSlot.length;
+                            const timeLength = timeSlot[0].time_scope.length;
+
+                            const timeMaxDate = timeSlot[dateLength - 1].date;
+                            const timeMaxTime = timeSlot[dateLength - 1].time_scope[timeLength - 1].end;
+                            const timeMinDate = timeSlot[0].date;
+                            const timeMinTime = timeSlot[0].time_scope[0].start;
+                            const timeMax = new Date(`${timeMaxDate} ${timeMaxTime}`);
+                            const timeMin = new Date(`${timeMinDate} ${timeMinTime}`);
+
+                            await calendar.freebusy.query({
+                                resource: {
+                                    timeMax: timeMax,
+                                    timeMin: timeMin,
+                                    timeZone: 'Asia/Seoul',
+                                    items: [{ id: calendarId }]
+                                }
+                            })
+                            .then(async (res) => {
+                                const busy = res.data.calendars[calendarId].busy;
+                                const timeRange = {
+                                    start: timeMinTime,
+                                    end: timeMaxTime
+                                };
+                                await generateSchedules(info.plan, busy, timeRange)
+                                .then((info) => {
+                                    req.result = {
+                                        statusCode: info.statusCode,
+                                        submission_time_slot: info.submission_time_slot
+                                    };
     
+                                    resovle();
+                                });
+                            })
+                            .catch((err) => {
+                                req.result = {
+                                    error: {
+                                        statusCode: 500,
+                                        comment: err
+                                    }
+                                };
+                                reject();
+                            });
+                        };
+                    });
+                };
+            });
+        })
+        .then(()=>{
+            next();
+        })
+        .catch(()=>{
+            next();
+        });
     };
-
-    next();
 }, handleError);
 
 router.get('/calendars/callback', async (req, res, next) => {

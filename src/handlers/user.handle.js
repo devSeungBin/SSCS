@@ -3,6 +3,71 @@ const { Users, Preferences, Participants, Plans } = db;
 
 function isValidObject(obj) { return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0; };
 
+function filterByTimeRange(busyList, startTime, endTime) {
+    const startHours = startTime.split(':')[0];
+    const startMinutes = startTime.split(':')[1];
+
+    const endHours = endTime.split(':')[0];
+    const endMinutes = endTime.split(':')[1];
+
+    let newBusyList = [];
+    for (let busy of busyList) {
+        console.log('현재 busy: ', busy)
+        const oldDate = new Date(busy.start);
+        const year = oldDate.getFullYear();
+        const month = oldDate.getMonth();
+        const day = oldDate.getDate();
+
+        console.log(new Date(year, month, day, startHours, startMinutes))
+        console.log(new Date(year, month, day, endHours, endMinutes))
+        const startLimit = new Date(year, month, day, startHours, startMinutes).getTime();
+        const endLimit = new Date(year, month, day, endHours, endMinutes).getTime();
+
+        console.log(new Date(busy.start))
+        console.log(new Date(busy.end))
+        const busyStart = new Date(busy.start).getTime();
+        const busyEnd = new Date(busy.end).getTime();
+
+        if (busyStart >= startLimit && busyEnd <= endLimit) {   // 시작 시간과 종료 시간이 모두 지정된 범위 안에 포함되는 경우
+            console.log('시작, 종료 모두 안')
+            newBusyList.push({
+                start: busy.start,
+                end: busy.end
+            });
+        } else if (busyStart < startLimit && busyEnd > endLimit) {   // 시작 시간과 종료 시간이 모두 지정된 범위 안에 포함되지 않는 경우
+            console.log('시작, 종료 모두 밖')
+            const newBusyStart = new Date(startLimit);
+            const newBusyEnd = new Date(endLimit);
+            newBusyList.push({
+                start: newBusyStart,
+                end: newBusyEnd
+            });
+        }  else if (busyStart < startLimit && (busyEnd > startLimit && busyEnd <= endLimit)) {     // 시작 시간만 지정된 범위에 포함되지 않는 경우
+            console.log('시작은 밖, 종료는 안')
+            const newBusyStart = new Date(startLimit);
+            newBusyList.push({
+                start: newBusyStart,
+                end: busy.end
+            });
+        } else if ((busyStart >= startLimit && busyStart < endLimit) && busyEnd > endLimit) {     // 종료 시간만 지정된 범위에 포함되지 않는 경우
+            console.log('시작은 안, 종료는 밖')
+            const newBusyEnd = new Date(endLimit);
+            newBusyList.push({
+                start: busy.start,
+                end: newBusyEnd
+            });
+        } else if (busyStart > endLimit) {     // 시작 시간이 지정된 종료 범위보다 큰 경우
+            console.log('시작이 거꾸로 밖')
+            continue;
+        } else if (busyEnd <= startLimit) {     // 종료 시간이 지정된 시작 범위보다 작은 경우
+            console.log('종료가 거꾸로 밖')
+            continue;
+        };
+    }
+
+    return newBusyList;
+};
+
 exports.searchUser = async (id) => {
     try {
         const user = await Users.findOne({ where: { id: id }, raw: true });
@@ -286,40 +351,77 @@ exports.searchPlan = async (id) => {
     });
 }
 
-exports.generateSchedules = (dateList, timeScope) => {
-    const planTimeSlot = [];
+// 혹시 몰라서 console.log는 남겨둠
+exports.generateSchedules = async (plan, busy, time_range) => {
+    try {
+        let submission_time_slot = plan.plan_time_slot;
+        let isFree = true;
+        let dateIndex = 0;
+        let busyIndex = 0;
+        console.log('이전 busy: ', busy)
 
-    // 시간 범위를 분 단위로 변환
-    const startTimeInMinutes = parseInt(timeScope.start.replace(':', ''), 10) / 100 * 60;
-    const endTimeInMinutes = parseInt(timeScope.end.replace(':', ''), 10) / 100 * 60;
+        let newBusy = filterByTimeRange(busy, time_range.start, time_range.end);
+        console.log('새로운 busy: ', newBusy);
+        for (let date of submission_time_slot) {
+            let timeIndex = 0;
+            for (let time of date.time_scope) {
+                if (newBusy.length !== 0 && busyIndex < newBusy.length) {
+                    const startDate = new Date(`${submission_time_slot[dateIndex].date} ${time.start}:00`);
+                    const endDate = new Date(`${submission_time_slot[dateIndex].date} ${time.end}:00`);
+                    const busyStart = new Date(newBusy[busyIndex].start);
+                    const busyEnd = new Date(newBusy[busyIndex].end);
 
-    let index = 0;
-    dateList.forEach((date) => {
-        planTimeSlot.push({
-            date: date,
-            time_scope: []
-        });
+                    if (isFree) {
+                        console.log('현재 가능 time: ', time)
+                        console.log('현재 가능 busy: ', busyIndex)
+                        if (busyStart.getTime() == startDate.getTime() && busyEnd.getTime() == endDate.getTime()) {
+                            isFree = false;
+                            submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
+                            isFree = true;
+                            busyIndex++;
 
-        for (let minutes = startTimeInMinutes; minutes < endTimeInMinutes; minutes += 15) {
-            const hours = Math.floor(minutes / 60);
-            const startMinute = (minutes % 60).toString().padStart(2, '0');
-            const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
+                        } else if (busyStart.getTime() == startDate.getTime()) {
+                            isFree = false;
+                            submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
 
-            const start = `${hours}:${startMinute}`;
-            let end = `${hours}:${endMinute}`;
-            if (endMinute == 60) {
-                end = `${hours + 1}:00`;
+                        } else {
+                            submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
+                        }
+
+                    } else {
+                        console.log('현재 불가능 time: ', time)
+                        console.log('현재 불가능 busy: ', busyIndex)
+                        if (busyEnd.getTime() == endDate.getTime()) {
+                            submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
+                            isFree = true;
+                            busyIndex++;
+                        } else {
+                            submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
+                        };
+                    };
+
+                } else {
+                    submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
+                }
+
+                timeIndex++;
             };
 
-            planTimeSlot[index].time_scope.push({
-                start: start,
-                end: end,
-                available: []
-            });
+            isFree = true;
+            dateIndex++;
         };
 
-        index++;
-    });
+        return {
+            statusCode: 200,
+            submission_time_slot: submission_time_slot
+        };
 
-    return planTimeSlot;
+
+    } catch (err) {
+        console.log(err)
+        return {
+            statusCode: 500,
+            comment: err
+        };
+    };
 }

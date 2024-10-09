@@ -2713,46 +2713,21 @@
         }
       }
     },
-    "/users/calendars/freebusy": {
+    "/users/calendars/freebusy/:plan_id": {
       "get": {
         "tags": [
           "UserRouter"
         ],
-        "summary": "캘린더 리스트 조회 API (인증 필수)",
-        "description": "사용자의 캘린더 리스트를 조회하는 엔드포인트",
+        "summary": "한가한 일정 가져오기 API (인증 필수)",
+        "description": "사용자의 구글 캘린더에서 한가한 일정을 가져오는 엔드포인트",
         "parameters": [
           {
-            "name": "timeMax",
+            "name": "plan_id",
             "in": "query",
-            "description": "plan_time_slot의 끝 time",
+            "description": "약속 id",
             "required": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "timeMin",
-            "in": "query",
-            "description": "plan_time_slot의 시작 time",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "dateList",
-            "in": "query",
-            "description": "plan_time_slot의 date 목록",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "example": [
-                "2024-11-01",
-                "2024-11-03"
-              ],
-              "items": {
-                "type": "string"
-              }
+              "type": "integer"
             }
           }
         ],
@@ -3138,7 +3113,7 @@
             "type": "array",
             "example": [
               "2024-11-01",
-              "2023-11-03"
+              "2024-11-03"
             ],
             "items": {
               "type": "string"
@@ -3163,11 +3138,11 @@
           },
           "maximum_user_count": {
             "type": "number",
-            "example": 5
+            "example": 2
           },
           "progress_time": {
             "type": "number",
-            "example": 60
+            "example": 30
           },
           "schedule_deadline": {
             "type": "string",

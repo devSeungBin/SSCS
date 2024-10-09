@@ -132,7 +132,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
-> GET /users/calendars/{timeParams} - 구글 캘린더 일정 가져오기 (구글 연동 필요)[...]
+> GET /users/calendars/freebusy/{plan_id} - 구글 캘린더 일정 가져오기 [완성, 응답 테스트 완료]
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
@@ -143,6 +143,7 @@
 > GET /groups/{group_id}/plans/{plan_id}/votes - 제출된 모든 투표 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/votes - 투표 제출 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id}/votes - 제출된 투표 수정 [완성, 응답 테스트 완료]
+> DELETE /groups/{group_id}/plans/{plan_id}/votes - 제출한 투표 삭제[]
 
 > GET /groups/{group_id}/plans/{plan_id}/vote - 개별 투표 확인 [완성, 응답 테스트 완료]
 
