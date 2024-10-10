@@ -2,6 +2,14 @@ const crypto = require('crypto');
 const db = require('../models/index.db');
 const { Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
 
+function convertToMinutes(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    if (hours < 0 || minutes < 0 || minutes >= 60) {
+        return false;
+    }
+    return hours * 60 + minutes;
+}
+
 exports.searchGroup = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -428,9 +436,12 @@ exports.calculatePreferences = async (group_id) => {
 exports.generateTimeSlots = (dateList, timeScope) => {
     const planTimeSlot = [];
 
-    // 시간 범위를 분 단위로 변환
-    const startTimeInMinutes = parseInt(timeScope.start.replace(':', ''), 10) / 100 * 60;
-    const endTimeInMinutes = parseInt(timeScope.end.replace(':', ''), 10) / 100 * 60;
+    const startTimeMinutes = convertToMinutes(timeScope.start);
+    const endTimeMinutes = convertToMinutes(timeScope.end);
+
+    if (!startTimeMinutes || !endTimeMinutes) {
+        return planTimeSlot;
+    };
 
     let index = 0;
     dateList.forEach((date) => {
@@ -439,7 +450,7 @@ exports.generateTimeSlots = (dateList, timeScope) => {
             time_scope: []
         });
 
-        for (let minutes = startTimeInMinutes; minutes < endTimeInMinutes; minutes += 15) {
+        for (let minutes = startTimeMinutes; minutes < endTimeMinutes; minutes += 15) {
             const hours = Math.floor(minutes / 60);
             const startMinute = (minutes % 60).toString().padStart(2, '0');
             const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
