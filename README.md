@@ -26,8 +26,8 @@
 
 > GET /users - 사용자 정보 조회 [완성, 응답 테스트 완료]
 > POST /users - 로컬 회원가입 [완성, 응답 테스트 완료]
-> PATCH /users - 사용자 정보 수정 [완성, ...]
-> DELETE /users - 사용자 탈퇴 []
+> PATCH /users - 사용자 정보 수정 [완성, 응답 테스트 완료]
+> DELETE /users - 사용자 탈퇴 [보류]
 
 > GET /users/login - 구글 로그인 [완성, 응답 테스트 완료]
 > GET /users/login/callback - 리다이렉트 [완성, 응답 테스트 완료]
@@ -39,7 +39,7 @@
 > POST /users/preferences - 사용자 선호도 정보 생성 [완성, 응답 테스트 완료]
 
 > GET /users/calendars - 사용자 캘린더 리스트 조회 [완성, 응답 테스트 완료]
-> GET /users/calendars/callback - 리다이렉트 [딱히 하는거 없음..?]
+> GET /users/calendars/callback - 리다이렉트 [완성, 응답 테스트 완료]
 
 > GET /users/plans - 사용자 개인 약속 조회 [완성, 응답 테스트 완료]
 
@@ -85,11 +85,11 @@
 
 > GET /groups/{group_id} - 단일 그룹 정보 조회 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id} - 그룹 정보 수정 [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id} - 그룹 삭제[]
+> DELETE /groups/{group_id} - 그룹 삭제[보류]
 
 > GET /groups/{group_id}/members - 그룹 참여자 정보 조회 [완성, 응답 테스트 완료]
 > POST /groups/members - 그룹 참여자 생성(그룹 참여) [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/members - 그룹 탈퇴[]
+> DELETE /groups/{group_id}/members - 그룹 탈퇴[보류]
 
 > GET /groups/{group_id}/invite - 그룹 참여코드 조회(코드 재생성) [완성, 응답 테스트 완료]
 
@@ -98,7 +98,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id} - 약속 정보 조회 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id} - 그룹 약속 수정 (유저 수정) [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제[]
+> DELETE /groups/{group_id}/plans/{plan_id} - 그룹 약속 삭제[보류]
 ```
 
 ***
@@ -128,7 +128,7 @@
 > GET /groups/{group_id}/plans/{plan_id}/schedules - 제출된 모든 일정 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/schedules - 일정 제출 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id}/schedules - 개별 일정 수정 [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제[]
+> DELETE /groups/{group_id}/plans/{plan_id}/schedules - 제출한 일정 삭제[보류]
 
 > GET /groups/{group_id}/plans/{plan_id}/schedule - 개별 일정 확인 [완성, 응답 테스트 완료]
 
@@ -143,7 +143,7 @@
 > GET /groups/{group_id}/plans/{plan_id}/votes - 제출된 모든 투표 확인 [완성, 응답 테스트 완료]
 > POST /groups/{group_id}/plans/{plan_id}/votes - 투표 제출 [완성, 응답 테스트 완료]
 > PATCH /groups/{group_id}/plans/{plan_id}/votes - 제출된 투표 수정 [완성, 응답 테스트 완료]
-> DELETE /groups/{group_id}/plans/{plan_id}/votes - 제출한 투표 삭제[]
+> DELETE /groups/{group_id}/plans/{plan_id}/votes - 제출한 투표 삭제[보류]
 
 > GET /groups/{group_id}/plans/{plan_id}/vote - 개별 투표 확인 [완성, 응답 테스트 완료]
 
