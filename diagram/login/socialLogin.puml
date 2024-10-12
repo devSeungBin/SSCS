@@ -1,0 +1,41 @@
+@startuml socialLogin
+'http://localhost:3000/login
+
+title SocialLogin seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Google order 40
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Click "Google로 로그인"
+Client -> Server: **GET /users/login** \n Request "Social Login" 
+
+alt#Gold #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **409** or **500**
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #LightBlue Success
+    User <-- Server: Redirect "Google Login URL"
+    User -> Google: Login as User's google account
+    Server <- Google: **GET /users/login/callback** \n Request "Authorized redirect"
+    Client <-- Server: Response "JSON"
+    note left
+        result:
+            statusCode: **200** or **201**
+            user:
+                name: "**username**"
+    end note
+    User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/"
+
+end
+
+@enduml

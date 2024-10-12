@@ -1222,33 +1222,6 @@ router.get('/calendars/callback', async (req, res, next) => {
     }
     */
 
-    // console.log(req);
-    // req.result = {};
-
-    // new Promise (async (resolve, reject) => {
-    //     // Handle the OAuth 2.0 server response
-    //     let q = url.parse(req.url, true).query;
-    //     if (q.error) { // An error response e.g. error=access_denied
-    //         console.log('Error:' + q.error);
-    //         req.result = {
-    //             error: {
-    //                 statusCode: 500,
-    //                 comment: q.error
-    //             }
-    //         };
-    //         resolve();
-    //     } else {
-    //         req.result = {
-    //             statusCode: info.statusCode,
-    //             q: q
-    //         };
-    //         resolve();
-    //     }
-    // })
-    // .then(() => {
-    //     next();
-    // });
-
 });
 
 
