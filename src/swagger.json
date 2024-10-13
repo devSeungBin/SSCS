@@ -3409,13 +3409,13 @@
       "response_303": {
         "type": "object",
         "properties": {
-          "location": {
+          "message": {
             "type": "string",
-            "example": "리다이렉트 URL"
+            "example": "리다이렉트가 필요한 요청입니다."
           }
         },
         "required": [
-          "location"
+          "message"
         ]
       },
       "response_400": {
@@ -3550,10 +3550,6 @@
           "user": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "example": "사용자 id"
-              },
               "name": {
                 "type": "string",
                 "example": "사용자 이름"
@@ -3562,43 +3558,19 @@
                 "type": "string",
                 "example": "사용자 이메일"
               },
-              "password": {
-                "type": "string",
-                "example": "사용자 비밀번호"
-              },
-              "image": {
-                "type": "string",
-                "example": "사용자 프로필 이미지"
-              },
               "provider": {
                 "type": "string",
                 "example": "로그인 종류"
               },
-              "new": {
+              "calendar_id": {
                 "type": "string",
-                "example": "신규 사용자 여부"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "사용자 가입일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "사용자 정보 수정일"
+                "example": "기본 캘린더 id"
               }
             }
           },
           "preference": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "example": "선호도 id"
-              },
-              "user_id": {
-                "type": "string",
-                "example": "사용자 이름"
-              },
               "day_preference": {
                 "type": "string",
                 "example": "요일 선호도 정보"
@@ -3606,14 +3578,6 @@
               "time_preference": {
                 "type": "string",
                 "example": "시간 선호도 정보"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "선호도 생성일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "선호도 정보 수정일"
               }
             }
           }
@@ -3630,52 +3594,10 @@
           "statusCode": {
             "type": "string",
             "example": "201"
-          },
-          "user": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "사용자 id"
-              },
-              "name": {
-                "type": "string",
-                "example": "사용자 이름"
-              },
-              "email": {
-                "type": "string",
-                "example": "사용자 이메일"
-              },
-              "password": {
-                "type": "string",
-                "example": "사용자 비밀번호"
-              },
-              "image": {
-                "type": "string",
-                "example": "사용자 프로필 이미지"
-              },
-              "provider": {
-                "type": "string",
-                "example": "로그인 종류"
-              },
-              "new": {
-                "type": "string",
-                "example": "신규 사용자 여부"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "사용자 가입일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "사용자 정보 수정일"
-              }
-            }
           }
         },
         "required": [
-          "statusCode",
-          "user"
+          "statusCode"
         ]
       },
       "getUsersLoginCallbackRes200": {
@@ -3685,19 +3607,19 @@
             "type": "string",
             "example": "200"
           },
-          "passport": {
+          "user": {
             "type": "object",
             "properties": {
-              "id": {
+              "name": {
                 "type": "string",
-                "example": "사용자 id"
+                "example": "사용자 이름"
               }
             }
           }
         },
         "required": [
           "statusCode",
-          "passport"
+          "user"
         ]
       },
       "getUsersLoginCallbackRes201": {
@@ -3710,58 +3632,16 @@
           "user": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "example": "사용자 id"
-              },
               "name": {
                 "type": "string",
                 "example": "사용자 이름"
-              },
-              "email": {
-                "type": "string",
-                "example": "사용자 이메일"
-              },
-              "password": {
-                "type": "string",
-                "example": "사용자 비밀번호"
-              },
-              "image": {
-                "type": "string",
-                "example": "사용자 프로필 이미지"
-              },
-              "provider": {
-                "type": "string",
-                "example": "로그인 종류"
-              },
-              "new": {
-                "type": "string",
-                "example": "신규 사용자 여부"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "사용자 가입일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "사용자 정보 수정일"
-              }
-            }
-          },
-          "passport": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "사용자 id"
               }
             }
           }
         },
         "required": [
           "statusCode",
-          "user",
-          "passport"
+          "user"
         ]
       },
       "postUsersLoginRes200": {
@@ -3771,19 +3651,19 @@
             "type": "string",
             "example": "200"
           },
-          "passport": {
+          "user": {
             "type": "object",
             "properties": {
-              "id": {
+              "name": {
                 "type": "string",
-                "example": "사용자 id"
+                "example": "사용자 이름"
               }
             }
           }
         },
         "required": [
           "statusCode",
-          "passport"
+          "user"
         ]
       },
       "postUsersLogoutRes200": {
@@ -3813,14 +3693,6 @@
           "preference": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "example": "선호도 id"
-              },
-              "user_id": {
-                "type": "string",
-                "example": "사용자 이름"
-              },
               "day_preference": {
                 "type": "string",
                 "example": "요일 선호도 정보"
@@ -3828,14 +3700,6 @@
               "time_preference": {
                 "type": "string",
                 "example": "시간 선호도 정보"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "선호도 생성일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "선호도 정보 수정일"
               }
             }
           }
@@ -3855,14 +3719,6 @@
           "preference": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "example": "선호도 id"
-              },
-              "user_id": {
-                "type": "string",
-                "example": "사용자 이름"
-              },
               "day_preference": {
                 "type": "string",
                 "example": "요일 선호도 정보"
@@ -3870,14 +3726,6 @@
               "time_preference": {
                 "type": "string",
                 "example": "시간 선호도 정보"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "선호도 생성일"
-              },
-              "updated_at": {
-                "type": "string",
-                "example": "선호도 정보 수정일"
               }
             }
           }

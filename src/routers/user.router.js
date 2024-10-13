@@ -87,10 +87,22 @@ router.get('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                     }
                 };
             } else {
+                const user = {
+                    name: info.user.name,
+                    email: info.user.email,
+                    provider: info.user.provider,
+                    calendar_id: info.user.calendar_id
+                };
+
+                const preference = {
+                    day_preference: info.preference.day_preference,
+                    time_preference: info.preference.time_preference
+                };
+
                 req.result = {
                     statusCode: info.statusCode,
-                    user: info.user,
-                    preference: info.preference
+                    user: user,
+                    preference: preference
                 };
             };
         })
@@ -176,8 +188,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
                 };
             } else {
                 req.result = {
-                    statusCode: info.statusCode,
-                    user: info.user,
+                    statusCode: info.statusCode
                 };
             };
         })
@@ -430,14 +441,13 @@ router.get('/login/callback', async (req, res, next) => {
                 if (info.statusCode === 200) {
                     req.result = {
                         statusCode: info.statusCode,
-                        passport: req.session.passport,
+                        name: info.user.name
                     };
     
                 } else {
                     req.result = {
                         statusCode: info.statusCode,
-                        user: info.user,
-                        passport: req.session.passport,
+                        name: info.user.name
                     };
 
                 };
@@ -557,7 +567,7 @@ router.post('/login', isNotLoggedIn, async (req, res, next) => {
                     } else {
                         req.result = {
                             statusCode: info.statusCode,
-                            passport: req.session.passport,
+                            name: user.name
                         };
                     };
                     
@@ -699,9 +709,14 @@ router.get('/preferences', isLoggedIn, isNotNewUser, async (req, res, next) => {
                     }
                 };
             } else {
+                const preference = {
+                    day_preference: info.preference.day_preference,
+                    time_preference: info.preference.time_preference
+                };
+
                 req.result = {
                     statusCode: info.statusCode,
-                    preference: info.preference
+                    preference: preference
                 };
             };
         })
@@ -790,8 +805,7 @@ router.post('/preferences', isLoggedIn, isNewUser, async (req, res, next) => {
                     };
                 } else {
                     req.result = {
-                        statusCode: info.statusCode,
-                        preference: info.preference
+                        statusCode: info.statusCode
                     };
                 };
             })

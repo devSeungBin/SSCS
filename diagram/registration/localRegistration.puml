@@ -1,0 +1,42 @@
+@startuml localRegistration
+'http://localhost:3000/registration
+
+title localRegistration seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Input "name, email, password" \n & Click "회원가입"
+
+Client -> Server: **POST /users** \n Request "Local Registration"
+note right
+    req.body:
+        name: "**userName**",
+        email: "**userEmail**",
+        password: "**userPassword**"
+end note
+
+alt#Gold #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **400** or **409** or **500**
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #LightBlue Success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **201**
+    end note
+    User <-- Client: Alert "회원가입에 성공했습니다." \n & Redirect "/login"
+
+end
+
+@enduml

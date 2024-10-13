@@ -1,0 +1,34 @@
+@startuml allPageInitialMount
+'http://localhost:3000/
+
+title allPageInitialMount seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Move "/.."
+
+Client -> Server: **GET /plans** \n Request "Update plans' status"
+
+alt#Gold #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404** or **500**
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+
+else #LightBlue Success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **200**
+    end note
+
+end
+
+@enduml

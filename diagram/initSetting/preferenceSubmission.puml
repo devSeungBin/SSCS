@@ -1,0 +1,48 @@
+@startuml preferenceSubmission
+'http://localhost:3000/initSetting
+
+title preferenceSubmission seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Input "day_preference, time_preference" \n & Click "제출하기"
+
+Client -> Server: **POST /users/preferences** \n Request "Create Preferences"
+note right
+    req.body:
+        day_preference:
+            Mon: 3,
+            ...,
+        time_preference:
+            morning: 3,
+            afternoon: 3,
+            evening: 3
+end note
+
+alt#Gold #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401** or **409** or **500**
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #LightBlue Success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **201**
+    end note
+    User <-- Client: Modal "Preference Survey Completed"
+    User -> Client: Click "Start"
+    User <-- Client: Redirect "/UserHome"
+
+end
+
+@enduml

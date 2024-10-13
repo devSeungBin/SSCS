@@ -20,7 +20,7 @@ module.exports = () => {
                 try {
                     const user = await Users.findOne({ where: { email: profile.email } });
                     if (user) {
-                        done(null, user, { statusCode: 200 });
+                        done(null, user, { statusCode: 200, user: user.toJSON() });
                     } else {
                         const newUser = await Users.create({
                             name: profile.name,

@@ -184,7 +184,7 @@ const doc = {
             
             // 공용 응답
             response_303: {     // '요청을 다른 페이지로 연결'
-                $location: "리다이렉트 URL",
+                $message: "리다이렉트가 필요한 요청입니다.",
             },
             response_400: {     // '클라이언트 요청 실패 (잘못된 요청 구문)'
                 $statusCode: '400',
@@ -219,66 +219,35 @@ const doc = {
             getUsersRes200: {   // 'GET /users 요청 성공'
                 $statusCode: '200',
                 $user: {
-                    id: '사용자 id',
                     name: '사용자 이름',
                     email: '사용자 이메일',
-                    password: '사용자 비밀번호',
-                    image: '사용자 프로필 이미지',
                     provider: '로그인 종류',
-                    new: '신규 사용자 여부',
-                    created_at: '사용자 가입일',
-                    updated_at: '사용자 정보 수정일',
+                    calendar_id: '기본 캘린더 id',
                 },
                 $preference: {
-                    id: '선호도 id',
-                    user_id: '사용자 이름',
                     day_preference: '요일 선호도 정보',
                     time_preference: '시간 선호도 정보',
-                    created_at: '선호도 생성일',
-                    updated_at: '선호도 정보 수정일',
                 },
             },
             postUsersRes201: {  // 'POST /users 요청 성공'
                 $statusCode: '201',
-                $user: {
-                    id: '사용자 id',
-                    name: '사용자 이름',
-                    email: '사용자 이메일',
-                    password: '사용자 비밀번호',
-                    image: '사용자 프로필 이미지',
-                    provider: '로그인 종류',
-                    new: '신규 사용자 여부',
-                    created_at: '사용자 가입일',
-                    updated_at: '사용자 정보 수정일',
-                },
             },
             getUsersLoginCallbackRes200: {  // 'GET /users/login 요청 성공'
                 $statusCode: '200',
-                $passport: {
-                    id: '사용자 id',
+                $user: {
+                    name: '사용자 이름',
                 },
             },
             getUsersLoginCallbackRes201: {  // 'GET /users/login 요청 성공'
                 $statusCode: '201',
                 $user: {
-                    id: '사용자 id',
                     name: '사용자 이름',
-                    email: '사용자 이메일',
-                    password: '사용자 비밀번호',
-                    image: '사용자 프로필 이미지',
-                    provider: '로그인 종류',
-                    new: '신규 사용자 여부',
-                    created_at: '사용자 가입일',
-                    updated_at: '사용자 정보 수정일',
-                },
-                $passport: {
-                    id: '사용자 id',
                 },
             },
             postUsersLoginRes200: {     // 'POST /users/login 요청 성공'
                 $statusCode: '200',
-                $passport: {
-                    id: '사용자 id',
+                $user: {
+                    name: '사용자 이름',
                 },
             },
             postUsersLogoutRes200: {    // 'POST /users/logout 요청 성공'
@@ -288,23 +257,15 @@ const doc = {
             getUsersPreferencesRes200: {  // 'GET /users/preferences 요청 성공'
                 $statusCode: '200',
                 $preference: {
-                    id: '선호도 id',
-                    user_id: '사용자 이름',
                     day_preference: '요일 선호도 정보',
                     time_preference: '시간 선호도 정보',
-                    created_at: '선호도 생성일',
-                    updated_at: '선호도 정보 수정일',
                 },
             },
             postUsersPreferencesRes201: {  // 'POST /users/preferences 요청 성공'
                 $statusCode: '201',
                 $preference: {
-                    id: '선호도 id',
-                    user_id: '사용자 이름',
                     day_preference: '요일 선호도 정보',
                     time_preference: '시간 선호도 정보',
-                    created_at: '선호도 생성일',
-                    updated_at: '선호도 정보 수정일',
                 },
             },
             getUsersPlansRes200: {  // 'GET /users/plans 요청 성공'
