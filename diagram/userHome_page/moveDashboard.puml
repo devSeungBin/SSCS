@@ -1,0 +1,14 @@
+@startuml moveDashboard
+'http://localhost:3000/userHome
+
+title moveDashboard seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Client order 20
+actor User order 10
+
+User -> Client: Click "DashBoard"
+User <-- Client: Redirect "/dashboard"
+
+@enduml

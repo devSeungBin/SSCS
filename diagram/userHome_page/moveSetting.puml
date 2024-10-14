@@ -1,0 +1,14 @@
+@startuml moveSetting
+'http://localhost:3000/userHome
+
+title moveSetting seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Client order 20
+actor User order 10
+
+User -> Client: Click "Setting"
+User <-- Client: Redirect "/setting"
+
+@enduml

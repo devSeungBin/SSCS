@@ -325,7 +325,16 @@ exports.searchPlan = async (id) => {
             for(let group of myGroup) {
                 const plans = await Plans.findAll({ where: { group_id: group.group_id }, raw: true });
                 for (let plan of plans) {
-                    planList.push(plan);
+                    const planInfo = {
+                        id: plan.id,
+                        name: plan.name,
+                        group: plan.group,
+                        plan_time: plan.plan_time,
+                        schedule_deadline: plan.schedule_deadline,
+                        vote_deadline: plan.vote_deadline,
+                        status: plan.status
+                    };
+                    planList.push(planInfo);
                 };
                 ++count;
             };

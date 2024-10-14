@@ -204,7 +204,7 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                     } else {
                         req.result = {
                             statusCode: info.statusCode,
-                            group: info.group,
+                            groupId: info.group.id
                         };
                     };
                 });
@@ -615,7 +615,7 @@ router.post('/members', isLoggedIn, isNotNewUser, async (req, res, next) => {
             } else {
                 req.result = {
                     statusCode: info.statusCode,
-                    participant: info.participant,
+                    groupId: info.participant.group_id
                 };
             };
         })

@@ -25,7 +25,12 @@ exports.searchGroup = (id) => {
             let count = 0;
     
             myGroup.forEach(async (group) => {
-                groupList.push(await Groups.findOne({ where: { id: group.group_id }, raw: true }));
+                const group = await Groups.findOne({ where: { id: group.group_id }, raw: true });
+                groupList.push({
+                    id: group.id,
+                    name: group.name,
+                    user_count: group.user_count
+                });
                 ++count;
                 
                 if (count === myGroup.length) {

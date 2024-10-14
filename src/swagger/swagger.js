@@ -275,17 +275,10 @@ const doc = {
                         id: '약속 id',
                         name: '약속 이름',
                         group: '약속이 생성된 그룹 id',
-                        plan_time: '확정된 약속 시간',
-                        candidate_plan_time: '계산된 일정 후보 목록',
-                        vote_plan_time: '투표할 일정 후보 목록',
-                        plan_time_slot: '일정 제출 양식',
-                        minimum_user_count: '제출된 시간대에서 겹칠 수 있는 최소 인원수',
-                        maximum_user_count: '일정을 제출할 최대 인원 수',
-                        progress_time: '약속 진행 시간',
+                        plan_time: '약속 시간',
                         schedule_deadline: '일정 제출 마감일',
-                        status: '약속 진행 상태',
-                        created_at: '약속 생성일',
-                        updated_at: '약속 정보 수정일',
+                        vote_deadline: '투표 제출 마감일',
+                        status: '약속 진행 상태'
                     }
                 ]
             },
@@ -332,14 +325,7 @@ const doc = {
                     {
                         id: '그룹 id',
                         name: '그룹 이름',
-                        image: '그룹 프로필 이미지',
                         user_count: '그룹 참여자 수',
-                        invitation_code: '그룹 초대코드',
-                        preference_setting: '일정 후보 자동 선택 시 사용할 선호도 방식',
-                        manual_group_preferenece: '그룹 선호도 정보(수동)',
-                        creator: '그룹 생성자',
-                        created_at: '그룹 생성일',
-                        updated_at: '그룹 정보 수정일',
                     }
                 ]
             },

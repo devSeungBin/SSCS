@@ -1,0 +1,14 @@
+@startuml moveGroup
+'http://localhost:3000/userHome
+
+title moveGroup seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Client order 20
+actor User order 10
+
+User -> Client: Click "Group"
+User <-- Client: Redirect "/group/:id"
+
+@enduml
