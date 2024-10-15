@@ -37,16 +37,7 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **200**,
-            user:
-                **name**,
-                **email**,
-                **provider**,
-                **calender_id**
-            ,
-            preference:
-                **day_preference**,
-                **time_preference**
+            statusCode: **200**
     end note
 
     Client -> Server: **GET /groups** \n Request "Read UserGroupList"
@@ -77,9 +68,9 @@ else #LightBlue Success
             result:
                 statusCode: **200**, **404**,
                 groups: [{
-                    id: "**groupId**",
-                    name: "**groupName**",
-                    user_count: "**groupUsercount**"
+                    **id**,
+                    **name**,
+                    **user_count**
                 }, ...]
                 or
                 **null**
@@ -113,13 +104,13 @@ else #LightBlue Success
                 result:
                     statusCode: **200**, **404**,
                     plans: [{
-                        id: "**planId**",
-                        name: "**planName**",
-                        group: "**groupId**",
-                        plan_time: "**planTime**",
-                        schedule_deadline: "**planScheduleDeadline**",
-                        vote_deadline: "**planVoteDeadline**",
-                        status: "**planStatus**"
+                        **id**,
+                        **name**,
+                        **group**,
+                        **plan_time**,
+                        **schedule_deadline**,
+                        **vote_deadline**,
+                        **status**
                     }, ...]
                     or
                     **null**

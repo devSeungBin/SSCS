@@ -1,7 +1,7 @@
-@startuml addGroup
-'http://localhost:3000/userHome
+@startuml initialMount
+'http://localhost:3000/editGroup/:id
 
-title addGroup seqeunce diagram
+title initialMount seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,23 +9,19 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "추가"
+User -> Client: Move "/editGroup/:id"
 
-Client -> Server: **POST /groups** \n Request "Create Group"
-note right
-    req.body:
-        name: "**groupName**"
-end note
+Client -> Server: **GET /groups/:group_id** \n Request "Read GroupInformation"
 
 alt#Gold #Pink Failure
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **400** or **500**,
+            statusCode: **404** or **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment"
+    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
 
 else #Pink Failure_redirect
     Client <-- Server: Reponse "JSON"
@@ -51,12 +47,14 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **201**,
-            groupId: "**groupId**",
-
+            statusCode: **200**,
+            group:
+                **id**,
+                **name**,
+                **invitation_code**,
+                **preference_setting**,
+                **Manual_group_preference**
     end note
-    User <-- Client: Redirect "/group/:id"
-
 end
 
 @enduml

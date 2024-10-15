@@ -37,16 +37,7 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **200**,
-            user:
-                name,
-                email,
-                provider,
-                calender_id
-            ,
-            preference:
-                day_preference,
-                time_preference
+            statusCode: **200**
 
     end note
     User <-- Client: Redirect "/UserHome"

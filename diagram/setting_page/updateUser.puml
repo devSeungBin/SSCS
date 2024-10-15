@@ -1,0 +1,89 @@
+@startuml updateUser
+'http://localhost:3000/setting
+
+title updateUser seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Click "변경사항 저장"
+
+Client -> Server: **PATCH /users** \n Request "Update UserInformation"
+note right
+    req.body:
+        user: {
+            name: '홍승빈',
+            password: '123456789',
+            calendar_id: 'hongsb119@gmail.com'
+        },
+        preference: {
+            day_preference: {
+                Mon: 5,
+                Tue: 5,
+                Wed: 5,
+                Thu: 5,
+                Fri: 5,
+                Sat: 5,
+                Sun: 5,
+            },
+            time_preference: {
+                morning: 1,
+                afternoon: 1,
+                evening: 1,
+            },
+        }
+end note
+
+alt#Gold #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+
+else #Pink Failure_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401** or **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.message" \n & Redirect "/login"
+
+else #Pink Failure_request
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **400**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #LightYellow Redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **303**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+
+else #LightBlue Success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **200**
+    end note
+    User <-- Client: Alert "사용자 정보가 정상적으로 수정됐습니다."
+end
+
+@enduml

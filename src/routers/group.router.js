@@ -192,7 +192,7 @@ router.post('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                     manual_group_preference: info.group_preference,
                 }
             
-                await createGroup(newGroup)
+                await createGroup(req.user.id, newGroup)
                 .then((info) => {
                     if (info.statusCode !== 201) {
                         req.result = {

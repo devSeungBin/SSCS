@@ -34,7 +34,7 @@ else #LightBlue Success
         result:
             statusCode: **201**,
             user:
-                name: "**userName**"
+                **name**
     end note
     User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/"
 

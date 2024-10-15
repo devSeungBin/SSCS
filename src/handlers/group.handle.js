@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../models/index.db');
-const { Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
+const { Users, Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
 
 function convertToMinutes(timeString) {
     const [hours, minutes] = timeString.split(':').map(Number);
@@ -25,11 +25,11 @@ exports.searchGroup = (id) => {
             let count = 0;
     
             myGroup.forEach(async (group) => {
-                const group = await Groups.findOne({ where: { id: group.group_id }, raw: true });
+                const item = await Groups.findOne({ where: { id: group.group_id }, raw: true });
                 groupList.push({
-                    id: group.id,
-                    name: group.name,
-                    user_count: group.user_count
+                    id: item.id,
+                    name: item.name,
+                    user_count: item.user_count
                 });
                 ++count;
                 
@@ -75,7 +75,7 @@ exports.searchParticipant = async (id) => {
     });
 }
 
-exports.createGroup = async (group) => {
+exports.createGroup = async (id, group) => {
     if (!group.name || !group.creator) {
         return {
             statusCode: 400,
@@ -85,7 +85,12 @@ exports.createGroup = async (group) => {
 
     try {        
         const newGroup = await Groups.create(group);
-        await Participants.create({ user_id: group.creator, group_id: newGroup.id });
+        const user = await Users.findOne({ where: { id: id }, raw: true });
+        if(user.length === 0) return {
+            statusCode: 404,
+            comment: '사용자 프로필을 찾을 수 없습니다.'
+        };
+        await Participants.create({ name: user.name, user_id: group.creator, group_id: newGroup.id });
 
         return {
             statusCode: 201,
@@ -215,7 +220,13 @@ exports.joinGroup = async (id, invitation_code) => {
             };
         };
 
-        const participant = await Participants.create({ user_id: id, group_id: group.dataValues.id });
+        const user = await Users.findOne({ where: { id: id }, raw: true });
+        if(user.length === 0) return {
+            statusCode: 404,
+            comment: '사용자 프로필을 찾을 수 없습니다.'
+        };
+
+        const participant = await Participants.create({ name: user.name, user_id: id, group_id: group.dataValues.id });
         await group.update({ user_count: ++group.user_count });
         await group.save();
         

@@ -36,10 +36,7 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **200**,
-            preference:
-                day_preference,
-                time_preference
+            statusCode: **200**
 
     end note
     User <-- Client: Alert "이미 로그인 중입니다." \n & Redirect "/UserHome"

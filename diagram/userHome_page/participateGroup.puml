@@ -52,7 +52,7 @@ else #LightBlue Success
     note left
         result:
             statusCode: **201**,
-            groupId: **groupId**,
+            groupId: "**groupId**",
 
     end note
     User <-- Client: Redirect "/group/:id"

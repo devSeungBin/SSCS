@@ -32,7 +32,7 @@ else #LightBlue Success
         result:
             statusCode: **200** or **201**,
             user:
-                name: "**userName**"
+                **name**
     end note
     User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/"
 
