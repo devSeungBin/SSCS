@@ -203,7 +203,6 @@ groups table
 - user_count (INTEGER, NOT NULL)
 - invitation_code (VARCHAR(20))
 - preference_setting (VARCHAR(20))
-- auto_group_preference (JSON)
 - manual_group_preference (JSON)
 - creator (INTEGER, NOT NULL) / reference 'id' in users table
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
@@ -214,6 +213,7 @@ groups table
 participants table
 
 - id (INTEGER, NOT NULL, PRIMARY KEY)
+- name (VARCHAR(100), NOT NULL)
 - user_id (INTEGER, NOT NULL) / reference 'id' in users table
 - group_id (INTEGER, NOT NULL) / reference 'id' in groups table
 - created_at (TIMASTAMP, NOT NULL, DEFAULT CURRENT_TIMESTAMP)
