@@ -1475,13 +1475,22 @@ exports.failCalculation = async (plan_id, req) => {
 
 
 
-exports.checkVote = async (plan_id, vote_plan_time) => {
+exports.checkVote = async (user_id, plan_id, vote_plan_time) => {
     try {
         const plan = await Plans.findOne({ where: { id: plan_id, status: 'vote' }, raw: true });
         if (plan.length === 0) {
             return {
                 statusCode: 404,
                 comment: '투표를 제출할 약속이 없습니다.',
+                result: false
+            };
+        };
+
+        const submission = await Submissions.findOne({ where: { id: plan_id, user_id: user_id }, raw: true });
+        if (submission.length === 0) {
+            return {
+                statusCode: 404,
+                comment: '약속 참여자가 아닙니다.',
                 result: false
             };
         };
