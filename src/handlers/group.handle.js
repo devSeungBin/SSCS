@@ -1047,7 +1047,7 @@ exports.calculateCandidates = async (plan_id) => {
             await plan.update({ status: 'fail' });
             await plan.save();
         } else if (candidate_plan_time.length === 1) {
-            await plan.update({ candidate_plan_time: candidate_plan_time, status: 'select' });
+            await plan.update({ plan_time: candidate_plan_time[0], candidate_plan_time: candidate_plan_time, status: 'comfirm' });
             await plan.save();
         } else {
             let mostUserCount = 0;
@@ -1478,7 +1478,7 @@ exports.failCalculation = async (plan_id, req) => {
 exports.checkVote = async (user_id, plan_id, vote_plan_time) => {
     try {
         const plan = await Plans.findOne({ where: { id: plan_id, status: 'vote' }, raw: true });
-        if (plan.length === 0) {
+        if (!plan) {
             return {
                 statusCode: 404,
                 comment: '투표를 제출할 약속이 없습니다.',
@@ -1486,8 +1486,8 @@ exports.checkVote = async (user_id, plan_id, vote_plan_time) => {
             };
         };
 
-        const submission = await Submissions.findOne({ where: { id: plan_id, user_id: user_id }, raw: true });
-        if (submission.length === 0) {
+        const submission = await Submissions.findOne({ where: { user_id: user_id, plan_id: plan_id }, raw: true });
+        if (!submission) {
             return {
                 statusCode: 404,
                 comment: '약속 참여자가 아닙니다.',

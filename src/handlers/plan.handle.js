@@ -96,9 +96,15 @@ exports.updatePlan = async () => {
                                     };
                                 };
 
-                                await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
-                                await newPlan.save();
-                                continue;
+                                if (final_candidates.length === 1) {
+                                    await newPlan.update({ plan_time: final_candidates[0], candidate_plan_time: final_candidates, status: 'comfirm' });
+                                    await newPlan.save();
+                                    continue;
+                                } else {
+                                    await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
+                                    await newPlan.save();
+                                    continue;
+                                };
                             };
                         };
     
@@ -149,9 +155,15 @@ exports.updatePlan = async () => {
                                 };
                             };
 
-                            await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
-                            await newPlan.save();
-                            continue;
+                            if (final_candidates.length === 1) {
+                                await newPlan.update({ plan_time: final_candidates[0], candidate_plan_time: final_candidates, status: 'comfirm' });
+                                await newPlan.save();
+                                continue;
+                            } else {
+                                await newPlan.update({ candidate_plan_time: final_candidates, status: 'select' });
+                                await newPlan.save();
+                                continue;
+                            };
                         };
                     };
                 };  

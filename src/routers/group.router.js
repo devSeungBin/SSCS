@@ -2351,7 +2351,7 @@ router.post('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroup
         };
 
     } else {
-        const check = await checkVote(req.query.plan_id, req.body.vote_plan_time);
+        const check = await checkVote(req.user.id, req.query.plan_id, req.body.vote_plan_time);
 
         if (!check.result) {
             req.result = {
