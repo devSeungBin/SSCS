@@ -265,3 +265,17 @@ votes table
 
 약속 시나리오
 - 피그잼 주소: https://www.figma.com/board/Nddkm0xGkz5ZmGWPNA7xlS/Capstone-Design?node-id=368-596&t=0hdPo19nn5F83RpF-1
+
+***
+
+통합 설계 완료된 다이어그램
+
+- / (landing_page)
+- /registratino (registration_page)
+- /login (login_page)
+- /initSetting (initSetting_page)
+- /setting (setting_page)
+- /userHome (userHome_page)
+- /group (group_page)
+- /editGroup (editGroup_page)
+- /addPlan (addPlan_page)
