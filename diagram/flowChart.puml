@@ -1,0 +1,120 @@
+@startuml flowChart
+start
+split
+    :로컬 회원가입;
+    :로컬 로그인;
+split again
+    :소셜 로그인;
+end split
+split
+    :그룹 생성;
+split again
+    :그룹 참여;
+end split
+:약속 생성;
+
+switch (약속 상태?)
+case ( submit )
+group 일정 입력
+    if (제출된 일정 == null) then (yes)
+        if (소셜 로그인) then (yes)
+            :캘린더 일정 가져오기;
+        else (no)
+        endif
+        :한가한 일정 입력;
+    else (no)
+        if (소셜 로그인) then (yes)
+            :캘린더 일정 가져오기;
+        else (no)
+        endif
+        :제출된 일정 수정;
+    endif
+    :입력한 일정 제출 요청;
+end group
+
+case ( calculate )
+group 일정 후보 계산
+    :일정 후보 계산 요청;
+end group
+
+case ( fail )
+group 일정 후보 계산 실패
+    if (사용자 == 그룹 관리자) then (yes)
+        switch (선택지?)
+        case ( 투표 생성 )
+        :투표할 일정 후보 선택;
+        :투표 생성 요청;
+
+        case ( 약속 조건 재설정 )
+        :일정 후보 계산에
+        필요한 조건 수정
+        
+        - 최소 인원수
+        - 진행 시간;
+        :약속 수정 요청;
+
+        case ( 약속 취소 )
+        :약속 취소 요청;
+        endswitch
+    else (no)
+    endif
+end group
+
+case ( vote )
+group 일정 후보 투표
+    if (제출된 투표 == null) then (yes)
+        :한가한 일정 투표;
+    else (no)
+        :제출된 투표 수정;
+    endif
+    :입력한 투표 제출 요청;
+end group
+
+case ( select )
+group 약속 일정 선택
+    split
+    :약속 일정 자동 선택 요청;
+    switch (약속 일정 수?)
+    case ( 0개 )
+    :candidate_plan_time 내에서 약속 일정 선택;
+    :약속 일정 수동 선택 요청;
+
+    case ( 1개 )
+
+    case ( 2개 이상 )
+    :plan_time 내에서 약속 일정 선택;
+    :약속 일정 수동 선택 요청;
+
+    endswitch
+    split again
+    :candidate_plan_time 내에서 약속 일정 선택;
+    :약속 일정 수동 선택 요청;
+    end split
+end group
+
+case ( comfirm )
+group 약속 확정
+    :확정된 약속 정보 요청;
+end group
+
+endswitch
+stop
+@enduml
+
+`group 약속 상태 업데이트 단계
+`    if (약속 최대 인원수 != null) then (yes)
+`        if (약속 최대 인원수 <= 제출된 일정 수) then (yes)
+`            :약속 상태 변경
+`            __sumbit__ to __calculate__;
+`            stop
+`        else (no)
+`        endif
+`    else (no)
+`    endif
+`
+`    if (일정 제출 마감일 <= 현재 날짜) then (yes)
+`        :약속 상태 변경
+`        __sumbit__ to __calculate__;
+`    else (no)
+`    endif
+`end group
