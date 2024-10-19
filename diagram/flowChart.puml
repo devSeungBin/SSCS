@@ -100,21 +100,3 @@ end group
 endswitch
 stop
 @enduml
-
-`group 약속 상태 업데이트 단계
-`    if (약속 최대 인원수 != null) then (yes)
-`        if (약속 최대 인원수 <= 제출된 일정 수) then (yes)
-`            :약속 상태 변경
-`            __sumbit__ to __calculate__;
-`            stop
-`        else (no)
-`        endif
-`    else (no)
-`    endif
-`
-`    if (일정 제출 마감일 <= 현재 날짜) then (yes)
-`        :약속 상태 변경
-`        __sumbit__ to __calculate__;
-`    else (no)
-`    endif
-`end group
