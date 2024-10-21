@@ -1266,6 +1266,9 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
                 };
 
                 if (twoCondition.length >= 2) {
+                    await plan.update({ candidate_plan_time: twoCondition });
+                    await plan.save();
+
                     return {
                         statusCode: 200,
                         plan_time: twoCondition
@@ -1283,6 +1286,9 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
                 };
 
                 if (oneCondition.length >= 2) {
+                    await plan.update({ candidate_plan_time: twoCondition });
+                    await plan.save();
+                    
                     return {
                         statusCode: 200,
                         plan_time: oneCondition

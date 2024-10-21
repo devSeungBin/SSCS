@@ -1166,13 +1166,6 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             }           
         }
     }
-    #swagger.responses[409] = {
-        content: {
-            "application/json": {
-                schema:{ $ref: "#/components/schemas/response_409" }
-            }           
-        }
-    }
     #swagger.responses[500] = {
         content: {
             "application/json": {
@@ -1372,7 +1365,7 @@ router.post('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isG
             }
         }
     }
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
         content: {
             "application/json": {
                 schema:{ $ref: "#/components/schemas/postGroupsIdPlansIdSchedulesRes201" }
@@ -1563,13 +1556,6 @@ router.patch('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, is
             }           
         }
     }
-    #swagger.responses[409] = {
-        content: {
-            "application/json": {
-                schema:{ $ref: "#/components/schemas/response_409" }
-            }           
-        }
-    }
     #swagger.responses[500] = {
         content: {
             "application/json": {
@@ -1670,12 +1656,12 @@ router.patch('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, is
     next();
 }, handleError);
 
-router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+router.get('/:group_id/plans/:plan_id/schedule/:user_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/groups/:group_id/plans/:plan_id/schedule'
+    #swagger.path = '/groups/:group_id/plans/:plan_id/schedule/:user_id'
     #swagger.tags = ['GroupRouter']
     #swagger.summary = '개별 일정 확인 API (인증 필요)'
-    #swagger.description = '자신이 제출한 일정을 확인하기 위한 엔드포인트'
+    #swagger.description = '제출한 개별 일정을 확인하기 위한 엔드포인트'
     #swagger.parameters['group_id'] = {
         in: 'query',
         description: '약속이 속한 그룹 id',
@@ -1686,6 +1672,12 @@ router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGro
         in: 'query',
         description: '제출된 일정을 확인할 약속 id',
         required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['user_id'] = {
+        in: 'query',
+        description: '제출된 일정을 확인할 사용자 id',
+        required: false,
         type: 'integer',
     }
     #swagger.responses[200] = {
@@ -1736,7 +1728,14 @@ router.get('/:group_id/plans/:plan_id/schedule', isLoggedIn, isNotNewUser, isGro
         };
 
     } else {
-        await searchSchedule(req.user.id, req.query.plan_id)
+        let userId = null;
+        if (req.query.user_id != null) {
+            userId = req.query.user_id;
+        } else {
+            userId = req.user.id;
+        };
+
+        await searchSchedule(userId, req.query.plan_id)
         .then((info) => {
             if (info.statusCode !== 200) {
                 req.result = {
@@ -2585,12 +2584,12 @@ router.patch('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGrou
     next();
 }, handleError);
 
-router.get('/:group_id/plans/:plan_id/vote', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
+router.get('/:group_id/plans/:plan_id/vote/:user_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
     /* 
-    #swagger.path = '/groups/:group_id/plans/:plan_id/vote'
+    #swagger.path = '/groups/:group_id/plans/:plan_id/vote/:user_id'
     #swagger.tags = ['GroupRouter']
     #swagger.summary = '개별 투표 확인 API (인증 필요)'
-    #swagger.description = '자신이 제출한 투표를 확인하기 위한 엔드포인트'
+    #swagger.description = '제출한 개별 투표를 확인하기 위한 엔드포인트'
     #swagger.parameters['group_id'] = {
         in: 'query',
         description: '그룹 id',
@@ -2601,6 +2600,12 @@ router.get('/:group_id/plans/:plan_id/vote', isLoggedIn, isNotNewUser, isGroupUs
         in: 'query',
         description: '약속 id',
         required: true,
+        type: 'integer',
+    }
+    #swagger.parameters['user_id'] = {
+        in: 'query',
+        description: '제출된 투표를 확인할 사용자 id',
+        required: false,
         type: 'integer',
     }
     #swagger.responses[200] = {
@@ -2651,7 +2656,14 @@ router.get('/:group_id/plans/:plan_id/vote', isLoggedIn, isNotNewUser, isGroupUs
         };
 
     } else {
-        await searchVote(req.user.id, req.query.plan_id)
+        let userId = null;
+        if (req.query.user_id != null) {
+            userId = req.query.user_id;
+        } else {
+            userId = req.user.id;
+        };
+
+        await searchVote(userId, req.query.plan_id)
         .then((info) => {
             if (info.statusCode !== 200) {
                 req.result = {

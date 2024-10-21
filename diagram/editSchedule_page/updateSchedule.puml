@@ -1,7 +1,7 @@
-@startuml addPlan
-'http://localhost:3000/addPlan
+@startuml updateSchedule
+'http://localhost:3000/editSchedule
 
-title addPlan seqeunce diagram
+title updateSchedule seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,32 +9,42 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "일정 추가 & 완료"
+User -> Client: Click "일정 수정"
 
-Client -> Server: **POST /groups/:group_id/plans** \n Request "Create Plan"
+Client -> Server: **PATCH /groups/:group_id/plans/:plan_id/schedules** \n Request "Update UserSchedule"
 note right
     req.body:
-        name: 'myPlan',
-        date_list: ["2024-11-01", "2024-11-03"],
-        time_scope: {
-            "start": "09:00",
-            "end": "10:00"
-        },
-        minimum_user_count: 2,
-        maximum_user_count: 2,
-        progress_time: 30,
-        schedule_deadline: '2024-11-05 00:00',
+        submission_time_slot: [{
+            date: "2024-11-01",
+            time_scope: [
+                {
+                    start: "9:00",
+                    end: "9:15",
+                    available: true
+                }
+            ]
+        }, ...]
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink Failure_internal
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **404** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink Failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "약속이 존재하지 않습니다." \n & Redirect "/userHome"
 
 else #Pink Failure_redirect
     Client <-- Server: Reponse "JSON"
@@ -70,11 +80,10 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **201**
-            plan:
-                **id**
+            statusCode: **200**
+
     end note
-    User <-- Client: Redirect "/plan/:id"
+    User <-- Client: Alert "일정이 수정됐습니다." \n & Redirect "/plan/:id"
 end
 
 @enduml

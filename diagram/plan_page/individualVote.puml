@@ -1,7 +1,7 @@
-@startuml addPlan
-'http://localhost:3000/addPlan
+@startuml individualVote
+'http://localhost:3000/plan/:id
 
-title addPlan seqeunce diagram
+title individualVote seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,22 +9,9 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "일정 추가 & 완료"
+User -> Client: Click "제출 일정 확인"
 
-Client -> Server: **POST /groups/:group_id/plans** \n Request "Create Plan"
-note right
-    req.body:
-        name: 'myPlan',
-        date_list: ["2024-11-01", "2024-11-03"],
-        time_scope: {
-            "start": "09:00",
-            "end": "10:00"
-        },
-        minimum_user_count: 2,
-        maximum_user_count: 2,
-        progress_time: 30,
-        schedule_deadline: '2024-11-05 00:00',
-end note
+Client -> Server: **GET /groups/:group_id/plans/:plan_id/vote/:user_id** \n Request "Read individualVote"
 
 alt#Gold #Pink Failure
     Client <-- Server: Reponse "JSON"
@@ -46,16 +33,6 @@ else #Pink Failure_redirect
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #Pink Failure_request
-    Client <-- Server: Reponse "JSON"
-    note left
-        result:
-            statusCode: **400**,
-            comment: "**error comment**",
-            message: "**error message**"
-    end note
-    User <-- Client: Alert "result.comment"
-
 else #LightYellow Redirect
     Client <-- Server: Reponse "JSON"
     note left
@@ -70,11 +47,14 @@ else #LightBlue Success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **201**
-            plan:
-                **id**
+            statusCode: **200**,
+            vote:
+                **id**,
+                **user_id**,
+                **plan_id**,
+                **vote_plan_time**
     end note
-    User <-- Client: Redirect "/plan/:id"
+
 end
 
 @enduml

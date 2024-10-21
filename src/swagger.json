@@ -1260,13 +1260,13 @@
         }
       }
     },
-    "/groups/:group_id/plans/:plan_id/schedule": {
+    "/groups/:group_id/plans/:plan_id/schedule/:user_id": {
       "get": {
         "tags": [
           "GroupRouter"
         ],
         "summary": "개별 일정 확인 API (인증 필요)",
-        "description": "자신이 제출한 일정을 확인하기 위한 엔드포인트",
+        "description": "제출한 개별 일정을 확인하기 위한 엔드포인트",
         "parameters": [
           {
             "name": "group_id",
@@ -1282,6 +1282,15 @@
             "in": "query",
             "description": "제출된 일정을 확인할 약속 id",
             "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "제출된 일정을 확인할 사용자 id",
+            "required": false,
             "schema": {
               "type": "integer"
             }
@@ -1970,13 +1979,13 @@
         }
       }
     },
-    "/groups/:group_id/plans/:plan_id/vote": {
+    "/groups/:group_id/plans/:plan_id/vote/:user_id": {
       "get": {
         "tags": [
           "GroupRouter"
         ],
         "summary": "개별 투표 확인 API (인증 필요)",
-        "description": "자신이 제출한 투표를 확인하기 위한 엔드포인트",
+        "description": "제출한 개별 투표를 확인하기 위한 엔드포인트",
         "parameters": [
           {
             "name": "group_id",
@@ -1992,6 +2001,15 @@
             "in": "query",
             "description": "약속 id",
             "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "제출된 투표를 확인할 사용자 id",
+            "required": false,
             "schema": {
               "type": "integer"
             }
@@ -3761,47 +3779,19 @@
                 },
                 "plan_time": {
                   "type": "string",
-                  "example": "확정된 약속 시간"
-                },
-                "candidate_plan_time": {
-                  "type": "string",
-                  "example": "계산된 일정 후보 목록"
-                },
-                "vote_plan_time": {
-                  "type": "string",
-                  "example": "투표할 일정 후보 목록"
-                },
-                "plan_time_slot": {
-                  "type": "string",
-                  "example": "일정 제출 양식"
-                },
-                "minimum_user_count": {
-                  "type": "string",
-                  "example": "제출된 시간대에서 겹칠 수 있는 최소 인원수"
-                },
-                "maximum_user_count": {
-                  "type": "string",
-                  "example": "일정을 제출할 최대 인원 수"
-                },
-                "progress_time": {
-                  "type": "string",
-                  "example": "약속 진행 시간"
+                  "example": "약속 시간"
                 },
                 "schedule_deadline": {
                   "type": "string",
                   "example": "일정 제출 마감일"
                 },
+                "vote_deadline": {
+                  "type": "string",
+                  "example": "투표 제출 마감일"
+                },
                 "status": {
                   "type": "string",
                   "example": "약속 진행 상태"
-                },
-                "created_at": {
-                  "type": "string",
-                  "example": "약속 생성일"
-                },
-                "updated_at": {
-                  "type": "string",
-                  "example": "약속 정보 수정일"
                 }
               }
             }
@@ -3968,37 +3958,9 @@
                   "type": "string",
                   "example": "그룹 이름"
                 },
-                "image": {
-                  "type": "string",
-                  "example": "그룹 프로필 이미지"
-                },
                 "user_count": {
                   "type": "string",
                   "example": "그룹 참여자 수"
-                },
-                "invitation_code": {
-                  "type": "string",
-                  "example": "그룹 초대코드"
-                },
-                "preference_setting": {
-                  "type": "string",
-                  "example": "일정 후보 자동 선택 시 사용할 선호도 방식"
-                },
-                "manual_group_preferenece": {
-                  "type": "string",
-                  "example": "그룹 선호도 정보(수동)"
-                },
-                "creator": {
-                  "type": "string",
-                  "example": "그룹 생성자"
-                },
-                "created_at": {
-                  "type": "string",
-                  "example": "그룹 생성일"
-                },
-                "updated_at": {
-                  "type": "string",
-                  "example": "그룹 정보 수정일"
                 }
               }
             }
