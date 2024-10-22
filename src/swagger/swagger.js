@@ -1,18 +1,19 @@
 const swaggerAutogen = require("swagger-autogen")({openapi: '3.0.0'});
 const path = require("path");
+const keys = require("../config/keys.config");
 
 // API 문서 자동화
 
 const doc = {
     info: {
         version: '1.0.0',
-        title: 'Plans Wizard\'s REST API',
-        description: 'Plans Wizard\'s API 명세서'
+        title: 'Timely Meet\'s REST API',
+        description: 'Timely Meet\'s API 명세서'
     },
     servers: [
         {
-            url: 'http://localhost:3000',
-            description: 'Plans Wizard\'s API 명세서 주소'
+            url: `http://${keys.CLIENT_HOST}:${keys.CLIENT_PORT}`,
+            description: 'Timely Meet\'s API 명세서 주소'
         },
     ],
     tags: [

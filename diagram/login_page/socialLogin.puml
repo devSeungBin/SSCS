@@ -1,7 +1,7 @@
-@startuml socialLogin
+@startuml socialLogin(완료)
 'http://localhost:3000/login
 
-title SocialLogin seqeunce diagram
+title SocialLogin(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -13,17 +13,27 @@ actor User order 10
 User -> Client: Click "Google로 로그인"
 Client -> Server: **GET /users/login** \n Request "Social Login" 
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **409** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.message"
+    User <-- Client: Redirect "/login"
 
-else #LightBlue Success
+else #Pink socialLogin_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **409**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Redirect "/userHome"
+
+else #LightBlue socialLogin_success
     User <-- Server: Redirect "Google Login URL"
     User -> Google: Login as User's google account
     Server <- Google: **GET /users/login/callback** \n Request "Authorized redirect"
@@ -31,10 +41,9 @@ else #LightBlue Success
     note left
         result:
             statusCode: **200** or **201**,
-            user:
-                **name**
+            name: **name**
     end note
-    User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/"
+    User <-- Client: Redirect "/userHome"
 
 end
 

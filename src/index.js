@@ -36,6 +36,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: false,
+        sameSite: 'lax'
         // maxAge: 1000 * 60 * 60,
     },
 }),
@@ -66,6 +67,6 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 
 // 서버 오픈
-app.listen(keys.CLIENT_PORT, () => {
+app.listen(keys.SERVER_PORT, () => {
     console.log(`[Server] 서버를 정상적으로 열었습니다.`);
 });

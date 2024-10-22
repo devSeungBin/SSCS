@@ -5,6 +5,15 @@ exports.handleError = (req, res) => {
     const result = req.result;
     const error = req.result.error;
 
+    if (result?.redirect !== undefined) {
+        const userHomeURL = `http://${keys.CLIENT_HOST}:${keys.CLIENT_PORT}${keys.CLIENT_USERHOME_ROUTER}`;
+        return res.redirect(301, userHomeURL);
+
+    } else if (error?.redirect !== undefined) {
+        const loginURL = `http://${keys.CLIENT_HOST}:${keys.CLIENT_PORT}${keys.CLIENT_LOGIN_ROUTER}`;
+        return res.redirect(301, loginURL);
+    };
+
     if (error) {
         if (error.statusCode === 303) {
             req.result.error.message = '임시 리다이렉트 메세지';

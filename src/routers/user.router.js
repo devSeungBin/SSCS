@@ -420,7 +420,8 @@ router.get('/login/callback', async (req, res, next) => {
                 req.result = {
                     error: {
                         statusCode: 500,
-                        comment: err
+                        comment: err,
+                        redirect: 'login'
                     }
                 };
                 resolve();
@@ -432,22 +433,25 @@ router.get('/login/callback', async (req, res, next) => {
                     req.result = {
                         error: {
                             statusCode: 500,
-                            comment: err
+                            comment: err,
+                            redirect: 'login'
                         }
                     };
 
                 };
     
-                if (info.statusCode === 200) {
+                if (info.statusCode === 200 || info.statusCode === 201) {
                     req.result = {
                         statusCode: info.statusCode,
-                        name: info.user.name
+                        name: info.user.name,
+                        redirect: 'userHome'
                     };
-    
+
                 } else {
                     req.result = {
                         statusCode: info.statusCode,
-                        name: info.user.name
+                        name: info.user.name,
+                        redirect: 'userHome'
                     };
 
                 };

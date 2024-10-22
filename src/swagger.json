@@ -2,13 +2,13 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "Plans Wizard's REST API",
-    "description": "Plans Wizard's API 명세서"
+    "title": "Timely Meet's REST API",
+    "description": "Timely Meet's API 명세서"
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": "Plans Wizard's API 명세서 주소"
+      "url": "http://localhost:5000",
+      "description": "Timely Meet's API 명세서 주소"
     }
   ],
   "tags": [
@@ -922,16 +922,6 @@
             },
             "description": "Not Found"
           },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response_409"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
           "500": {
             "content": {
               "application/json": {
@@ -1064,7 +1054,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1072,7 +1062,7 @@
                 }
               }
             },
-            "description": "Created"
+            "description": "OK"
           },
           "303": {
             "content": {
@@ -1224,16 +1214,6 @@
               }
             },
             "description": "Not Found"
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response_409"
-                }
-              }
-            },
-            "description": "Conflict"
           },
           "500": {
             "content": {

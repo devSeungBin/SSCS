@@ -1,7 +1,7 @@
-@startuml localRegistration
+@startuml localRegistration(완료)
 'http://localhost:3000/registration
 
-title localRegistration seqeunce diagram
+title localRegistration(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -19,17 +19,27 @@ note right
         password: "**userPassword**"
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **400** or **409** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.message"
+    User <-- Client: Alert "result.comment" & "result.message"
 
-else #LightBlue Success
+else #Pink localRegistration_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **400** or **409**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #LightBlue localRegistration_success
     Client <-- Server: Reponse "JSON"
     note left
         result:

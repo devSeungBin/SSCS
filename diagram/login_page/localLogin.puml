@@ -1,7 +1,7 @@
-@startuml localLogin
+@startuml localLogin(완료)
 'http://localhost:3000/login
 
-title localLogin seqeunce diagram
+title localLogin(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -18,25 +18,44 @@ note right
         password: "**userPassword**"
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **400** or **404** or **409** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.message"
+    User <-- Client: Alert "result.comment" & "result.message"
 
-else #LightBlue Success
+else #Pink localLogin_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **400** or **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #Pink localLogin_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **409**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+
+else #LightBlue localLogin_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **201**,
-            user:
-                **name**
+            name: **name**
     end note
-    User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/"
+    User <-- Client: Alert "user.name님, 환영합니다." \n & Redirect "/userHome"
 
 end
 

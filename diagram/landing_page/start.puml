@@ -1,7 +1,7 @@
-@startuml start
+@startuml start(완료)
 'http://localhost:3000/
 
-title start seqeunce diagram
+title start(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -13,17 +13,27 @@ User -> Client: Click "시작하기"
 
 Client -> Server: **GET /users** \n Request "Read UserInformation"
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **401** or **404** or **500**,
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink readUserInformation_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401** or **404**,
             comment: "**error comment**",
             message: "**error message**"
     end note
     User <-- Client: Redirect "/login"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -33,14 +43,14 @@ else #LightYellow Redirect
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue readUserInformation_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**
 
     end note
-    User <-- Client: Redirect "/UserHome"
+    User <-- Client: Redirect "/userHome"
 
 end
 
