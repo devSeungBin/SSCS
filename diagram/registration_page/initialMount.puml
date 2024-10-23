@@ -40,7 +40,7 @@ else #LightYellow newUser_redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
 else #LightBlue readUserInformation_success
     Client <-- Server: Reponse "JSON"

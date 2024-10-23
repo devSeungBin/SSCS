@@ -1,3 +1,4 @@
+const array = require('lodash');
 const db = require('../models/index.db');
 const { Users, Preferences, Participants, Plans } = db;
 
@@ -340,6 +341,8 @@ exports.searchPlan = async (id) => {
             };
 
             if (planList.length !== 0) {
+                planList = array.orderBy(planList, ['id'], ['asc']);
+
                 resolve({
                     statusCode: 200,
                     plans: planList

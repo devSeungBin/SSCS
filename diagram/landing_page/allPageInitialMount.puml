@@ -41,4 +41,149 @@ else #LightBlue updatePlanStatus_success
 
 end
 
+Client -> Server: **GET /users** \n Request "Read UserInformation2"
+
+alt#Gold #Pink internal_error
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink readUserInformation2_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401** or **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: if (pathName is /, /login, /registration)
+    User <-- Client: else Alert "result.message" \n & Redirect "/login"
+
+else #LightYellow newUser_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **303**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Redirect "/initSetting"
+
+else #LightBlue readUserInformation2_success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **200**,
+            name: **name**
+    end note
+
+    Client -> Server: **GET /groups** \n Request "Read UserGroupList"
+
+    alt#Gold #Pink internal_error
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **500**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+    else #Pink readUserGroupList_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: if (pathName is /, /login, /registration)
+    User <-- Client: else Alert "result.message" \n & Redirect "/login"
+
+    else #LightYellow newUser_redirect
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **303**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+        User <-- Client: Redirect "/initSetting"
+
+    else #LightBlue readUserGroupList_success
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **200** or **404**,
+                groups: [{  
+                    **id**,
+                    **name**,
+                    **user_count**
+                }, ...] // 200
+                or
+                **null** // 404
+        end note
+
+        Client -> Server: **GET /users/plans** \n Request "Read UserPlanList"
+
+        alt#Gold #Pink internal_error
+            Client <-- Server: Reponse "JSON"
+                note left
+                    result:
+                        statusCode: **500**,
+                        comment: "**error comment**",
+                        message: "**error message**"
+                end note
+            User <-- Client: Alert "result.comment" & "result.message"
+
+        else #Pink readUserPlanList_failure
+            Client <-- Server: Reponse "JSON"
+            note left
+                result:
+                    statusCode: **401**,
+                    comment: "**error comment**",
+                    message: "**error message**"
+            end note
+            User <-- Client: if (pathName is /, /login, /registration)
+            User <-- Client: else Alert "result.message" \n & Redirect "/login"
+
+        else #LightYellow newUser_redirect
+            Client <-- Server: Reponse "JSON"
+            note left
+                result:
+                    statusCode: **303**,
+                    comment: "**error comment**",
+                    message: "**error message**"
+            end note
+            User <-- Client: Redirect "/initSetting"
+
+        else #LightBlue readUserPlanList_success
+            Client <-- Server: Reponse "JSON"
+            note left
+                result:
+                    statusCode: **200** or **404**,
+                    plans: [{
+                        **id**,
+                        **name**,
+                        **group**,
+                        **plan_time**,
+                        **schedule_deadline**,
+                        **vote_deadline**,
+                        **status**
+                    }, ...] // 200
+                    or
+                    **null** // 400
+            end note
+
+        end
+
+    end
+
+end
+
 @enduml

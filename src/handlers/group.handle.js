@@ -1,3 +1,4 @@
+const array = require('lodash');
 const crypto = require('crypto');
 const db = require('../models/index.db');
 const { Users, Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
@@ -34,6 +35,8 @@ exports.searchGroup = (id) => {
                 ++count;
                 
                 if (count === myGroup.length) {
+                    groupList = array.orderBy(groupList, ['id'], ['asc']);
+
                     resolve({
                         statusCode: 200,
                         groupList: groupList

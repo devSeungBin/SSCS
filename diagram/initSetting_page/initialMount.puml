@@ -1,7 +1,7 @@
-@startuml initialMount
+@startuml initialMount(완료)
 'http://localhost:3000/initSetting
 
-title initialMount seqeunce diagram
+title initialMount(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -13,17 +13,27 @@ User -> Client: Move "/initSetting"
 
 Client -> Server: **GET /users/prefereces** \n Request "Read UserPrefereces"
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **401** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.message" \n & Redirect "/login"
+    User <-- Client: Alert "result.comment" & "result.message"
 
-else #LightYellow Redirect
+else #Pink readUserPreferences_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/login"
+
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -32,14 +42,14 @@ else #LightYellow Redirect
             message: "**error message**"
     end note
 
-else #LightBlue Success
+else #LightBlue readUserPreferences_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**
 
     end note
-    User <-- Client: Alert "이미 로그인 중입니다." \n & Redirect "/UserHome"
+    User <-- Client: Alert "이미 선호도가 설정됐습니다." \n & Redirect "/userHome"
 
 end
 
