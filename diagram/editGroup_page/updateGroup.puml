@@ -1,7 +1,7 @@
-@startuml updateGroup
+@startuml updateGroup(완료)
 'http://localhost:3000/editGroup/:id
 
-title updateGroup seqeunce diagram
+title updateGroup(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -23,17 +23,27 @@ note right
         }
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **404** or **500**,
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink updateGroupInformation_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404**,
             comment: "**error comment**",
             message: "**error message**"
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
 
-else #Pink Failure_redirect
+else #Pink updateGroupInformation_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -43,7 +53,7 @@ else #Pink Failure_redirect
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -51,9 +61,9 @@ else #LightYellow Redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue updateGroupInformation_success
     Client <-- Server: Reponse "JSON"
     note left
         result:

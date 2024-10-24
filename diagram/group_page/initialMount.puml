@@ -62,7 +62,6 @@ else #LightBlue readGroupInformation_success
                 **id**,
                 **name**,
                 **creator**
-
     end note
 
     Client -> Server: **GET /groups/:group_id/members** \n Request "Read GroupParticipantList"
@@ -118,7 +117,6 @@ else #LightBlue readGroupInformation_success
                     **user_id**,
                     **group_id**
                 }, ...]
-
         end note
         
         Client -> Server: **GET /groups/:group_id/plans** \n Request "Read GroupPlanList"
@@ -175,7 +173,6 @@ else #LightBlue readGroupInformation_success
                         **vote_deadline**,
                         **status**
                     }, ...]
-
             end note
 
         end

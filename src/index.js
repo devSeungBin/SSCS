@@ -48,7 +48,7 @@ app.use(passport.session());
 const client = `http://${keys.CLIENT_HOST}:${keys.CLIENT_PORT}`;
 const corsOption = {
     origin: client,
-    methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+    methods: ['GET', 'POST', 'OPTIONS', 'HEAD', 'PATCH'],
     credentials: true,
 }
 app.use(cors(corsOption));

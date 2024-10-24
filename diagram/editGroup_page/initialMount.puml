@@ -1,7 +1,7 @@
-@startuml initialMount
+@startuml initialMount(완료)
 'http://localhost:3000/editGroup/:id
 
-title initialMount seqeunce diagram
+title initialMount(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -13,17 +13,27 @@ User -> Client: Move "/editGroup/:id"
 
 Client -> Server: **GET /groups/:group_id** \n Request "Read GroupInformation"
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **404** or **500**,
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink readGroupInformation_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404**,
             comment: "**error comment**",
             message: "**error message**"
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
 
-else #Pink Failure_redirect
+else #Pink readGroupInformation_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -33,7 +43,7 @@ else #Pink Failure_redirect
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -41,9 +51,9 @@ else #LightYellow Redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue readGroupInformation_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -53,7 +63,7 @@ else #LightBlue Success
                 **name**,
                 **invitation_code**,
                 **preference_setting**,
-                **Manual_group_preference**
+                **manual_group_preference**
     end note
 end
 

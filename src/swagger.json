@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000",
+      "url": "http://localhost:3000",
       "description": "Timely Meet's API 명세서 주소"
     }
   ],
@@ -901,6 +901,16 @@
               }
             },
             "description": "See Other"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response_400"
+                }
+              }
+            },
+            "description": "Bad Request"
           },
           "401": {
             "content": {

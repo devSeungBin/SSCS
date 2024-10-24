@@ -1152,6 +1152,13 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             }           
         }
     }
+    #swagger.responses[400] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_400" }
+            }           
+        }
+    }
     #swagger.responses[401] = {
         content: {
             "application/json": {
@@ -1438,6 +1445,7 @@ router.post('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isG
             };
         } else {
             const submission = {
+                name: req.user.name,
                 user_id: req.user.id,
                 plan_id: req.query.plan_id,
                 submission_time_slot: req.body.submission_time_slot
@@ -2361,6 +2369,7 @@ router.post('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGroup
             };
         } else {
             const vote = {
+                name: req.user.name,
                 user_id: req.user.id,
                 plan_id: req.query.plan_id,
                 vote_plan_time: req.body.vote_plan_time

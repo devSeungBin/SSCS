@@ -146,7 +146,7 @@ exports.createInvitationCode = async (id) => {
             const buf = crypto.randomBytes(64);
             const key = crypto.pbkdf2Sync(
                 `${group.name}${group.id}${group.user_count}${today.toLocaleDateString('en-US')}`,
-                buf.toString('base64'), 9999, 9, 'sha512');
+                buf.toString('base64'), 9999, 6, 'sha512');
 
             return {
                 statusCode: 200,
@@ -571,7 +571,9 @@ exports.updatePlan = async (plan) => {
 
             if (input_schedule_deadline.getTime() == schedule_deadline.getTime()) {
                 delete plan.schedule_deadline;
-            };
+            } else {
+                plan.schedule_deadline = input_schedule_deadline;
+            }
 
             if (plan.name == changedPlan.toJSON().name) {
                 delete plan.name;
