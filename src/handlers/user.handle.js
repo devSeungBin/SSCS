@@ -13,30 +13,30 @@ function filterByTimeRange(busyList, startTime, endTime) {
 
     let newBusyList = [];
     for (let busy of busyList) {
-        console.log('현재 busy: ', busy)
+        // console.log('현재 busy: ', busy)
         const oldDate = new Date(busy.start);
         const year = oldDate.getFullYear();
         const month = oldDate.getMonth();
         const day = oldDate.getDate();
 
-        console.log(new Date(year, month, day, startHours, startMinutes))
-        console.log(new Date(year, month, day, endHours, endMinutes))
+        // console.log(new Date(year, month, day, startHours, startMinutes))
+        // console.log(new Date(year, month, day, endHours, endMinutes))
         const startLimit = new Date(year, month, day, startHours, startMinutes).getTime();
         const endLimit = new Date(year, month, day, endHours, endMinutes).getTime();
 
-        console.log(new Date(busy.start))
-        console.log(new Date(busy.end))
+        // console.log(new Date(busy.start))
+        // console.log(new Date(busy.end))
         const busyStart = new Date(busy.start).getTime();
         const busyEnd = new Date(busy.end).getTime();
 
         if (busyStart >= startLimit && busyEnd <= endLimit) {   // 시작 시간과 종료 시간이 모두 지정된 범위 안에 포함되는 경우
-            console.log('시작, 종료 모두 안')
+            // console.log('시작, 종료 모두 안')
             newBusyList.push({
                 start: busy.start,
                 end: busy.end
             });
         } else if (busyStart < startLimit && busyEnd > endLimit) {   // 시작 시간과 종료 시간이 모두 지정된 범위 안에 포함되지 않는 경우
-            console.log('시작, 종료 모두 밖')
+            // console.log('시작, 종료 모두 밖')
             const newBusyStart = new Date(startLimit);
             const newBusyEnd = new Date(endLimit);
             newBusyList.push({
@@ -44,24 +44,24 @@ function filterByTimeRange(busyList, startTime, endTime) {
                 end: newBusyEnd
             });
         }  else if (busyStart < startLimit && (busyEnd > startLimit && busyEnd <= endLimit)) {     // 시작 시간만 지정된 범위에 포함되지 않는 경우
-            console.log('시작은 밖, 종료는 안')
+            // console.log('시작은 밖, 종료는 안')
             const newBusyStart = new Date(startLimit);
             newBusyList.push({
                 start: newBusyStart,
                 end: busy.end
             });
         } else if ((busyStart >= startLimit && busyStart < endLimit) && busyEnd > endLimit) {     // 종료 시간만 지정된 범위에 포함되지 않는 경우
-            console.log('시작은 안, 종료는 밖')
+            // console.log('시작은 안, 종료는 밖')
             const newBusyEnd = new Date(endLimit);
             newBusyList.push({
                 start: busy.start,
                 end: newBusyEnd
             });
         } else if (busyStart > endLimit) {     // 시작 시간이 지정된 종료 범위보다 큰 경우
-            console.log('시작이 거꾸로 밖')
+            // console.log('시작이 거꾸로 밖')
             continue;
         } else if (busyEnd <= startLimit) {     // 종료 시간이 지정된 시작 범위보다 작은 경우
-            console.log('종료가 거꾸로 밖')
+            // console.log('종료가 거꾸로 밖')
             continue;
         };
     }
@@ -251,7 +251,7 @@ exports.updateUser = async (id, user, preference) => {
             if (changedUser.toJSON().provider !== 'local') {
                 return {
                     statusCode: 400,
-                    comment: '로컬 로그인으로 인증된 계정만 사용할 수 있습니다.'
+                    comment: '로컬 로그인으로 인증된 계정만 비밀번호 변경이 가능합니다.'
                 };
             } else {
                 if (user.password == changedUser.toJSON().password) {
@@ -264,7 +264,7 @@ exports.updateUser = async (id, user, preference) => {
             if (changedUser.toJSON().provider !== 'google') {
                 return {
                     statusCode: 400,
-                    comment: '소셜 로그인으로 인증된 계정만 사용할 수 있습니다.'
+                    comment: '소셜 로그인으로 인증된 계정만 캘린더 설정이 가능합니다.'
                 };
             } else {
                 if (user.calendar_id == changedUser.toJSON().calendar_id) {
@@ -363,17 +363,16 @@ exports.searchPlan = async (id) => {
     });
 }
 
-// 혹시 몰라서 console.log는 남겨둠
 exports.generateSchedules = async (plan, busy, time_range) => {
     try {
         let submission_time_slot = plan.plan_time_slot;
         let isFree = true;
         let dateIndex = 0;
         let busyIndex = 0;
-        console.log('이전 busy: ', busy)
+        // console.log('이전 busy: ', busy)
 
         let newBusy = filterByTimeRange(busy, time_range.start, time_range.end);
-        console.log('새로운 busy: ', newBusy);
+        // console.log('새로운 busy: ', newBusy);
         for (let date of submission_time_slot) {
             let timeIndex = 0;
             for (let time of date.time_scope) {
@@ -384,8 +383,8 @@ exports.generateSchedules = async (plan, busy, time_range) => {
                     const busyEnd = new Date(newBusy[busyIndex].end);
 
                     if (isFree) {
-                        console.log('현재 가능 time: ', time)
-                        console.log('현재 가능 busy: ', busyIndex)
+                        // console.log('현재 가능 time: ', time)
+                        // console.log('현재 가능 busy: ', busyIndex)
                         if (busyStart.getTime() == startDate.getTime() && busyEnd.getTime() == endDate.getTime()) {
                             isFree = false;
                             submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
@@ -401,8 +400,8 @@ exports.generateSchedules = async (plan, busy, time_range) => {
                         }
 
                     } else {
-                        console.log('현재 불가능 time: ', time)
-                        console.log('현재 불가능 busy: ', busyIndex)
+                        // console.log('현재 불가능 time: ', time)
+                        // console.log('현재 불가능 busy: ', busyIndex)
                         if (busyEnd.getTime() == endDate.getTime()) {
                             submission_time_slot[dateIndex].time_scope[timeIndex].available = isFree;
                             isFree = true;

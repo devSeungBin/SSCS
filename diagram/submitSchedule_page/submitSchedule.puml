@@ -1,7 +1,7 @@
-@startuml createSchedule
-'http://localhost:3000/submitSchedule
+@startuml submitSchedule(완료)
+'http://localhost:3000/submitSchedule/:id
 
-title createSchedule seqeunce diagram
+title submitSchedule(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -27,27 +27,17 @@ note right
         
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **404** or **500**,
+            statusCode: **500**,
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+    User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink Failure_redirect
-    Client <-- Server: Reponse "JSON"
-    note left
-        result:
-            statusCode: **401**,
-            comment: "**error comment**",
-            message: "**error message**"
-    end note
-    User <-- Client: Alert "result.message" \n & Redirect "/login"
-
-else #Pink Failure_redirect
+else #Pink submitSchedule_scheduleAlreadyExist
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -55,9 +45,35 @@ else #Pink Failure_redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/plan/:id"
+    User <-- Client: Alert "제출된 일정이 존재합니다." \n & Redirect "/plan/:id"
 
-else #Pink Failure_request
+else #Pink submitSchedule_notFound
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    alt #Gray "해당 그룹이 존재하지 않거나 그룹 참여자가 아닙니다."
+        User <-- Client: Alert "result.comment" & Redirect "/userHome"
+
+    else #Gray "일정을 제출할 약속이 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/group/:id"
+
+    end
+
+else #Pink submitSchedule_accessDenied
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.message" & Redirect "/login"
+
+else #Pink submitSchedule_invaildRequest
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -67,7 +83,7 @@ else #Pink Failure_request
     end note
     User <-- Client: Alert "result.comment"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -75,7 +91,7 @@ else #LightYellow Redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
 else #LightBlue Success
     Client <-- Server: Reponse "JSON"

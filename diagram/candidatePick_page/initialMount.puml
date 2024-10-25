@@ -1,7 +1,7 @@
-@startuml getCalendarList(완료)
-'http://localhost:3000/setting
+@startuml initialMount
+'http://localhost:3000/candidiatePick/:id
 
-title getCalendarList(완료) seqeunce diagram
+title initialMount seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,9 +9,9 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "캘린더 목록 둘러보기"
+User -> Client: Move "/editPlan/:id"
 
-Client -> Server: **GET /users/calendars** \n Request "Read GoogleCalendarList"
+Client -> Server: **GET /groups/:group_id/plans/:plan_id** \n Request "Read PlanInformation"
 
 alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
@@ -23,7 +23,7 @@ alt#Gold #Pink internal_error
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink readGoogleCalendarList_userNotFound
+else #Pink readPlanInformation_planNotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -31,9 +31,9 @@ else #Pink readGoogleCalendarList_userNotFound
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/login"
+    User <-- Client: Alert "result.comment" \n & Redirect "/group/:id"
 
-else #Pink readGoogleCalendarList_accessDenied
+else #Pink readPlanInformation_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -42,17 +42,6 @@ else #Pink readGoogleCalendarList_accessDenied
             message: "**error message**"
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
-
-
-else #Pink readGoogleCalendarList_invaildRequest
-    Client <-- Server: Reponse "JSON"
-    note left
-        result:
-            statusCode: **400**,
-            comment: "**error comment**",
-            message: "**error message**"
-    end note
-    User <-- Client: Alert "result.comment"
 
 else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
@@ -64,18 +53,21 @@ else #LightYellow newUser_redirect
     end note
     User <-- Client: Redirect "/initSetting"
 
-else #LightBlue readGoogleCalendarList_success
+else #LightBlue readPlanInformation_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**,
-            calendarList:
-                items: [{
-                    **id**,
-                    **summary**,
-                    **description**,
-                }, ...]
+            plan:
+                **id**,
+                **name**,
+                **minimum_user_count**,
+                **maximum_user_count**,
+                **progress_time**,
+                **schedule_deadline**,
+                **vote_deadline**
     end note
+    
 end
 
 @enduml

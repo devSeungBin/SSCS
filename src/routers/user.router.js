@@ -1099,6 +1099,7 @@ router.get('/calendars/freebusy/:plan_id', isGoogleLoggedIn, isNotNewUser, async
             }
         };
 
+        next();
     } else {
         new Promise(async (resovle, reject) => {
             await searchUser(req.user.id)
@@ -1194,6 +1195,7 @@ router.get('/calendars/freebusy/:plan_id', isGoogleLoggedIn, isNotNewUser, async
             next();
         });
     };
+
 }, handleError);
 
 router.get('/calendars/callback', async (req, res, next) => {

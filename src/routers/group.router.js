@@ -1166,6 +1166,13 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             }           
         }
     }
+    #swagger.responses[403] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_403" }
+            }           
+        }
+    }
     #swagger.responses[404] = {
         content: {
             "application/json": {
@@ -1193,57 +1200,68 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
         };
 
     } else {
-        const { name, minimum_user_count, maximum_user_count, progress_time, schedule_deadline } = req.body;
+        const check = await checkLeader(req.user.id, req.query.group_id);
 
-        let plan = {};
-        let formError = false;
-
-        if (!req.query.plan_id) {
-            formError = true;
-        } else {
-            plan.id = req.query.plan_id;
-
-            if (name) { plan.name = name; };
-            if (minimum_user_count) { plan.minimum_user_count = minimum_user_count; };
-            if (maximum_user_count) { plan.maximum_user_count = maximum_user_count; };
-            if (progress_time) { plan.progress_time = progress_time; };
-            if (schedule_deadline) { plan.schedule_deadline = schedule_deadline; };
-        };
-        
-
-        if (!formError) {
-            await updatePlan(plan)
-            .then((info) => {
-                if (info.statusCode !== 200) {
-                    req.result = {
-                        error: {
-                            statusCode: info.statusCode,
-                            comment: info.comment
-                        }
-                    };
-                } else {
-                    req.result = {
-                        statusCode: info.statusCode,
-                        plan: info.plan
-                    };
-                };
-            })
-            .catch((err) => {
-                req.result = {
-                    error: {
-                        statusCode: err.statusCode,
-                        comment: err.comment
-                    }
-                };
-            });
-        } else {
+        if (!check.result) {
             req.result = {
                 error: {
-                    statusCode: 400,
-                    comment: '약속 정보가 올바르지 않습니다.'
+                    statusCode: check.statusCode,
+                    comment: check.comment
                 }
             };
-        };
+        } else {
+            const { name, minimum_user_count, maximum_user_count, progress_time, schedule_deadline } = req.body;
+
+            let plan = {};
+            let formError = false;
+    
+            if (!req.query.plan_id) {
+                formError = true;
+            } else {
+                plan.id = req.query.plan_id;
+    
+                if (name) { plan.name = name; };
+                if (minimum_user_count) { plan.minimum_user_count = minimum_user_count; };
+                if (maximum_user_count) { plan.maximum_user_count = maximum_user_count; };
+                if (progress_time) { plan.progress_time = progress_time; };
+                if (schedule_deadline) { plan.schedule_deadline = schedule_deadline; };
+            };
+            
+    
+            if (!formError) {
+                await updatePlan(plan)
+                .then((info) => {
+                    if (info.statusCode !== 200) {
+                        req.result = {
+                            error: {
+                                statusCode: info.statusCode,
+                                comment: info.comment
+                            }
+                        };
+                    } else {
+                        req.result = {
+                            statusCode: info.statusCode,
+                            plan: info.plan
+                        };
+                    };
+                })
+                .catch((err) => {
+                    req.result = {
+                        error: {
+                            statusCode: err.statusCode,
+                            comment: err.comment
+                        }
+                    };
+                });
+            } else {
+                req.result = {
+                    error: {
+                        statusCode: 400,
+                        comment: '약속 정보가 올바르지 않습니다.'
+                    }
+                };
+            };
+        }
     };
 
     next();
@@ -1914,6 +1932,13 @@ router.post('/:group_id/plans/:plan_id/failure', isLoggedIn, isNotNewUser, isGro
         content: {
             "application/json": {
                 schema:{ $ref: "#/components/schemas/response_401" }
+            }           
+        }
+    }
+    #swagger.responses[403] = {
+        content: {
+            "application/json": {
+                schema:{ $ref: "#/components/schemas/response_403" }
             }           
         }
     }

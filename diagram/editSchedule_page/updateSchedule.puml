@@ -1,7 +1,7 @@
-@startuml updateSchedule
+@startuml updateSchedule(완료)
 'http://localhost:3000/editSchedule
 
-title updateSchedule seqeunce diagram
+title updateSchedule(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -26,7 +26,7 @@ note right
         }, ...]
 end note
 
-alt#Gold #Pink Failure_internal
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -36,7 +36,7 @@ alt#Gold #Pink Failure_internal
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink Failure
+else #Pink updateUserSchedule_notFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -44,9 +44,21 @@ else #Pink Failure
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "약속이 존재하지 않습니다." \n & Redirect "/userHome"
+    alt #Gray "해당 그룹이 존재하지 않거나 그룹 참여자가 아닙니다."
+        User <-- Client: Alert "result.comment" & Redirect "/userHome"
 
-else #Pink Failure_redirect
+    else #Gray "일정을 제출할 약속이 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/group/:id"
+
+    else #Gray "제출된 일정이 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/plan/:id"
+
+    else #Gray "일정을 수정할 약속이 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/group/:id"
+
+    end
+
+else #Pink updateUserSchedule_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -56,7 +68,7 @@ else #Pink Failure_redirect
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #Pink Failure_request
+else #Pink updateUserSchedule_invaildRequest
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -66,7 +78,7 @@ else #Pink Failure_request
     end note
     User <-- Client: Alert "result.comment"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -76,7 +88,7 @@ else #LightYellow Redirect
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue updateUserSchedule_success
     Client <-- Server: Reponse "JSON"
     note left
         result:

@@ -64,9 +64,11 @@ exports.searchParticipant = async (id) => {
                 });
             };
     
+            const orderParticipants = array.orderBy(participants, ['id'], ['asc']);
+
             resolve({
                 statusCode: 200,
-                participants: participants
+                participants: orderParticipants
             });
     
         } catch (err) {
@@ -474,10 +476,11 @@ exports.generateTimeSlots = (dateList, timeScope) => {
             const startMinute = (minutes % 60).toString().padStart(2, '0');
             const endMinute = ((minutes % 60) + 15).toString().padStart(2, '0');
 
-            const start = `${hours}:${startMinute}`;
-            let end = `${hours}:${endMinute}`;
+            const newHours = String(hours).length === 1 ? `0${hours}` : hours;
+            const start = `${newHours}:${startMinute}`;
+            let end = `${newHours}:${endMinute}`;
             if (endMinute == 60) {
-                end = `${hours + 1}:00`;
+                end = `${newHours + 1}:00`;
             };
 
             planTimeSlot[index].time_scope.push({
@@ -527,9 +530,11 @@ exports.searchPlan = async (id) => {
             };
 
         } else {
+            const orderPlans = array.orderBy(plans, ['id'], ['asc']);
+
             return {
                 statusCode: 200,
-                plans: plans
+                plans: orderPlans
             };
         };
 
@@ -1348,7 +1353,7 @@ exports.checkLeader = async (user_id, group_id) => {
         const group = await Groups.findOne({ where: { id: group_id, creator: user_id }, raw: false });
         if (!group) {
             return {
-                statusCode: 404,
+                statusCode: 403,
                 comment: '그룹 리더가 아닙니다.',
                 result: false
             };

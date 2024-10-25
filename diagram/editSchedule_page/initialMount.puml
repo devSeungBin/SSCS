@@ -1,5 +1,5 @@
 @startuml initialMount
-'http://localhost:3000/editSchedule
+'http://localhost:3000/editSchedule/:id
 
 title initialMount seqeunce diagram
 
@@ -9,11 +9,11 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Move "/editSchedule"
+User -> Client: Move "/editSchedule/:id"
 
 Client -> Server: **GET /groups/:group_id/plans/:plan_id/schedule/:user_id** \n Request "Read userSchedule"
 
-alt#Gold #Pink Failure_internal
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -23,7 +23,7 @@ alt#Gold #Pink Failure_internal
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink Failure
+else #Pink readUserSchedule_scheduleNotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -33,7 +33,7 @@ else #Pink Failure
     end note
     User <-- Client: Alert "제출된 일정이 없습니다." \n & Redirect "/plan/:id"
 
-else #Pink Failure_redirect
+else #Pink readUserSchedule_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -43,7 +43,7 @@ else #Pink Failure_redirect
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #LightYellow Redirect
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -51,21 +51,19 @@ else #LightYellow Redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue readUserSchedule_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**,
-            submission_time_slot: [{
-                **date**,
-                **time_scope**: [{
-                        **start**,
-                        **end**,
-                        **available**
-                }, ...]
-            }, ...]
+            submission:
+                **id**,
+                **name**,
+                **user_id**,
+                **plan_id**,
+                **submission_time_slot**
     end note
 
 end

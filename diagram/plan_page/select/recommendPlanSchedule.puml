@@ -1,7 +1,7 @@
-@startuml getCalendarSchedule(완료)
-'http://localhost:3000/submitSchedule/:id
+@startuml recommendPlanSchedule(보류)
+'http://localhost:3000/plan/:id
 
-title getCalendarSchedule(완료) seqeunce diagram
+title recommendPlanSchedule seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,9 +9,9 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "구글 캘린더 일정 가져오기"
+User -> Client: Click "약속 일정 추천"
 
-Client -> Server: **GET /users/calendars/freebusy/:plan_id** \n Request "Read userCalendarSchedule"
+Client -> Server: **GET /groups/:group_id/plans/:plan_id/selection** \n Request "Recommend PlanSchedule"
 
 alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
@@ -23,7 +23,7 @@ alt#Gold #Pink internal_error
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink readUserCalendarSchedule_notFound
+else #Pink recommendPlanSchedule_NotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -31,15 +31,18 @@ else #Pink readUserCalendarSchedule_notFound
             comment: "**error comment**",
             message: "**error message**"
     end note
-    alt #Gray "사용자 프로필을 찾을 수 없습니다."
-        User <-- Client: Alert "result.comment" & Redirect "/login"
-
-    else #Gray "생성된 약속이 없습니다."
+    alt #Gray "일정을 선택할 약속이 존재하지 않습니다."
         User <-- Client: Alert "result.comment" & Redirect "/group/:id"
 
+    else #Gray "해당 그룹이 존재하지 않습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/userHome"
+
+    else #Gray "신규 사용자가 존재합니다."
+        User <-- Client: Alert "result.comment"
+    
     end
 
-else #Pink readUserCalendarSchedule_accessDenied
+else #Pink recommendPlanSchedule_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -48,16 +51,6 @@ else #Pink readUserCalendarSchedule_accessDenied
             message: "**error message**"
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
-
-else #Pink readUserCalendarSchedule_invaildRequest
-    Client <-- Server: Reponse "JSON"
-    note left
-        result:
-            statusCode: **400**,
-            comment: "**error comment**",
-            message: "**error message**"
-    end note
-    User <-- Client: Alert "result.comment"
 
 else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
@@ -69,21 +62,24 @@ else #LightYellow newUser_redirect
     end note
     User <-- Client: Redirect "/initSetting"
 
-else #LightBlue readUserCalendarSchedule_success
+else #LightBlue recommendPlanSchedule_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**,
-            submission_time_slot: [{
-                **date**,
-                **time_scope**: [{
-                        **start**,
-                        **end**,
-                        **available**
-                }, ...]
+            candidiate_plan_time: [{
+                **start**,
+                **end**,
+                **day**,
+                **time**,
             }, ...]
-
     end note
+    alt #Gray candidiate_plan_time.length === 1
+        User <-- Client: Redirect "/group/:id"
+
+    else #Gray candidiate_plan_time.length > 1
+        User <-- Client: Redirect "/candidatePick/:id"
+    end
 
 end
 

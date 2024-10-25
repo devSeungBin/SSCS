@@ -41,6 +41,16 @@ else #Pink updatePlanInformation_planNotFound
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/group/:id"
 
+else #Pink updatePlanInformation_notGroupLeader
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **403**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
 else #Pink updatePlanInformation_accessDenied
     Client <-- Server: Reponse "JSON"
     note left

@@ -12,7 +12,7 @@ const doc = {
     },
     servers: [
         {
-            url: `http://${keys.CLIENT_HOST}:${keys.CLIENT_PORT}`,
+            url: `http://${keys.SERVER_HOST}:${keys.SERVER_PORT}`,
             description: 'Timely Meet\'s API 명세서 주소'
         },
     ],

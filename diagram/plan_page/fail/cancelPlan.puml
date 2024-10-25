@@ -1,7 +1,7 @@
-@startuml getCalendarList(완료)
-'http://localhost:3000/setting
+@startuml cancelPlan(완료)
+'http://localhost:3000/plan/:id
 
-title getCalendarList(완료) seqeunce diagram
+title cancelPlan(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,9 +9,9 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "캘린더 목록 둘러보기"
+User -> Client: Click "약속 취소"
 
-Client -> Server: **GET /users/calendars** \n Request "Read GoogleCalendarList"
+Client -> Server: **POST /groups/:group_id/plans/:plan_id/failure** \n Request "Cancel Plan"
 
 alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
@@ -23,7 +23,7 @@ alt#Gold #Pink internal_error
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink readGoogleCalendarList_userNotFound
+else #Pink cancelPlan_planNotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -31,9 +31,19 @@ else #Pink readGoogleCalendarList_userNotFound
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/login"
+    User <-- Client: Alert "result.comment" \n & Redirect "/group/:id"
 
-else #Pink readGoogleCalendarList_accessDenied
+else #Pink cancelPlan_NotGroupLeader
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **403**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
+else #Pink cancelPlan_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -42,17 +52,6 @@ else #Pink readGoogleCalendarList_accessDenied
             message: "**error message**"
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
-
-
-else #Pink readGoogleCalendarList_invaildRequest
-    Client <-- Server: Reponse "JSON"
-    note left
-        result:
-            statusCode: **400**,
-            comment: "**error comment**",
-            message: "**error message**"
-    end note
-    User <-- Client: Alert "result.comment"
 
 else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
@@ -64,18 +63,14 @@ else #LightYellow newUser_redirect
     end note
     User <-- Client: Redirect "/initSetting"
 
-else #LightBlue readGoogleCalendarList_success
+else #LightBlue cancelPlan_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **200**,
-            calendarList:
-                items: [{
-                    **id**,
-                    **summary**,
-                    **description**,
-                }, ...]
+            statusCode: **200**
     end note
+    User <-- Client: Redirect "/group/:id"
+
 end
 
 @enduml

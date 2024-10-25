@@ -1,7 +1,7 @@
-@startuml updateUser
+@startuml updateUser(완료)
 'http://localhost:3000/setting
 
-title updateUser seqeunce diagram
+title updateUser(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -37,7 +37,7 @@ note right
         }
 end note
 
-alt#Gold #Pink Failure
+alt#Gold #Pink internal_error
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -45,19 +45,29 @@ alt#Gold #Pink Failure
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+    User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink Failure_redirect
+else #Pink updateUserInformation_userNotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **401** or **404**,
+            statusCode: **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/login"
+
+else #Pink updateUserInformation_accessDenied
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401**,
             comment: "**error comment**",
             message: "**error message**"
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
-else #Pink Failure_request
+else #Pink updateUserInformation_invaildRequest
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -66,8 +76,18 @@ else #Pink Failure_request
             message: "**error message**"
     end note
     User <-- Client: Alert "result.comment"
+    ' alt #Gray "선호도 형식이 올바르지 않습니다."
+    '     User <-- Client: Alert "result.comment"
 
-else #LightYellow Redirect
+    ' else #Gray "로컬 로그인으로 인증된 계정만 사용할 수 있습니다."
+    '     User <-- Client: Alert "result.comment"
+
+    ' else #Gray "소셜 로그인으로 인증된 계정만 사용할 수 있습니다."
+    '     User <-- Client: Alert "result.comment"
+
+    ' end
+
+else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -75,15 +95,15 @@ else #LightYellow Redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
+    User <-- Client: Redirect "/initSetting"
 
-else #LightBlue Success
+else #LightBlue updateUserInformation_access
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**
     end note
-    User <-- Client: Alert "사용자 정보가 정상적으로 수정됐습니다."
+    User <-- Client: Alert "사용자 정보가 수정됐습니다."
 end
 
 @enduml
