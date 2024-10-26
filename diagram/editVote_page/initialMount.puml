@@ -1,5 +1,5 @@
 @startuml initialMount(완료)
-'http://localhost:3000/candidiatePick/:id
+'http://localhost:3000/editVote/:id
 
 title initialMount(완료) seqeunce diagram
 
@@ -9,7 +9,7 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Move "/candidatePick/:id"
+User -> Client: Move "/editSchedule/:id"
 
 Client -> Server: **GET /groups/:group_id/plans/:plan_id** \n Request "Read PlanInformation"
 
@@ -60,11 +60,11 @@ else #LightBlue readPlanInformation_success
             statusCode: **200**,
             plan:
                 **id**,
-                **name**,
-                **candidiate_plan_time**
+                **vote_plan_time**,
+                **status**,
     end note
 
-    Client -> Server: **GET /groups/:group_id/members** \n Request "Read GroupParticipantList"
+    Client -> Server: **GET /groups/:group_id/plans/:plan_id/vote/:user_id** \n Request "Read userVote"
 
     alt#Gold #Pink internal_error
         Client <-- Server: Reponse "JSON"
@@ -76,7 +76,7 @@ else #LightBlue readPlanInformation_success
         end note
         User <-- Client: Alert "result.comment" & "result.message"
 
-    else #Pink readGroupParticipantList_groupNotFound
+    else #Pink readUserVote_notFound
         Client <-- Server: Reponse "JSON"
         note left
             result:
@@ -84,9 +84,15 @@ else #LightBlue readPlanInformation_success
                 comment: "**error comment**",
                 message: "**error message**"
         end note
-        User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+        alt #Gray "해당 그룹이 존재하지 않거나 그룹 참여자가 아닙니다."
+            User <-- Client: Alert "result.comment" & Redirect "/userHome"
 
-    else #Pink readGroupParticipantList_accessDenied
+        else #Gray "제출된 투표가 없습니다."
+            User <-- Client: Alert "result.comment" & Redirect "/vote/:id"
+        
+        end
+
+    else #Pink readUserVote_accessDenied
         Client <-- Server: Reponse "JSON"
         note left
             result:
@@ -106,21 +112,23 @@ else #LightBlue readPlanInformation_success
         end note
         User <-- Client: Redirect "/initSetting"
 
-    else #LightBlue readGroupParticipantList_success
+    else #LightBlue readUserVote_success
         Client <-- Server: Reponse "JSON"
         note left
             result:
                 statusCode: **200**,
-                participants: [{
-                    **id**,
-                    **name**,
-                    **user_id**,
-                    **group_id**
+                vote_plan_time: [{
+                    **start**,
+                    **end**,
+                    **day**,
+                    **time**,
+                    **approval**
                 }, ...]
+
         end note
-        
+
     end
-    
+
 end
 
 @enduml

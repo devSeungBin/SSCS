@@ -2532,7 +2532,7 @@ router.patch('/:group_id/plans/:plan_id/votes', isLoggedIn, isNotNewUser, isGrou
         };
 
     } else {
-        const check = await checkVote(req.query.plan_id, req.body.vote_plan_time);
+        const check = await checkVote(req.user.id, req.query.plan_id, req.body.vote_plan_time);
 
         if (!check.result) {
             req.result = {

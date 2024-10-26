@@ -1,5 +1,5 @@
 @startuml updateSchedule(완료)
-'http://localhost:3000/editSchedule
+'http://localhost:3000/editSchedule/:id
 
 title updateSchedule(완료) seqeunce diagram
 

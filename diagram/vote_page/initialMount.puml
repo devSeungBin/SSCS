@@ -1,5 +1,5 @@
 @startuml initialMount(완료)
-'http://localhost:3000/candidiatePick/:id
+'http://localhost:3000/vote/:id
 
 title initialMount(완료) seqeunce diagram
 
@@ -9,7 +9,7 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Move "/candidatePick/:id"
+User -> Client: Move "/vote/:id"
 
 Client -> Server: **GET /groups/:group_id/plans/:plan_id** \n Request "Read PlanInformation"
 
@@ -60,10 +60,9 @@ else #LightBlue readPlanInformation_success
             statusCode: **200**,
             plan:
                 **id**,
-                **name**,
-                **candidiate_plan_time**
+                **candidiate_plan_time**,
+                **vote_deadline**
     end note
-
     Client -> Server: **GET /groups/:group_id/members** \n Request "Read GroupParticipantList"
 
     alt#Gold #Pink internal_error
@@ -120,7 +119,7 @@ else #LightBlue readPlanInformation_success
         end note
         
     end
-    
+
 end
 
 @enduml

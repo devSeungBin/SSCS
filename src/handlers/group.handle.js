@@ -300,7 +300,6 @@ exports.createPreferences = async (user_id) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err
@@ -358,8 +357,8 @@ exports.calculatePreferences = async (group_id) => {
                 });
             };
 
-            console.log(`all_day: ${all_day_preference}`)
-            console.log(`all_time: ${all_time_preference}`)
+            // console.log(`all_day: ${all_day_preference}`)
+            // console.log(`all_time: ${all_time_preference}`)
 
             // 평균 선호도 구하기
             let avg_day_preference = Array.from({length: 7}, () => 0);
@@ -373,8 +372,8 @@ exports.calculatePreferences = async (group_id) => {
                 avg_time_preference[index] += all_time_preference[index] / headcount;
             });
 
-            console.log(`avg_day: ${avg_day_preference}`)
-            console.log(`avg_time: ${avg_time_preference}`)
+            // console.log(`avg_day: ${avg_day_preference}`)
+            // console.log(`avg_time: ${avg_time_preference}`)
 
             // 선호도 MSD 구하기
             let day_preference_MSD = Array.from({length: 7}, () => 0);
@@ -393,8 +392,8 @@ exports.calculatePreferences = async (group_id) => {
             day_preference_MSD = day_preference_MSD.map((p) => p / headcount);
             time_preference_MSD = time_preference_MSD.map((p) => p / headcount);
 
-            console.log(`day_MSD: ${day_preference_MSD}`)
-            console.log(`time_MSD: ${time_preference_MSD}`)
+            // console.log(`day_MSD: ${day_preference_MSD}`)
+            // console.log(`time_MSD: ${time_preference_MSD}`)
 
             // 평균 선호도와 선호도 가중치(1-MSD)를 곱한 그룹 선호도 구하기
             let group_day_preference = Array.from({length: 7}, () => 0);
@@ -408,8 +407,8 @@ exports.calculatePreferences = async (group_id) => {
                 group_time_preference[index] = avg_time_preference[index] * (1 - time_preference_MSD[index]);
             });
 
-            console.log(`group_day: ${group_day_preference}`)
-            console.log(`group_time: ${group_time_preference}`)
+            // console.log(`group_day: ${group_day_preference}`)
+            // console.log(`group_time: ${group_time_preference}`)
 
             // 그룹 선호도 중 최댓값을 갖는 선호도를 구하기
             const day_max = Math.max(...group_day_preference);
@@ -430,8 +429,8 @@ exports.calculatePreferences = async (group_id) => {
                 };
             };
 
-            console.log(`day_max_index: ${day_max_index}`)
-            console.log(`time_max_index: ${time_max_index}`)
+            // console.log(`day_max_index: ${day_max_index}`)
+            // console.log(`time_max_index: ${time_max_index}`)
 
             const auto_group_preference = {
                 day: day_max_index,
@@ -1084,7 +1083,6 @@ exports.calculateCandidates = async (plan_id) => {
         };
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err,
@@ -1296,7 +1294,7 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
                 };
 
                 if (oneCondition.length >= 2) {
-                    await plan.update({ candidate_plan_time: twoCondition });
+                    await plan.update({ candidate_plan_time: oneCondition });
                     await plan.save();
                     
                     return {
@@ -1307,7 +1305,7 @@ exports.autoSelectCandidates = async (group_id, plan_id) => {
             } else {
                 return {
                     statusCode: 200,
-                    plan_time: candidate_plan_time
+                    plan_time: planJson.candidate_plan_time
                 };
             };
         };
@@ -1326,7 +1324,7 @@ exports.manualSelectCandidates = async (plan_id, plan_time) => {
         if (!plan) {
             return {
                 statusCode: 404,
-                comment: '일정을 선택할 약속이 존재하지 않습니다.'
+                comment: '약속 일정을 선택할 약속이 존재하지 않습니다.'
             };
         };
 
@@ -1614,7 +1612,7 @@ exports.searchVote = async (user_id, plan_id) => {
         if (!vote) {
             return {
                 statusCode: 404,
-                comment: '제출된 일정이 없습니다.'
+                comment: '제출된 투표가 없습니다.'
             };
 
         } else {

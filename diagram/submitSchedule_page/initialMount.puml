@@ -83,7 +83,7 @@ else #LightBlue readPlanInformation_success
         end note
         User <-- Client: Alert "result.comment" & "result.message"
 
-    else #Pink readUserSchedule_scheduleNotFound
+    else #Pink readUserSchedule_notFound
         Client <-- Server: Reponse "JSON"
         note left
             result:
@@ -91,6 +91,12 @@ else #LightBlue readPlanInformation_success
                 comment: "**error comment**",
                 message: "**error message**"
         end note
+        alt #Gray "해당 그룹이 존재하지 않거나 그룹 참여자가 아닙니다."
+            User <-- Client: Alert "result.comment" & Redirect "/userHome"
+
+        else #Gray "제출된 일정이 없습니다."
+        
+        end
 
     else #Pink readUserSchedule_accessDenied
         Client <-- Server: Reponse "JSON"

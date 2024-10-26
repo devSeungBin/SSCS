@@ -1,7 +1,7 @@
-@startuml manualSelectSchedule(완료)
-'http://localhost:3000/candidiatePick/:id
+@startuml updateVote(완료)
+'http://localhost:3000/editVote/:id
 
-title manualSelectSchedule(완료) seqeunce diagram
+title updateVote(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,16 +9,18 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "약속 확정"
+User -> Client: Click "투표 수정"
 
-Client -> Server: **POST /groups/:group_id/plans/:plan_id/selection** \n Request "Select PlanTime"
+Client -> Server: **PATCH /groups/:group_id/plans/:plan_id/votes** \n Request "Update UserVote"
 note right
     req.body:
-        plan_time:
+        vote_plan_time: [{
             **start**,
             **end**,
             **day**,
-            **time**
+            **time**,
+            **approval**
+        }, ...]
 end note
 
 alt#Gold #Pink internal_error
@@ -31,7 +33,7 @@ alt#Gold #Pink internal_error
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink selectPlanTime_notFound
+else #Pink updateUserVote_notFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -42,12 +44,21 @@ else #Pink selectPlanTime_notFound
     alt #Gray "해당 그룹이 존재하지 않거나 그룹 참여자가 아닙니다."
         User <-- Client: Alert "result.comment" & Redirect "/userHome"
 
-    else #Gray "약속 일정을 선택할 약속이 존재하지 않습니다."
+    else #Gray "투표를 제출할 약속이 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/group/:id"
+
+    else #Gray "약속 참여자가 아닙니다."
+        User <-- Client: Alert "result.comment" & Redirect "/vote/:id"
+
+    else #Gray "제출된 투표가 없습니다."
+        User <-- Client: Alert "result.comment" & Redirect "/vote/:id"
+
+    else #Gray "투표를 수정할 약속이 없습니다."
         User <-- Client: Alert "result.comment" & Redirect "/group/:id"
 
     end
 
-else #Pink selectPlanTime_accessDenied
+else #Pink updateUserVote_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -57,6 +68,16 @@ else #Pink selectPlanTime_accessDenied
     end note
     User <-- Client: Alert "result.message" \n & Redirect "/login"
 
+else #Pink updateUserVote_invaildRequest
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **400**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment"
+
 else #LightYellow newUser_redirect
     Client <-- Server: Reponse "JSON"
     note left
@@ -65,19 +86,16 @@ else #LightYellow newUser_redirect
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Redirect "/initSetting"
+    User <-- Client: Alert "result.comment" \n & Redirect "/initSetting"
 
-else #LightBlue selectPlanTime_success
+else #LightBlue updateUserVote_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
-            statusCode: **200**,
-            plan:
-                **id**,
-                **name**,
-                **candidiate_plan_time**
+            statusCode: **200**
+
     end note
-    
+    User <-- Client: Alert "투표가 수정됐습니다." \n & Redirect "/vote/:id"
 end
 
 @enduml

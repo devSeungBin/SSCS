@@ -1,7 +1,7 @@
-@startuml cancelPlan(완료)
-'http://localhost:3000/plan/:id
+@startuml createVote(완료)
+'http://localhost:3000/createVote/:id
 
-title cancelPlan(완료) seqeunce diagram
+title createVote(완료) seqeunce diagram
 
 skinparam SequenceMessageAlignment center
 
@@ -9,12 +9,17 @@ participant Server order 30
 participant Client order 20
 actor User order 10
 
-User -> Client: Click "약속 취소"
+User -> Client: Click "투표 생성"
 
-Client -> Server: **POST /groups/:group_id/plans/:plan_id/failure** \n Request "Cancel Plan"
+Client -> Server: **POST /groups/:group_id/plans/:plan_id/failure** \n Request "Cancel Vote"
 note right
     req.body:
-        option: **cancel**
+        option: **select**
+        vote_plan_time: [{
+                **start**
+                **end**
+        }, ...],
+        **vote_deadline**
 end note
 
 alt#Gold #Pink internal_error
@@ -27,7 +32,7 @@ alt#Gold #Pink internal_error
     end note
     User <-- Client: Alert "result.comment" & "result.message"
 
-else #Pink cancelPlan_planNotFound
+else #Pink createVote_planNotFound
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -37,7 +42,7 @@ else #Pink cancelPlan_planNotFound
     end note
     User <-- Client: Alert "result.comment" \n & Redirect "/group/:id"
 
-else #Pink cancelPlan_notGroupLeader
+else #Pink createVote_notGroupLeader
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -45,9 +50,9 @@ else #Pink cancelPlan_notGroupLeader
             comment: "**error comment**",
             message: "**error message**"
     end note
-    User <-- Client: Alert "result.comment"
+    User <-- Client: Alert "result.comment" \n & Redirect "/plan/:id"
 
-else #Pink cancelPlan_accessDenied
+else #Pink createVote_accessDenied
     Client <-- Server: Reponse "JSON"
     note left
         result:
@@ -67,13 +72,13 @@ else #LightYellow newUser_redirect
     end note
     User <-- Client: Redirect "/initSetting"
 
-else #LightBlue cancelPlan_success
+else #LightBlue createVote_success
     Client <-- Server: Reponse "JSON"
     note left
         result:
             statusCode: **200**
     end note
-    User <-- Client: Redirect "/group/:id"
+    User <-- Client: Redirect "/vote/:id"
 
 end
 

@@ -329,7 +329,7 @@ exports.searchPlan = async (id) => {
                     const planInfo = {
                         id: plan.id,
                         name: plan.name,
-                        group: plan.group,
+                        group_id: plan.group_id,
                         plan_time: plan.plan_time,
                         schedule_deadline: plan.schedule_deadline,
                         vote_deadline: plan.vote_deadline,
@@ -429,7 +429,6 @@ exports.generateSchedules = async (plan, busy, time_range) => {
 
 
     } catch (err) {
-        console.log(err)
         return {
             statusCode: 500,
             comment: err

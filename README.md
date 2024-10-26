@@ -136,7 +136,7 @@
 
 > GET /groups/{group_id}/plans/{plan_id}/candidates - 일정 후보 계산 [완성, 응답 테스트 완료]
 
-> POSTS /groups/{group_id}/plans/{plan_id}/failure - 일정 후보 계산 실패 [완성, 응답 테스트 완료]
+> POST /groups/{group_id}/plans/{plan_id}/failure - 일정 후보 계산 실패 [완성, 응답 테스트 완료]
 
 > GET /groups/{group_id}/preferences - 그룹 선호도 계산 [임시 사용, 완성, 응답 테스트 완료]
 
