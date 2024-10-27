@@ -275,7 +275,7 @@ const doc = {
                     {
                         id: '약속 id',
                         name: '약속 이름',
-                        group: '약속이 생성된 그룹 id',
+                        group_id: '약속이 생성된 그룹 id',
                         plan_time: '약속 시간',
                         schedule_deadline: '일정 제출 마감일',
                         vote_deadline: '투표 제출 마감일',

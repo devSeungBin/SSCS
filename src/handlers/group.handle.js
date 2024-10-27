@@ -1,5 +1,6 @@
 const array = require('lodash');
 const crypto = require('crypto');
+const moment = require('moment');
 const db = require('../models/index.db');
 const { Users, Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
 
@@ -9,6 +10,116 @@ function convertToMinutes(timeString) {
         return false;
     }
     return hours * 60 + minutes;
+}
+
+function isVaildString(object, options = {}) {
+    const {
+        checkEmpty = {
+            enabled: false,
+            allowBlank: false
+        },
+    } = options;
+
+    // object의 타입이 문자열인지 검사 (default)
+    // 문자열이 아니면 false
+    if (typeof object !== 'string') {
+        return false;
+    };
+
+    // 문자열 길이가 0인지 검사 (option.checkEmpty)
+    if (checkEmpty.enabled) {
+
+        // 공백을 허용하는 경우(allowBlank), 문자열의 시작과 끝이 바로 이어지면 false
+        // 공백을 허용하지 않는 경우(!allowBlank), 문자열 내 공백만 있는 경우 false (default)
+        const regex = checkEmpty.allowBlank ? /^$/ : /^\s*$/ ;
+        if(!regex.test(object)) {
+            return false;
+        };
+    };
+
+    return true;
+}
+
+function isVaildDate(object, options = {}) {
+    const {
+        checkDateType = 'string',
+        checkDateForm = {
+            enabled: false,
+            format: 'YYYY-MM-DD'
+        },
+    } = options;
+
+    // object의 타입이 checkDateType인지 검사 (default)
+    switch (checkDateType) {
+
+        // 날짜인 경우
+        case 'date':
+            // 날짜가 아니면 false
+            if (!(typeof object === 'object' && object instanceof Date)) {
+                return false;
+            };
+            break;
+
+        // 문자열인 경우 (default)
+        default:
+            // 문자열이 아니면 false
+            if (!isVaildString(object, { checkEmpty: { enabled: false } } )) {
+                console.log(object, typeof object)
+                return false;
+            };
+    };
+        
+    // object의 형식이 주어진 format인지 검사 (option.checkDateForm)
+    if (checkDateForm.enabled) {
+
+        // 주어진 format이 아니면 false
+        if (!moment(object, checkDateForm.format, true).isValid()) {
+            return false;
+        };
+    };
+
+    return true;
+}
+
+function getEarlierDate(dates = {}, options = {}) {
+    const {
+        dateFormat = 'YYYY-MM-DD',
+        dateType = 'string',
+        transformFirstDate = {
+            enabled: false
+        },
+        transformSecondDate = {
+            enabled: false
+        }
+    } = options;
+
+    const {
+        firstDate,
+        secondDate
+    } = dates;
+
+    // date1, 2가 올바른지 검사
+    if (
+        !isVaildDate(firstDate, { checkDateType: dateType, checkDateForm: { enabled: true, format: dateFormat } }) ||
+        !isVaildDate(secondDate, { checkDateType: dateType, checkDateForm: { enabled: true, format: dateFormat } }))
+    {
+        return false;
+    };
+
+    const date1 = transformFirstDate.enabled ? moment(firstDate, dateFormat).add(9, 'hours') : moment(firstDate, dateFormat);
+    const date2 = transformFirstDate.enabled ? moment(secondDate, dateFormat).add(9, 'hours') : moment(secondDate, dateFormat);
+
+    // 각 날짜를 비교 후 결과를 반환
+    if (date1.isSame(date2)) {
+        return false;
+    };
+
+    if (date1.isBefore(date2)) {
+        return transformFirstDate.enabled ? date1.format(dateFormat) : firstDate;
+
+    } else {
+        return transformFirstDate.enabled ? date2.format(dateFormat) : secondDate;
+    };
 }
 
 exports.searchGroup = (id) => {
@@ -452,6 +563,151 @@ exports.calculatePreferences = async (group_id) => {
 }
 
 
+exports.checkPlan = async (group_id, plan) => {
+    const group = await Groups.findOne({ where: { id: group_id }, raw: true });
+    if (!group) {
+        return {
+            statusCode: 404,
+            comment: '그룹이 존재하지 않습니다.',
+            result: false
+        };
+    }
+
+    const { 
+        name,
+        date_list,
+        time_scope,
+        maximum_user_count,
+        minimum_user_count,
+        progress_time,
+        schedule_deadline
+    } = plan;
+
+    // name이 문자열인지, 공백만 포함하지 않는지 확인
+    if (isVaildString(name, { checkEmpty: { enabled: true, allowBlank: false } })) {
+        return {
+            statusCode: 400,
+            comment: '입력하신 약속 이름이 올바르지 않습니다.',
+            result: false
+        }; 
+    };
+
+    // schedule_deadline이 문자열이고, 형식이 YYYY-MM-DD HH:mm인지 확인
+    if (!isVaildDate(schedule_deadline, { checkDateForm: { enabled: true, format: 'YYYY-MM-DD HH:mm' } })) {
+        return {
+            statusCode: 400,
+            comment: '입력하신 일정 마감일이 올바르지 않습니다.',
+            result: false
+        };
+    
+    // schedule_deadline이 현재 날짜 이후인지 확인
+    } else {
+        const currentDate = moment().format('YYYY-MM-DD HH:mm');
+        const comparison = getEarlierDate({ firstDate: schedule_deadline, secondDate: currentDate }, { dateFormat: 'YYYY-MM-DD HH:mm' });
+
+        if (comparison === schedule_deadline || !comparison) {
+            return {
+                statusCode: 400,
+                comment: '입력하신 일정 마감일이 올바르지 않습니다.',
+                result: false
+            };
+        };
+    };
+
+    // date_list이 배열이고, 빈배열이 아니며, 배열 내 원소의 형식이 YYYY-MM-DD인지 확인
+    if (
+        !Array.isArray(date_list) ||
+        date_list.length === 0 ||
+        date_list.every((date) => typeof date !== 'string' && !moment(date, 'YYYY-MM-DD', true).isValid())
+    ) {
+        return {
+            statusCode: 400,
+            comment: '입력하신 약속 날짜가 올바르지 않습니다.',
+            result: false
+        };
+        
+    // date_list 내 date의 날짜들이 일정 마감일 이후인지 확인
+    } else {
+        for (let date of date_list) {
+            if (getEarlierDate({ firstDate: date, secondDate: schedule_deadline.split(' ')[0] }) === date) {
+                return {
+                    statusCode: 400,
+                    comment: '입력하신 약속 날짜가 올바르지 않습니다.',
+                    result: false
+                };
+            };
+        };
+    };
+
+    // time_scope가 객체이고, start와 end 속성을 포함하는지 확인
+    if (
+        typeof time_scope !== 'object' ||
+        !(time_scope.hasOwnProperty('start') && time_scope.hasOwnProperty('end'))
+    ) {
+        return {
+            statusCode: 400,
+            comment: '입력하신 약속 시간대가 올바르지 않습니다.',
+            result: false
+        };
+
+    // start가 end를 넘어서지 않는지 확인
+    } else {
+        if (getEarlierDate({ firstDate: time_scope.start, secondDate: time_scope.end }, { dateFormat: 'HH:mm' }) !== time_scope.start) {
+            return {
+                statusCode: 400,
+                comment: '입력하신 약속 시간대가 올바르지 않습니다.',
+                result: false
+            };
+        };
+    };
+
+    // maximum_user_count가 설정된 경우
+    if (maximum_user_count !== null) {
+
+        // maximum_user_count가 정수이고, 0보다 작거나 group.user_count보다 큰지 확인
+        if (typeof maximum_user_count !== 'number' || maximum_user_count <= 0 || group.user_count < maximum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '입력하신 최대 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+
+        // minimum_user_count가 정수이고, 0보다 작거나 maximum_user_count보다 큰지 확인
+        if (typeof minimum_user_count !== 'number' || minimum_user_count <= 0 || maximum_user_count < minimum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '입력하신 최소 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+    
+    // maximum_user_count가 설정되지 않은 경우 
+    } else {
+
+        // minimum_user_count가 정수이고, 0보다 작거나 group.user_count보다 큰지 확인
+        if (typeof minimum_user_count !== 'number' || minimum_user_count <= 0 || group.user_count < minimum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '입력하신 최소 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+    };
+
+    // progress_time이 정수이고, 15분 간격인지 확인
+    if (typeof progress_time !== 'number' || progress_time % 15 !== 0) {
+        return {
+            statusCode: 400,
+            comment: '입력하신 약속 예상 시간이 올바르지 않습니다.',
+            result: false
+        }; 
+    };
+
+    return {
+        result: true
+    };
+}
 
 exports.generateTimeSlots = (dateList, timeScope) => {
     const planTimeSlot = [];
@@ -542,6 +798,103 @@ exports.searchPlan = async (id) => {
             statusCode: 500,
             comment: err
         };
+    };
+}
+
+exports.checkNewPlan = async (group_id, newPlan) => {
+    const group = await Groups.findOne({ where: { id: group_id }, raw: true });
+    if (!group) {
+        return {
+            statusCode: 404,
+            comment: '그룹이 존재하지 않습니다.',
+            result: false
+        };
+    }
+
+    const { 
+        name,
+        maximum_user_count,
+        minimum_user_count,
+        progress_time,
+        schedule_deadline
+    } = newPlan;
+
+    // name이 문자열인지, 공백만 포함하지 않는지 확인
+    if (isVaildString(name, { checkEmpty: { enabled: true, allowBlank: false } })) {
+        return {
+            statusCode: 400,
+            comment: '수정하신 약속 이름이 올바르지 않습니다.',
+            result: false
+        }; 
+    };
+
+    // schedule_deadline이 문자열이고, 형식이 YYYY-MM-DD HH:mm인지 확인
+    if (!isVaildDate(schedule_deadline, { checkDateForm: { enabled: true, format: 'YYYY-MM-DD HH:mm' } })) {
+        return {
+            statusCode: 400,
+            comment: '수정하신 일정 마감일이 올바르지 않습니다.',
+            result: false
+        };
+    
+    // schedule_deadline이 현재 날짜 이후인지 확인
+    } else {
+        const currentDate = moment().format('YYYY-MM-DD HH:mm');
+        const comparison = getEarlierDate({ firstDate: schedule_deadline, secondDate: currentDate }, { dateFormat: 'YYYY-MM-DD HH:mm', transformFirstDate: { enabled: true } });
+
+        if (comparison === schedule_deadline || !comparison) {
+            return {
+                statusCode: 400,
+                comment: '수정하신 일정 마감일이 올바르지 않습니다.',
+                result: false
+            };
+        };
+    };
+
+    // maximum_user_count가 설정된 경우
+    if (maximum_user_count !== null) {
+
+        // maximum_user_count가 정수이고, 0보다 작거나 group.user_count보다 큰지 확인
+        if (typeof maximum_user_count !== 'number' || maximum_user_count <= 0 || group.user_count < maximum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '수정하신 최대 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+
+        // minimum_user_count가 정수이고, 0보다 작거나 maximum_user_count보다 큰지 확인
+        if (typeof minimum_user_count !== 'number' || minimum_user_count <= 0 || maximum_user_count < minimum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '수정하신 최소 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+    
+    // maximum_user_count가 설정되지 않은 경우 
+    } else {
+
+        // minimum_user_count가 정수이고, 0보다 작거나 group.user_count보다 큰지 확인
+        if (typeof minimum_user_count !== 'number' || minimum_user_count <= 0 || group.user_count < minimum_user_count) {
+            return {
+                statusCode: 400,
+                comment: '수정하신 최소 인원수가 올바르지 않습니다.',
+                result: false
+            }; 
+        };
+    };
+
+    // progress_time이 정수이고, 15분 간격인지 확인
+    if (typeof progress_time !== 'number' || progress_time % 15 !== 0) {
+        return {
+            statusCode: 400,
+            comment: '수정하신 약속 예상 시간이 올바르지 않습니다.',
+            result: false
+        }; 
+    };
+
+    return {
+        result: true
     };
 }
 

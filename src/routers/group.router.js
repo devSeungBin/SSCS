@@ -13,7 +13,7 @@ const {
     createInvitationCode, joinGroup,
     calculatePreferences, createPreferences,
     searchParticipant,
-    createPlan, searchPlan, updatePlan, updatePlanSchedule, updatePlanVote, deletePlanSchedule, deletePlanVote,
+    checkPlan, createPlan, searchPlan, checkNewPlan, updatePlan, updatePlanSchedule, updatePlanVote, deletePlanSchedule, deletePlanVote,
     searchPlanInfo,
     generateTimeSlots,
     checkSchedule, createSchedule, searchSchedules, searchSchedule, updateSchedule,
@@ -971,47 +971,61 @@ router.post('/:group_id/plans', isLoggedIn, isNotNewUser, isGroupUser, async (re
             }
         };
 
+        next();
     } else {
-        const planTimeSlot = generateTimeSlots(req.body.date_list, req.body.time_scope);
-
-        let newPlan = {
-            name: req.body.name,
-            group_id: req.query.group_id,
-            plan_time_slot: planTimeSlot,
-            minimum_user_count: req.body.minimum_user_count,
-            maximum_user_count: req.body.maximum_user_count,
-            progress_time: req.body.progress_time,
-            schedule_deadline: req.body.schedule_deadline,
-            status: 'submit'
-        }
-    
-        await createPlan(newPlan)
-        .then((info) => {
-            if (info.statusCode !== 201) {
+        await checkPlan(req.query.group_id, req.body)
+        .then(async (res) => {
+            if (!res.result) {
                 req.result = {
                     error: {
-                        statusCode: info.statusCode,
-                        comment: info.comment
+                        statusCode: res.statusCode,
+                        comment: res.comment
                     }
                 };
+    
             } else {
-                req.result = {
-                    statusCode: info.statusCode,
-                    plan: info.plan,
-                };
-            };
-        })
-        .catch((err) => {
-            req.result = {
-                error: {
-                    statusCode: err.statusCode,
-                    comment: err.comment
+                const planTimeSlot = generateTimeSlots(req.body.date_list, req.body.time_scope);
+    
+                let newPlan = {
+                    name: req.body.name,
+                    group_id: req.query.group_id,
+                    plan_time_slot: planTimeSlot,
+                    minimum_user_count: req.body.minimum_user_count,
+                    maximum_user_count: req.body.maximum_user_count,
+                    progress_time: req.body.progress_time,
+                    schedule_deadline: req.body.schedule_deadline,
+                    status: 'submit'
                 }
+            
+                await createPlan(newPlan)
+                .then((info) => {
+                    if (info.statusCode !== 201) {
+                        req.result = {
+                            error: {
+                                statusCode: info.statusCode,
+                                comment: info.comment
+                            }
+                        };
+                    } else {
+                        req.result = {
+                            statusCode: info.statusCode,
+                            plan: info.plan,
+                        };
+                    };
+                })
+                .catch((err) => {
+                    req.result = {
+                        error: {
+                            statusCode: err.statusCode,
+                            comment: err.comment
+                        }
+                    };
+                });
             };
+    
+            next();
         });
     };
-
-    next();
 }, handleError);
 
 router.get('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
@@ -1199,6 +1213,7 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
             }
         };
 
+        next();
     } else {
         const check = await checkLeader(req.user.id, req.query.group_id);
 
@@ -1209,62 +1224,55 @@ router.patch('/:group_id/plans/:plan_id', isLoggedIn, isNotNewUser, isGroupUser,
                     comment: check.comment
                 }
             };
-        } else {
-            const { name, minimum_user_count, maximum_user_count, progress_time, schedule_deadline } = req.body;
 
-            let plan = {};
-            let formError = false;
-    
-            if (!req.query.plan_id) {
-                formError = true;
-            } else {
-                plan.id = req.query.plan_id;
-    
-                if (name) { plan.name = name; };
-                if (minimum_user_count) { plan.minimum_user_count = minimum_user_count; };
-                if (maximum_user_count) { plan.maximum_user_count = maximum_user_count; };
-                if (progress_time) { plan.progress_time = progress_time; };
-                if (schedule_deadline) { plan.schedule_deadline = schedule_deadline; };
-            };
-            
-    
-            if (!formError) {
-                await updatePlan(plan)
-                .then((info) => {
-                    if (info.statusCode !== 200) {
-                        req.result = {
-                            error: {
-                                statusCode: info.statusCode,
-                                comment: info.comment
-                            }
-                        };
-                    } else {
-                        req.result = {
-                            statusCode: info.statusCode,
-                            plan: info.plan
-                        };
-                    };
-                })
-                .catch((err) => {
+            next();
+        } else {
+            await checkNewPlan(req.query.group_id, req.body)
+            .then(async (res) => {
+                if (!res.result) {
                     req.result = {
                         error: {
-                            statusCode: err.statusCode,
-                            comment: err.comment
+                            statusCode: res.statusCode,
+                            comment: res.comment
                         }
                     };
-                });
-            } else {
-                req.result = {
-                    error: {
-                        statusCode: 400,
-                        comment: '약속 정보가 올바르지 않습니다.'
-                    }
-                };
-            };
-        }
-    };
+        
+                } else {
+                    let plan = {
+                        id: req.query.plan_id,
+                        ...req.body
+                    };
 
-    next();
+                    await updatePlan(plan)
+                    .then((info) => {
+                        if (info.statusCode !== 200) {
+                            req.result = {
+                                error: {
+                                    statusCode: info.statusCode,
+                                    comment: info.comment
+                                }
+                            };
+                        } else {
+                            req.result = {
+                                statusCode: info.statusCode,
+                                plan: info.plan
+                            };
+                        };
+                    })
+                    .catch((err) => {
+                        req.result = {
+                            error: {
+                                statusCode: err.statusCode,
+                                comment: err.comment
+                            }
+                        };
+                    });
+                };
+
+                next();
+            });
+        };
+    };
 }, handleError);
 
 router.get('/:group_id/plans/:plan_id/schedules', isLoggedIn, isNotNewUser, isGroupUser, async (req, res, next) => {
