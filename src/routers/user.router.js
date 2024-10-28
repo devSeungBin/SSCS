@@ -88,8 +88,10 @@ router.get('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
                 };
             } else {
                 const user = {
+                    id: info.user.id,
                     name: info.user.name,
                     email: info.user.email,
+                    image:info.user.image,
                     provider: info.user.provider,
                     calendar_id: info.user.calendar_id
                 };
@@ -276,7 +278,7 @@ router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         };
 
     } else {
-        const { name, password, calendar_id } = req.body.user;
+        const { name, image, password, calendar_id } = req.body.user;
         const { day_preference, time_preference } = req.body.preference;
 
         let user = {};
@@ -284,6 +286,7 @@ router.patch('/', isLoggedIn, isNotNewUser, async (req, res, next) => {
         let formError = false;
 
         if (name) { user.name = name; };
+        if (image) { user.image = image; };
         if (password) { user.password = password; };
         if (calendar_id) { user.calendar_id = calendar_id; };
         if (day_preference) {

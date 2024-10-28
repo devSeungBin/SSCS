@@ -1,6 +1,7 @@
 const array = require('lodash');
 const crypto = require('crypto');
 const moment = require('moment');
+const { RandomImageGenerator } = require('../util/util.js');
 const db = require('../models/index.db');
 const { Users, Groups, Participants, Plans, Submissions, Preferences, Votes } = db;
 
@@ -118,7 +119,7 @@ function getEarlierDate(dates = {}, options = {}) {
         return transformFirstDate.enabled ? date1.format(dateFormat) : firstDate;
 
     } else {
-        return transformFirstDate.enabled ? date2.format(dateFormat) : secondDate;
+        return transformSecondDate.enabled ? date2.format(dateFormat) : secondDate;
     };
 }
 
@@ -141,6 +142,7 @@ exports.searchGroup = (id) => {
                 groupList.push({
                     id: item.id,
                     name: item.name,
+                    image: item.image,
                     user_count: item.user_count
                 });
                 ++count;
@@ -199,14 +201,17 @@ exports.createGroup = async (id, group) => {
         };
     };
 
-    try {        
+    try {
+        const randomImage = new RandomImageGenerator().getRandomImage();
+        group.image = randomImage;
+
         const newGroup = await Groups.create(group);
         const user = await Users.findOne({ where: { id: id }, raw: true });
         if(user.length === 0) return {
             statusCode: 404,
             comment: '사용자 프로필을 찾을 수 없습니다.'
         };
-        await Participants.create({ name: user.name, user_id: group.creator, group_id: newGroup.id });
+        await Participants.create({ name: user.name, image: user.image, user_id: group.creator, group_id: newGroup.id });
 
         return {
             statusCode: 201,
@@ -289,6 +294,10 @@ exports.updateGroup = async (group) => {
                 delete group.name;
             };
 
+            if (group.image == changedGroup.toJSON().image) {
+                delete group.image;
+            };
+
             if (group.invitation_code == changedGroup.toJSON().invitation_code) {
                 delete group.invitation_code;
             };
@@ -342,7 +351,7 @@ exports.joinGroup = async (id, invitation_code) => {
             comment: '사용자 프로필을 찾을 수 없습니다.'
         };
 
-        const participant = await Participants.create({ name: user.name, user_id: id, group_id: group.dataValues.id });
+        const participant = await Participants.create({ name: user.name, image: user.image, user_id: id, group_id: group.dataValues.id });
         await group.update({ user_count: ++group.user_count });
         await group.save();
         
@@ -629,10 +638,10 @@ exports.checkPlan = async (group_id, plan) => {
     // date_list 내 date의 날짜들이 일정 마감일 이후인지 확인
     } else {
         for (let date of date_list) {
-            if (getEarlierDate({ firstDate: date, secondDate: schedule_deadline.split(' ')[0] }) === date) {
+            if (getEarlierDate({ firstDate: date, secondDate: schedule_deadline.split(' ')[0] }, { dateFormat: 'YYYY-MM-DD' }) === date) {
                 return {
                     statusCode: 400,
-                    comment: '입력하신 약속 날짜가 올바르지 않습니다.',
+                    comment: '약속 날짜는 일정 제출 마감일 이후로 설정해야 합니다.',
                     result: false
                 };
             };
@@ -655,7 +664,7 @@ exports.checkPlan = async (group_id, plan) => {
         if (getEarlierDate({ firstDate: time_scope.start, secondDate: time_scope.end }, { dateFormat: 'HH:mm' }) !== time_scope.start) {
             return {
                 statusCode: 400,
-                comment: '입력하신 약속 시간대가 올바르지 않습니다.',
+                comment: '시작 시간대는 끝 시간대 이전으로 설정해야 합니다.',
                 result: false
             };
         };
@@ -719,8 +728,10 @@ exports.generateTimeSlots = (dateList, timeScope) => {
         return planTimeSlot;
     };
 
+    const sortDateList = dateList.map(date => moment(date)).sort((a, b) => a.diff(b)).map(moment => moment.format('YYYY-MM-DD'));
+
     let index = 0;
-    dateList.forEach((date) => {
+    sortDateList.forEach((date) => {
         planTimeSlot.push({
             date: date,
             time_scope: []

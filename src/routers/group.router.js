@@ -383,7 +383,7 @@ router.patch('/:group_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, re
         };
 
     } else {
-        const { name, invitationCode,
+        const { name, image, invitationCode,
             preference_setting, manual_group_preference } = req.body;
 
         let group = {};
@@ -395,6 +395,7 @@ router.patch('/:group_id', isLoggedIn, isNotNewUser, isGroupUser, async (req, re
             group.id = req.query.group_id;
 
             if (name) { group.name = name; };
+            if (image) { group.image = image; };
             if (invitationCode) { group.invitation_code = invitationCode; };
             if (preference_setting === 'manual') { 
                 group.preference_setting = preference_setting;

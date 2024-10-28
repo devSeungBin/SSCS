@@ -1,0 +1,127 @@
+@startuml initialMount
+'http://localhost:3000/dashboard
+
+title initialMount seqeunce diagram
+
+skinparam SequenceMessageAlignment center
+
+participant Server order 30
+participant Client order 20
+actor User order 10
+
+User -> Client: Move "/dashboard"
+
+Client -> Server: **GET /groups/:group_id** \n Request "Read GroupInformation"
+
+alt#Gold #Pink internal_error
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **500**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" & "result.message"
+
+else #Pink readGroupInformation_failure
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **404**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+
+else #Pink readGroupInformation_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **401**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Alert "result.message" \n & Redirect "/login"
+
+else #LightYellow newUser_redirect
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **303**,
+            comment: "**error comment**",
+            message: "**error message**"
+    end note
+    User <-- Client: Redirect "/initSetting"
+
+else #LightBlue readGroupInformation_success
+    Client <-- Server: Reponse "JSON"
+    note left
+        result:
+            statusCode: **200**,
+            group:
+                **id**,
+                **name**,
+                **creator**
+    end note
+
+    Client -> Server: **GET /groups/:group_id/members** \n Request "Read GroupParticipantList"
+
+    alt#Gold #Pink internal_error
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **500**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+        User <-- Client: Alert "result.comment" & "result.message"
+
+    else #Pink readGroupParticipantList_failure
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **404**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+        User <-- Client: Alert "result.comment" \n & Redirect "/userHome"
+
+    else #Pink readGroupParticipantList_redirect
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **401**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+        User <-- Client: Alert "result.message" \n & Redirect "/login"
+
+    else #LightYellow newUser_redirect
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **303**,
+                comment: "**error comment**",
+                message: "**error message**"
+        end note
+        User <-- Client: Redirect "/initSetting"
+
+    else #LightBlue readGroupParticipantList_success
+        Client <-- Server: Reponse "JSON"
+        note left
+            result:
+                statusCode: **200**,
+                participants: [{
+                    **id**,
+                    **name**,
+                    **user_id**,
+                    **group_id**
+                }, ...]
+        end note
+
+
+    end
+
+end
+
+@enduml

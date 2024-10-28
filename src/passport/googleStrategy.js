@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const { RandomImageGenerator } = require('../util/util.js');
 const db = require('../models/index.db');
 const { Users, Preferences } = db;
 
@@ -22,10 +23,11 @@ module.exports = () => {
                     if (user) {
                         done(null, user, { statusCode: 200, user: user.toJSON() });
                     } else {
+                        const randomImage = new RandomImageGenerator().getRandomImage();
                         const newUser = await Users.create({
                             name: profile.name,
                             email: profile.email,
-                            image: profile.picture,
+                            image: randomImage,
                             provider: 'google',
                             access_token: accessToken,
                             calendar_id: profile.email,

@@ -1,5 +1,6 @@
 const array = require('lodash');
 const db = require('../models/index.db');
+const { RandomImageGenerator } = require('../util/util.js');
 const { Users, Preferences, Participants, Plans } = db;
 
 function isValidObject(obj) { return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0; };
@@ -113,12 +114,13 @@ exports.createUser = async (user) => {
             };
         }
 
+        const randomImage = new RandomImageGenerator().getRandomImage();
         user = {
             name: user.name,
             email: user.email,
+            image: randomImage,
             password: user.password,
-            provider: 'local',
-            new: true
+            provider: 'local'
         };
         
         const newUser = await Users.create(user);
@@ -277,6 +279,10 @@ exports.updateUser = async (id, user, preference) => {
             if (user.name == changedUser.toJSON().name) {
                 delete user.name;
             };
+
+            if (user.image == changedUser.toJSON().image) {
+                delete user.image;
+            };
         };
 
         if (preference) {
@@ -294,6 +300,14 @@ exports.updateUser = async (id, user, preference) => {
 
         await changedPreference.update(preference);
         await changedPreference.save();
+
+        const myGroup = await Participants.findAll({ where: { user_id: id }, raw: false });
+        if (myGroup.length !== 0 && (user.name || user.image)) {
+            for (let group of myGroup) {
+                await group.update({ name: user.name, image: user.image });
+                await group.save();
+            };
+        };
 
         return {
             statusCode: 200,    // 사용자 정보가 변경됨
